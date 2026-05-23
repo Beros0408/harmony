@@ -189,6 +189,8 @@ Synchronisation cloud, intégration wearables, APIs tierces, assistant vocal, mo
 | ADR-003 | — | SQLCipher pour le stockage local | Sécurité des données sensibles (RGPD) | Phase 0 |
 | ADR-004 | — | Priorité Android pour le MVP WhatsApp | Sandboxing iOS trop restrictif pour WhatsApp | Phase 2 |
 | ADR-005 | — | TensorFlow Lite on-device pour l'IA spam | Latence faible + confidentialité | Phase 2 |
+| ADR-006 | 2026-05-23 | compileSdk relevé à 35 | Compatibilité sqflite_sqlcipher + androidx (exigent >= 34) | Phase 0 |
+| ADR-007 | 2026-05-23 | compileSdk relevé à 36 | local_auth_android + flutter_plugin_android_lifecycle exigent >= 36 | Phase 0 |
 
 ---
 
@@ -208,6 +210,7 @@ Synchronisation cloud, intégration wearables, APIs tierces, assistant vocal, mo
 |---|---|---|---|
 | 0.0.0 | 2026-05-23 | Init | Création du fichier de suivi, monorepo initialisé |
 | 0.1.0 | 2026-05-23 | Phase 0 | Flutter : structure feature-first, design system (12 composants), thèmes dark/OLED/light, router, dashboard. Backend : FastAPI + JWT auth + PostgreSQL + Redis + Docker + Alembic |
+| 0.1.1 | 2026-05-23 | Phase 0 | fix(android) : compileSdk 31→35, puis 35→36 pour satisfaire sqflite_sqlcipher, local_auth_android et flutter_plugin_android_lifecycle |
 
 ---
 
