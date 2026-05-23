@@ -11,13 +11,13 @@ import '../../core/constants/app_typography.dart';
 import 'route_names.dart';
 
 final GoRouter appRouter = GoRouter(
-  initialLocation: RouteNames.dashboard,
+  initialLocation: RouteNames.auth,
   debugLogDiagnostics: false,
   errorBuilder: (context, state) => _ErrorScreen(error: state.error),
   routes: [
     GoRoute(
       path: RouteNames.splash,
-      redirect: (_, __) => RouteNames.dashboard,
+      redirect: (_, __) => RouteNames.auth,
     ),
     GoRoute(
       path: RouteNames.auth,
