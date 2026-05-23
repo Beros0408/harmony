@@ -57,12 +57,11 @@ class AuthRepository implements IAuthRepository {
   @override
   Future<bool> authenticateWithBiometric() async {
     try {
+      // local_auth 3.x : stickyAuth renommé persistAcrossBackgrounding
       return await _localAuth.authenticate(
         localizedReason: 'Déverrouillez Harmony pour continuer',
-        options: const AuthenticationOptions(
-          stickyAuth: true,
-          biometricOnly: true,
-        ),
+        biometricOnly: true,
+        persistAcrossBackgrounding: true,
       );
     } catch (_) {
       return false;
