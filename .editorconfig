@@ -1,0 +1,40 @@
+root = true
+
+# Règles par défaut pour tous les fichiers
+[*]
+indent_style = space
+indent_size = 2
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+# Python — PEP 8 impose 4 espaces
+[*.py]
+indent_size = 4
+max_line_length = 88
+
+# Dart / Flutter
+[*.dart]
+indent_size = 2
+
+# YAML (GitHub Actions, Docker Compose, etc.)
+[*.{yml,yaml}]
+indent_size = 2
+
+# Markdown — ne pas supprimer les espaces en fin de ligne (double espace = saut de ligne)
+[*.md]
+trim_trailing_whitespace = false
+
+# Makefile — tabulations obligatoires
+[Makefile]
+indent_style = tab
+
+# JSON
+[*.json]
+indent_size = 2
+
+# Shell scripts
+[*.sh]
+indent_size = 2
+end_of_line = lf
