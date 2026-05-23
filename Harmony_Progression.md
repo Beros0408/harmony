@@ -211,6 +211,7 @@ Synchronisation cloud, intégration wearables, APIs tierces, assistant vocal, mo
 | 0.0.0 | 2026-05-23 | Init | Création du fichier de suivi, monorepo initialisé |
 | 0.1.0 | 2026-05-23 | Phase 0 | Flutter : structure feature-first, design system (12 composants), thèmes dark/OLED/light, router, dashboard. Backend : FastAPI + JWT auth + PostgreSQL + Redis + Docker + Alembic |
 | 0.1.1 | 2026-05-23 | Phase 0 | fix(android) : compileSdk 31→35, puis 35→36 pour satisfaire sqflite_sqlcipher, local_auth_android et flutter_plugin_android_lifecycle |
+| 0.2.0 | 2026-05-24 | Sprint A | Navigation interactive : 4 modules du dashboard câblés (Sécurité, Famille, Fitness, Agenda) — slide transition 200ms, boutons retour, HarmonyEmptyState, 5 nouveaux tests |
 
 ---
 
