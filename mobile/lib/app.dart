@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:harmony/l10n/app_localizations.dart';
+import 'core/language/language_cubit.dart';
 import 'core/router/app_router.dart';
 import 'core/security/secure_storage.dart';
 import 'features/auth/data/repositories/auth_repository.dart';
@@ -12,17 +14,31 @@ class HarmonyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => AuthBloc(
-        repository: AuthRepository(storage: SecureStorageService()),
-      )..add(const AuthCheckRequested()),
-      child: MaterialApp.router(
-        title: 'Harmony',
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.lightTheme,
-        darkTheme: AppTheme.darkTheme,
-        themeMode: ThemeMode.dark,
-        routerConfig: appRouter,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (_) => LanguageCubit(SecureStorageService())..load(),
+        ),
+        BlocProvider(
+          create: (_) => AuthBloc(
+            repository: AuthRepository(storage: SecureStorageService()),
+          )..add(const AuthCheckRequested()),
+        ),
+      ],
+      child: BlocBuilder<LanguageCubit, Locale>(
+        builder: (context, locale) {
+          return MaterialApp.router(
+            title: 'Harmony',
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: ThemeMode.dark,
+            routerConfig: appRouter,
+            locale: locale,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+          );
+        },
       ),
     );
   }

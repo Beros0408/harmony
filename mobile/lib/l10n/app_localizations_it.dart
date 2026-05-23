@@ -1,0 +1,442 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for Italian (`it`).
+class AppLocalizationsIt extends AppLocalizations {
+  AppLocalizationsIt([String locale = 'it']) : super(locale);
+
+  @override
+  String get appName => 'Harmony';
+
+  @override
+  String get dashboardTitle => 'Harmony';
+
+  @override
+  String get dashboardWelcomeWave => 'Benvenuto 👋';
+
+  @override
+  String get dashboardAllServicesActive => 'Tutti i servizi attivi';
+
+  @override
+  String get dashboardSectionModules => 'I MIEI MODULI';
+
+  @override
+  String get moduleSecurityTitle => 'Sicurezza';
+
+  @override
+  String get moduleSecuritySubtitle => 'Filtraggio attivo';
+
+  @override
+  String get moduleSecurityBadge => 'attivo';
+
+  @override
+  String get moduleFamilyTitle => 'Famiglia';
+
+  @override
+  String get moduleFamilySubtitle => 'Controllo parentale';
+
+  @override
+  String moduleFamilyBadgeProfiles(int count) {
+    return '$count profili';
+  }
+
+  @override
+  String get moduleFitnessTitle => 'Fitness';
+
+  @override
+  String moduleFitnessSubtitle(int current, int goal) {
+    return '$current / $goal passi';
+  }
+
+  @override
+  String get moduleFitnessBadge => 'in corso';
+
+  @override
+  String get moduleAgendaTitle => 'Agenda';
+
+  @override
+  String moduleAgendaSubtitle(int count) {
+    return '$count eventi';
+  }
+
+  @override
+  String get moduleAgendaBadge => 'oggi';
+
+  @override
+  String get navBack => 'Indietro';
+
+  @override
+  String get navBackToDashboard => 'Torna alla dashboard';
+
+  @override
+  String get securityScreenTitle => 'Sicurezza e Filtraggio';
+
+  @override
+  String get securityStatsBlocked => 'Bloccati';
+
+  @override
+  String get securityStatsRules => 'Regole';
+
+  @override
+  String get securityStatsPrecision => 'Precisione';
+
+  @override
+  String get securitySectionActiveMode => 'MODALITÀ ATTIVA';
+
+  @override
+  String get securityModeNormal => 'Modalità Normale';
+
+  @override
+  String get securityModeFocus => 'Modalità Focus';
+
+  @override
+  String get securityModeNight => 'Modalità Notte';
+
+  @override
+  String get securitySectionRules => 'REGOLE DI FILTRAGGIO';
+
+  @override
+  String get securityRuleUnknownNumbers => 'Numeri sconosciuti';
+
+  @override
+  String get securityRuleUnknownNumbersDesc =>
+      'Blocca tutte le chiamate non identificate';
+
+  @override
+  String get securityRuleSpam => 'Telemarketing';
+
+  @override
+  String get securityRuleSpamDesc => 'Rilevamento IA chiamate commerciali';
+
+  @override
+  String get securityRuleBlacklist => 'Lista nera personale';
+
+  @override
+  String securityRuleBlacklistDesc(int count) {
+    return '$count numeri';
+  }
+
+  @override
+  String get securityRuleForeign => 'Numeri esteri';
+
+  @override
+  String get securityRuleForeignDesc => 'Prefissi internazionali';
+
+  @override
+  String get securityRuleWhitelist => 'Lista bianca familiare';
+
+  @override
+  String securityRuleWhitelistDesc(int count) {
+    return '$count contatti sempre consentiti';
+  }
+
+  @override
+  String get securitySectionRecentBlocked => 'ULTIME CHIAMATE BLOCCATE';
+
+  @override
+  String get securitySeeAll => 'Vedi tutto';
+
+  @override
+  String get familyScreenTitle => 'Famiglia e Controllo Parentale';
+
+  @override
+  String get familySectionChildren => 'I MIEI FIGLI';
+
+  @override
+  String familyChildAge(String name, int age) {
+    return '$name, $age anni';
+  }
+
+  @override
+  String get familyStatusAtSchool => 'A scuola';
+
+  @override
+  String get familyStatusAtHome => 'A casa';
+
+  @override
+  String familyScoreLabel(int value) {
+    return 'Punteggio $value';
+  }
+
+  @override
+  String familyChildDetailsToast(String name) {
+    return 'Dettagli di $name disponibili nello Sprint 2';
+  }
+
+  @override
+  String get familySectionLocation => 'POSIZIONE IN TEMPO REALE';
+
+  @override
+  String get familyMapPlaceholderTitle => 'Mappa interattiva in arrivo';
+
+  @override
+  String get familyMapPlaceholderSubtitle => 'Google Maps — Sprint 2';
+
+  @override
+  String get familySectionZones => 'ZONE SICURE';
+
+  @override
+  String get familyZoneHome => 'Casa';
+
+  @override
+  String get familyZoneHomeDesc => 'Raggio 250m · Attiva 24h/24';
+
+  @override
+  String get familyZoneSchool => 'École Jules Ferry';
+
+  @override
+  String get familyZoneSchoolDesc => 'Raggio 100m · Lun-Ven 8-17';
+
+  @override
+  String get familyZoneStadium => 'Stadio municipale';
+
+  @override
+  String get familyZoneStadiumDesc => 'Raggio 150m · Mer-Sab pomeriggi';
+
+  @override
+  String get familySectionLimits => 'LIMITI GIORNALIERI';
+
+  @override
+  String get familyLimitScreen => 'Tempo schermo oggi';
+
+  @override
+  String get familyLimitDistance => 'Distanza da casa';
+
+  @override
+  String get fitnessScreenTitle => 'Fitness e Prestazioni';
+
+  @override
+  String get fitnessSectionToday => 'OGGI';
+
+  @override
+  String get fitnessSteps => 'Passi';
+
+  @override
+  String fitnessStepsGoal(int goal) {
+    return '/ $goal obj.';
+  }
+
+  @override
+  String get fitnessCalories => 'Calorie';
+
+  @override
+  String get fitnessCaloriesUnit => 'kcal';
+
+  @override
+  String get fitnessDistance => 'Distanza';
+
+  @override
+  String get fitnessDistanceUnit => 'km';
+
+  @override
+  String get fitnessHeartRate => 'BPM medio';
+
+  @override
+  String get fitnessHeartRateUnit => 'bpm';
+
+  @override
+  String get fitnessSectionWeekly => 'ATTIVITÀ SETTIMANALE';
+
+  @override
+  String get fitnessWeekdayMon => 'L';
+
+  @override
+  String get fitnessWeekdayTue => 'M';
+
+  @override
+  String get fitnessWeekdayWed => 'M';
+
+  @override
+  String get fitnessWeekdayThu => 'G';
+
+  @override
+  String get fitnessWeekdayFri => 'V';
+
+  @override
+  String get fitnessWeekdaySat => 'S';
+
+  @override
+  String get fitnessWeekdaySun => 'D';
+
+  @override
+  String get fitnessSectionRecords => 'I MIEI RECORD';
+
+  @override
+  String get fitnessRecordLongestWalk => 'Camminata più lunga';
+
+  @override
+  String get fitnessRecordLongestWalkDesc => '12.5 km · 2 settimane fa';
+
+  @override
+  String get fitnessRecordMostSteps => 'Più passi in 1 giorno';
+
+  @override
+  String get fitnessRecordMostStepsDesc => '14 832 passi · 1 mese fa';
+
+  @override
+  String get fitnessRecordFastestRun => 'Corsa più veloce';
+
+  @override
+  String get fitnessRecordFastestRunDesc => '5km in 28 min · 3 giorni fa';
+
+  @override
+  String get fitnessSectionSessions => 'ULTIME SESSIONI';
+
+  @override
+  String get fitnessSessionWalk => 'Camminata';
+
+  @override
+  String get fitnessSessionWalkDesc => '35min · 3.2km · ieri 18:12';
+
+  @override
+  String get fitnessSessionRun => 'Corsa';
+
+  @override
+  String get fitnessSessionRunDesc => '28min · 5km · 3 giorni fa';
+
+  @override
+  String get fitnessSessionBike => 'Ciclismo';
+
+  @override
+  String get fitnessSessionBikeDesc => '1h12 · 18km · 5 giorni fa';
+
+  @override
+  String get agendaScreenTitle => 'Agenda e Pianificazione';
+
+  @override
+  String get agendaDateToday => 'Oggi';
+
+  @override
+  String get agendaNavigationToast => 'Navigazione giornaliera in arrivo';
+
+  @override
+  String get agendaSectionModes => 'MODALITÀ DEL GIORNO';
+
+  @override
+  String get agendaModeFocus => 'Concentrazione';
+
+  @override
+  String get agendaModeFocusDesc => 'Notifiche limitate';
+
+  @override
+  String get agendaModeSleep => 'Sonno';
+
+  @override
+  String get agendaModeSleepDesc => 'Programmato 22h-7h';
+
+  @override
+  String get agendaSectionEvents => 'I MIEI EVENTI DI OGGI';
+
+  @override
+  String get agendaEventMeeting => 'Riunione team prodotto';
+
+  @override
+  String get agendaEventMeetingTime => '14:00–15:00 · Ufficio';
+
+  @override
+  String agendaEventMeetingDetail(int count) {
+    return '$count partecipanti';
+  }
+
+  @override
+  String get agendaEventDinner => 'Cena con i genitori';
+
+  @override
+  String get agendaEventDinnerTime => '19:30–21:00 · A casa';
+
+  @override
+  String get agendaEventDinnerDetail => 'Casa';
+
+  @override
+  String get agendaEventYoga => 'Lezione di yoga';
+
+  @override
+  String get agendaEventYogaTime => '18:00–19:00';
+
+  @override
+  String get agendaEventYogaDetail => 'Studio Mahalo';
+
+  @override
+  String get agendaCreateButton => 'Nuovo evento';
+
+  @override
+  String get agendaCreateToast => 'Creazione eventi disponibile nello Sprint 4';
+
+  @override
+  String get authWelcomeTitle => 'Benvenuto su Harmony';
+
+  @override
+  String get authCreatePinTitle => 'Crea il tuo PIN';
+
+  @override
+  String get authChoosePin => 'Scegli un codice a 4 cifre';
+
+  @override
+  String get authConfirmPinTitle => 'Conferma il tuo PIN';
+
+  @override
+  String get authReenterPin => 'Inserisci nuovamente il PIN';
+
+  @override
+  String get authEnterPin => 'Inserisci il tuo PIN';
+
+  @override
+  String get authPinMismatch => 'I codici non corrispondono';
+
+  @override
+  String get authIncorrectCode => 'Codice errato';
+
+  @override
+  String authAttemptsLeft(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count tentativi rimanenti',
+      one: '1 tentativo rimanente',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get authBiometricSetupTitle => 'Attivare la biometria?';
+
+  @override
+  String get authBiometricSetupDesc =>
+      'Sblocca Harmony con Face ID o la tua impronta digitale.';
+
+  @override
+  String get authBiometricEnable => 'Attiva';
+
+  @override
+  String get authBiometricLater => 'Più tardi';
+
+  @override
+  String get authBiometricSkip => 'Salta';
+
+  @override
+  String get emptyStateComingSoon => 'Prossimamente';
+
+  @override
+  String get settingsTitle => 'Impostazioni';
+
+  @override
+  String get settingsLanguage => 'Lingua';
+
+  @override
+  String get settingsLanguageFrench => 'Français';
+
+  @override
+  String get settingsLanguageEnglish => 'English';
+
+  @override
+  String get settingsLanguageSpanish => 'Español';
+
+  @override
+  String get settingsLanguagePortuguese => 'Português';
+
+  @override
+  String get settingsLanguageItalian => 'Italiano';
+}

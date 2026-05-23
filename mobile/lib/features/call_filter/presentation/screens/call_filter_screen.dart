@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:harmony/l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_radius.dart';
 import '../../../../core/constants/app_spacing.dart';
@@ -29,15 +29,25 @@ class _CallFilterScreenState extends State<CallFilterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    final modeTitles = [
+      l10n.securityModeNormal,
+      l10n.securityModeFocus,
+      l10n.securityModeNight,
+    ];
+
+    final ruleTexts = [
+      (l10n.securityRuleUnknownNumbers, l10n.securityRuleUnknownNumbersDesc),
+      (l10n.securityRuleSpam, l10n.securityRuleSpamDesc),
+      (l10n.securityRuleBlacklist, l10n.securityRuleBlacklistDesc(12)),
+      (l10n.securityRuleForeign, l10n.securityRuleForeignDesc),
+      (l10n.securityRuleWhitelist, l10n.securityRuleWhitelistDesc(8)),
+    ];
+
     return Scaffold(
       backgroundColor: AppColors.bgBase,
-      appBar: HarmonyAppBar(
-        title: 'Sécurité & Filtrage',
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.textPrimary, size: 20),
-          onPressed: () => context.pop(),
-        ),
-      ),
+      appBar: HarmonyAppBar(title: l10n.securityScreenTitle),
       body: ListView(
         padding: const EdgeInsets.all(AppSpacing.lg),
         children: [
@@ -46,7 +56,7 @@ class _CallFilterScreenState extends State<CallFilterScreen> {
           const SizedBox(height: AppSpacing.xxl),
 
           // B — Modes
-          const _SectionHeader(title: 'MODE ACTIF'),
+          _SectionHeader(title: l10n.securitySectionActiveMode),
           const SizedBox(height: AppSpacing.md),
           SizedBox(
             height: 110,
@@ -56,6 +66,7 @@ class _CallFilterScreenState extends State<CallFilterScreen> {
               separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.md),
               itemBuilder: (_, i) => _ModeCard(
                 mode: kFilterModes[i],
+                title: modeTitles[i],
                 isActive: _activeModeIndex == i,
                 onTap: () => setState(() => _activeModeIndex = i),
               ),
@@ -64,7 +75,7 @@ class _CallFilterScreenState extends State<CallFilterScreen> {
           const SizedBox(height: AppSpacing.xxl),
 
           // C — Règles
-          const _SectionHeader(title: 'RÈGLES DE FILTRAGE'),
+          _SectionHeader(title: l10n.securitySectionRules),
           const SizedBox(height: AppSpacing.sm),
           HarmonyCard(
             padding: AppSpacing.md,
@@ -74,8 +85,8 @@ class _CallFilterScreenState extends State<CallFilterScreen> {
                 return HarmonyListTile(
                   leadingIcon: rule.icon,
                   leadingColor: AppColors.accentBlue,
-                  title: rule.title,
-                  subtitle: rule.subtitle,
+                  title: ruleTexts[i].$1,
+                  subtitle: ruleTexts[i].$2,
                   trailing: HarmonyToggle(
                     value: _ruleStates[i],
                     onChanged: (v) => setState(() => _ruleStates[i] = v),
@@ -90,20 +101,24 @@ class _CallFilterScreenState extends State<CallFilterScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const _SectionHeader(title: 'DERNIERS APPELS BLOQUÉS'),
-              Text('Voir tout', style: AppTypography.textTheme.labelMedium),
+              _SectionHeader(title: l10n.securitySectionRecentBlocked),
+              Text(l10n.securitySeeAll, style: AppTypography.textTheme.labelMedium),
             ],
           ),
           const SizedBox(height: AppSpacing.sm),
           HarmonyCard(
             padding: AppSpacing.md,
             child: Column(
-              children: kRecentBlockedCalls.map((call) => HarmonyListTile(
-                leadingIcon: Icons.phone_disabled,
-                leadingColor: AppColors.accentRed,
-                title: call.number,
-                subtitle: call.detail,
-              ),).toList(),
+              children: kRecentBlockedCalls
+                  .map(
+                    (call) => HarmonyListTile(
+                      leadingIcon: Icons.phone_disabled,
+                      leadingColor: AppColors.accentRed,
+                      title: call.number,
+                      subtitle: call.detail,
+                    ),
+                  )
+                  .toList(),
             ),
           ),
           const SizedBox(height: AppSpacing.xxxl),
@@ -118,15 +133,16 @@ class _CallFilterScreenState extends State<CallFilterScreen> {
 class _KpiRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return HarmonyCard(
       padding: AppSpacing.lg,
       child: Row(
         children: [
-          _KpiItem(value: '${kSecurityKpis.blocked}', label: 'Bloqués', color: AppColors.accentRed),
+          _KpiItem(value: '${kSecurityKpis.blocked}', label: l10n.securityStatsBlocked, color: AppColors.accentRed),
           _Divider(),
-          _KpiItem(value: '${kSecurityKpis.rules}', label: 'Règles', color: AppColors.accentBlue),
+          _KpiItem(value: '${kSecurityKpis.rules}', label: l10n.securityStatsRules, color: AppColors.accentBlue),
           _Divider(),
-          _KpiItem(value: '${kSecurityKpis.accuracy}%', label: 'Précision', color: AppColors.accentGreen),
+          _KpiItem(value: '${kSecurityKpis.accuracy}%', label: l10n.securityStatsPrecision, color: AppColors.accentGreen),
         ],
       ),
     );
@@ -163,8 +179,14 @@ class _Divider extends StatelessWidget {
 // ─── Mode card ──────────────────────────────────────────────────────────────
 
 class _ModeCard extends StatelessWidget {
-  const _ModeCard({required this.mode, required this.isActive, required this.onTap});
+  const _ModeCard({
+    required this.mode,
+    required this.title,
+    required this.isActive,
+    required this.onTap,
+  });
   final FilterMode mode;
+  final String title;
   final bool isActive;
   final VoidCallback onTap;
 
@@ -199,7 +221,7 @@ class _ModeCard extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.sm),
             Text(
-              mode.title,
+              title,
               style: AppTypography.textTheme.labelMedium?.copyWith(
                 color: isActive ? AppColors.textPrimary : AppColors.textSecondary,
               ),

@@ -1,0 +1,193 @@
+{
+  "@@locale": "fr",
+
+  "appName": "Harmony",
+  "@appName": {"description": "Nom de l'application"},
+
+  "dashboardTitle": "Harmony",
+  "@dashboardTitle": {"description": "Titre de la barre d'app dashboard"},
+
+  "dashboardWelcomeWave": "Bienvenue 👋",
+  "dashboardAllServicesActive": "Tous les services actifs",
+  "dashboardSectionModules": "MES MODULES",
+
+  "moduleSecurityTitle": "Sécurité",
+  "moduleSecuritySubtitle": "Filtrage actif",
+  "moduleSecurityBadge": "actif",
+
+  "moduleFamilyTitle": "Famille",
+  "moduleFamilySubtitle": "Contrôle parental",
+  "moduleFamilyBadgeProfiles": "{count} profils",
+  "@moduleFamilyBadgeProfiles": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+
+  "moduleFitnessTitle": "Fitness",
+  "moduleFitnessSubtitle": "{current} / {goal} pas",
+  "@moduleFitnessSubtitle": {
+    "placeholders": {
+      "current": {"type": "int"},
+      "goal": {"type": "int"}
+    }
+  },
+  "moduleFitnessBadge": "en cours",
+
+  "moduleAgendaTitle": "Agenda",
+  "moduleAgendaSubtitle": "{count} événements",
+  "@moduleAgendaSubtitle": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "moduleAgendaBadge": "aujourd'hui",
+
+  "navBack": "Retour",
+  "navBackToDashboard": "Retour au tableau de bord",
+
+  "securityScreenTitle": "Sécurité & Filtrage",
+  "securityStatsBlocked": "Bloqués",
+  "securityStatsRules": "Règles",
+  "securityStatsPrecision": "Précision",
+  "securitySectionActiveMode": "MODE ACTIF",
+  "securityModeNormal": "Mode Normal",
+  "securityModeFocus": "Mode Focus",
+  "securityModeNight": "Mode Nuit",
+  "securitySectionRules": "RÈGLES DE FILTRAGE",
+  "securityRuleUnknownNumbers": "Numéros inconnus",
+  "securityRuleUnknownNumbersDesc": "Bloquer tous les appels non identifiés",
+  "securityRuleSpam": "Démarchage",
+  "securityRuleSpamDesc": "Détection IA des appels commerciaux",
+  "securityRuleBlacklist": "Liste noire personnelle",
+  "securityRuleBlacklistDesc": "{count} numéros",
+  "@securityRuleBlacklistDesc": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "securityRuleForeign": "Numéros étrangers",
+  "securityRuleForeignDesc": "Indicatifs hors France",
+  "securityRuleWhitelist": "Whitelist familiale",
+  "securityRuleWhitelistDesc": "{count} contacts toujours autorisés",
+  "@securityRuleWhitelistDesc": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "securitySectionRecentBlocked": "DERNIERS APPELS BLOQUÉS",
+  "securitySeeAll": "Voir tout",
+
+  "familyScreenTitle": "Famille & Contrôle parental",
+  "familySectionChildren": "MES ENFANTS",
+  "familyChildAge": "{name}, {age} ans",
+  "@familyChildAge": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "age": {"type": "int"}
+    }
+  },
+  "familyStatusAtSchool": "À l'école",
+  "familyStatusAtHome": "À la maison",
+  "familyScoreLabel": "Score {value}",
+  "@familyScoreLabel": {
+    "placeholders": {"value": {"type": "int"}}
+  },
+  "familyChildDetailsToast": "Détails de {name} à venir au Sprint 2",
+  "@familyChildDetailsToast": {
+    "placeholders": {"name": {"type": "String"}}
+  },
+  "familySectionLocation": "LOCALISATION EN TEMPS RÉEL",
+  "familyMapPlaceholderTitle": "Carte interactive à venir",
+  "familyMapPlaceholderSubtitle": "Google Maps — Sprint 2",
+  "familySectionZones": "ZONES AUTORISÉES",
+  "familyZoneHome": "Maison",
+  "familyZoneHomeDesc": "Rayon 250m · Activée 24h/24",
+  "familyZoneSchool": "École Jules Ferry",
+  "familyZoneSchoolDesc": "Rayon 100m · Lun-Ven 8h-17h",
+  "familyZoneStadium": "Stade municipal",
+  "familyZoneStadiumDesc": "Rayon 150m · Mer-Sam après-midi",
+  "familySectionLimits": "LIMITES QUOTIDIENNES",
+  "familyLimitScreen": "Temps d'écran aujourd'hui",
+  "familyLimitDistance": "Distance de la maison",
+
+  "fitnessScreenTitle": "Fitness & Performance",
+  "fitnessSectionToday": "AUJOURD'HUI",
+  "fitnessSteps": "Pas",
+  "fitnessStepsGoal": "/ {goal} obj.",
+  "@fitnessStepsGoal": {
+    "placeholders": {"goal": {"type": "int"}}
+  },
+  "fitnessCalories": "Calories",
+  "fitnessCaloriesUnit": "kcal",
+  "fitnessDistance": "Distance",
+  "fitnessDistanceUnit": "km",
+  "fitnessHeartRate": "BPM moyen",
+  "fitnessHeartRateUnit": "bpm",
+  "fitnessSectionWeekly": "ACTIVITÉ HEBDOMADAIRE",
+  "fitnessWeekdayMon": "L",
+  "fitnessWeekdayTue": "M",
+  "fitnessWeekdayWed": "M",
+  "fitnessWeekdayThu": "J",
+  "fitnessWeekdayFri": "V",
+  "fitnessWeekdaySat": "S",
+  "fitnessWeekdaySun": "D",
+  "fitnessSectionRecords": "MES RECORDS",
+  "fitnessRecordLongestWalk": "Plus longue marche",
+  "fitnessRecordLongestWalkDesc": "12.5 km · il y a 2 semaines",
+  "fitnessRecordMostSteps": "Plus de pas en 1 jour",
+  "fitnessRecordMostStepsDesc": "14 832 pas · il y a 1 mois",
+  "fitnessRecordFastestRun": "Course la plus rapide",
+  "fitnessRecordFastestRunDesc": "5km en 28 min · il y a 3 jours",
+  "fitnessSectionSessions": "DERNIÈRES SÉANCES",
+  "fitnessSessionWalk": "Marche",
+  "fitnessSessionWalkDesc": "35min · 3.2km · hier 18h12",
+  "fitnessSessionRun": "Course",
+  "fitnessSessionRunDesc": "28min · 5km · il y a 3 jours",
+  "fitnessSessionBike": "Vélo",
+  "fitnessSessionBikeDesc": "1h12 · 18km · il y a 5 jours",
+
+  "agendaScreenTitle": "Agenda & Planification",
+  "agendaDateToday": "Aujourd'hui",
+  "agendaNavigationToast": "Navigation jour à venir",
+  "agendaSectionModes": "MODES DU JOUR",
+  "agendaModeFocus": "Concentration",
+  "agendaModeFocusDesc": "Notifications limitées",
+  "agendaModeSleep": "Sommeil",
+  "agendaModeSleepDesc": "Programmé 22h-7h",
+  "agendaSectionEvents": "MES ÉVÉNEMENTS DU JOUR",
+  "agendaEventMeeting": "Réunion équipe produit",
+  "agendaEventMeetingTime": "14h00–15h00 · Bureau",
+  "agendaEventMeetingDetail": "{count} participants",
+  "@agendaEventMeetingDetail": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "agendaEventDinner": "Dîner avec parents",
+  "agendaEventDinnerTime": "19h30–21h00 · À la maison",
+  "agendaEventDinnerDetail": "Maison",
+  "agendaEventYoga": "Cours de yoga",
+  "agendaEventYogaTime": "18h00–19h00",
+  "agendaEventYogaDetail": "Studio Mahalo",
+  "agendaCreateButton": "Nouvel événement",
+  "agendaCreateToast": "Création d'événement à venir au Sprint 4",
+
+  "authWelcomeTitle": "Bienvenue sur Harmony",
+  "authCreatePinTitle": "Créer votre code PIN",
+  "authChoosePin": "Choisissez un code à 4 chiffres",
+  "authConfirmPinTitle": "Confirmez votre code PIN",
+  "authReenterPin": "Saisissez à nouveau le code PIN",
+  "authEnterPin": "Saisissez votre code PIN",
+  "authPinMismatch": "Les codes ne correspondent pas",
+  "authIncorrectCode": "Code incorrect",
+  "authAttemptsLeft": "{count, plural, =1{1 essai restant} other{{count} essais restants}}",
+  "@authAttemptsLeft": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "authBiometricSetupTitle": "Activer la biométrie ?",
+  "authBiometricSetupDesc": "Déverrouillez Harmony avec Face ID ou votre empreinte digitale.",
+  "authBiometricEnable": "Activer",
+  "authBiometricLater": "Plus tard",
+  "authBiometricSkip": "Ignorer",
+
+  "emptyStateComingSoon": "Bientôt disponible",
+
+  "settingsTitle": "Paramètres",
+  "settingsLanguage": "Langue",
+  "settingsLanguageFrench": "Français",
+  "settingsLanguageEnglish": "English",
+  "settingsLanguageSpanish": "Español",
+  "settingsLanguagePortuguese": "Português",
+  "settingsLanguageItalian": "Italiano"
+}

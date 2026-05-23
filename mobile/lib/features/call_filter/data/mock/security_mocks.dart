@@ -1,24 +1,22 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 
+enum FilterModeType { normal, focus, night }
+
+enum FilterRuleType { unknownNumbers, spam, blacklist, foreign, whitelist }
+
 class FilterMode {
-  final String title;
+  final FilterModeType type;
   final IconData icon;
   final Color color;
-  const FilterMode({required this.title, required this.icon, required this.color});
+  const FilterMode({required this.type, required this.icon, required this.color});
 }
 
 class FilterRule {
+  final FilterRuleType type;
   final IconData icon;
-  final String title;
-  final String subtitle;
   final bool defaultEnabled;
-  const FilterRule({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.defaultEnabled,
-  });
+  const FilterRule({required this.type, required this.icon, required this.defaultEnabled});
 }
 
 class BlockedCall {
@@ -30,42 +28,17 @@ class BlockedCall {
 const kSecurityKpis = (blocked: 127, rules: 5, accuracy: 98);
 
 const kFilterModes = [
-  FilterMode(title: 'Mode Normal', icon: Icons.shield_outlined, color: AppColors.accentBlue),
-  FilterMode(title: 'Mode Focus', icon: Icons.do_not_disturb_on_outlined, color: AppColors.accentAmber),
-  FilterMode(title: 'Mode Nuit', icon: Icons.nightlight_outlined, color: AppColors.accentPurple),
+  FilterMode(type: FilterModeType.normal, icon: Icons.shield_outlined, color: AppColors.accentBlue),
+  FilterMode(type: FilterModeType.focus, icon: Icons.do_not_disturb_on_outlined, color: AppColors.accentAmber),
+  FilterMode(type: FilterModeType.night, icon: Icons.nightlight_outlined, color: AppColors.accentPurple),
 ];
 
 const kFilterRules = [
-  FilterRule(
-    icon: Icons.help_outline,
-    title: 'Numéros inconnus',
-    subtitle: 'Bloquer tous les appels non identifiés',
-    defaultEnabled: true,
-  ),
-  FilterRule(
-    icon: Icons.do_not_disturb,
-    title: 'Démarchage',
-    subtitle: 'Détection IA des appels commerciaux',
-    defaultEnabled: true,
-  ),
-  FilterRule(
-    icon: Icons.block,
-    title: 'Liste noire personnelle',
-    subtitle: '12 numéros',
-    defaultEnabled: true,
-  ),
-  FilterRule(
-    icon: Icons.public,
-    title: 'Numéros étrangers',
-    subtitle: 'Indicatifs hors France',
-    defaultEnabled: false,
-  ),
-  FilterRule(
-    icon: Icons.verified_user,
-    title: 'Whitelist familiale',
-    subtitle: '8 contacts toujours autorisés',
-    defaultEnabled: true,
-  ),
+  FilterRule(type: FilterRuleType.unknownNumbers, icon: Icons.help_outline, defaultEnabled: true),
+  FilterRule(type: FilterRuleType.spam, icon: Icons.do_not_disturb, defaultEnabled: true),
+  FilterRule(type: FilterRuleType.blacklist, icon: Icons.block, defaultEnabled: true),
+  FilterRule(type: FilterRuleType.foreign, icon: Icons.public, defaultEnabled: false),
+  FilterRule(type: FilterRuleType.whitelist, icon: Icons.verified_user, defaultEnabled: true),
 ];
 
 const kRecentBlockedCalls = [

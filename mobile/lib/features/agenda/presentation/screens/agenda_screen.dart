@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:harmony/l10n/app_localizations.dart';
+import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_radius.dart';
 import '../../../../core/constants/app_spacing.dart';
@@ -29,30 +30,32 @@ class _AgendaScreenState extends State<AgendaScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: AppColors.bgBase,
-      appBar: HarmonyAppBar(
-        title: 'Agenda & Planification',
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.textPrimary, size: 20),
-          onPressed: () => context.pop(),
-        ),
-      ),
+      appBar: HarmonyAppBar(title: l10n.agendaScreenTitle),
       body: Stack(
         children: [
           ListView(
             padding: const EdgeInsets.fromLTRB(
-              AppSpacing.lg, AppSpacing.lg, AppSpacing.lg, 100,
+              AppSpacing.lg,
+              AppSpacing.lg,
+              AppSpacing.lg,
+              100,
             ),
             children: [
               // A — Date header
-              _DateHeader(onChevronTap: () {
-                HarmonySnackBar.show(context, message: 'Navigation jour à venir');
-              },),
+              _DateHeader(
+                onChevronTap: () => HarmonySnackBar.show(
+                  context,
+                  message: l10n.agendaNavigationToast,
+                ),
+              ),
               const SizedBox(height: AppSpacing.xxl),
 
               // B — Modes du jour
-              const _SectionHeader(title: 'MODES DU JOUR'),
+              _SectionHeader(title: l10n.agendaSectionModes),
               const SizedBox(height: AppSpacing.md),
               Row(
                 children: List.generate(kDayModes.length, (i) {
@@ -64,6 +67,8 @@ class _AgendaScreenState extends State<AgendaScreen> {
                       ),
                       child: _DayModeCard(
                         mode: mode,
+                        title: _modeTitle(mode.type, l10n),
+                        subtitle: _modeSubtitle(mode.type, l10n),
                         isEnabled: _modeStates[i],
                         onChanged: (v) => setState(() => _modeStates[i] = v),
                       ),
@@ -74,12 +79,19 @@ class _AgendaScreenState extends State<AgendaScreen> {
               const SizedBox(height: AppSpacing.xxl),
 
               // C — Événements
-              const _SectionHeader(title: 'MES ÉVÉNEMENTS DU JOUR'),
+              _SectionHeader(title: l10n.agendaSectionEvents),
               const SizedBox(height: AppSpacing.md),
-              ...kTodayEvents.map((event) => Padding(
-                padding: const EdgeInsets.only(bottom: AppSpacing.md),
-                child: _EventCard(event: event),
-              ),),
+              ...kTodayEvents.map(
+                (event) => Padding(
+                  padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                  child: _EventCard(
+                    event: event,
+                    title: _eventTitle(event.type, l10n),
+                    timeRange: _eventTimeRange(event.type, l10n),
+                    detailText: _eventDetail(event.type, l10n),
+                  ),
+                ),
+              ),
             ],
           ),
 
@@ -88,20 +100,46 @@ class _AgendaScreenState extends State<AgendaScreen> {
             right: AppSpacing.lg,
             bottom: AppSpacing.xl,
             child: HarmonyButton(
-              label: 'Nouvel événement',
+              label: l10n.agendaCreateButton,
               icon: Icons.add,
-              onPressed: () {
-                HarmonySnackBar.show(
-                  context,
-                  message: "Création d'événement à venir au Sprint 4",
-                );
-              },
+              onPressed: () => HarmonySnackBar.show(
+                context,
+                message: l10n.agendaCreateToast,
+              ),
             ),
           ),
         ],
       ),
     );
   }
+
+  String _modeTitle(DayModeType type, AppLocalizations l10n) => switch (type) {
+        DayModeType.focus => l10n.agendaModeFocus,
+        DayModeType.sleep => l10n.agendaModeSleep,
+      };
+
+  String _modeSubtitle(DayModeType type, AppLocalizations l10n) => switch (type) {
+        DayModeType.focus => l10n.agendaModeFocusDesc,
+        DayModeType.sleep => l10n.agendaModeSleepDesc,
+      };
+
+  String _eventTitle(EventType type, AppLocalizations l10n) => switch (type) {
+        EventType.meeting => l10n.agendaEventMeeting,
+        EventType.dinner => l10n.agendaEventDinner,
+        EventType.yoga => l10n.agendaEventYoga,
+      };
+
+  String _eventTimeRange(EventType type, AppLocalizations l10n) => switch (type) {
+        EventType.meeting => l10n.agendaEventMeetingTime,
+        EventType.dinner => l10n.agendaEventDinnerTime,
+        EventType.yoga => l10n.agendaEventYogaTime,
+      };
+
+  String _eventDetail(EventType type, AppLocalizations l10n) => switch (type) {
+        EventType.meeting => l10n.agendaEventMeetingDetail(5),
+        EventType.dinner => l10n.agendaEventDinnerDetail,
+        EventType.yoga => l10n.agendaEventYogaDetail,
+      };
 }
 
 // ─── Date header ─────────────────────────────────────────────────────────────
@@ -112,6 +150,10 @@ class _DateHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final locale = Localizations.localeOf(context);
+    final formattedDate = DateFormat('EEEE d MMMM yyyy', locale.languageCode).format(DateTime.now());
+
     return Row(
       children: [
         IconButton(
@@ -121,8 +163,8 @@ class _DateHeader extends StatelessWidget {
         Expanded(
           child: Column(
             children: [
-              Text("Aujourd'hui", style: AppTypography.textTheme.titleMedium),
-              Text('samedi 24 mai 2026', style: AppTypography.textTheme.bodySmall),
+              Text(l10n.agendaDateToday, style: AppTypography.textTheme.titleMedium),
+              Text(formattedDate, style: AppTypography.textTheme.bodySmall),
             ],
           ),
         ),
@@ -140,10 +182,14 @@ class _DateHeader extends StatelessWidget {
 class _DayModeCard extends StatelessWidget {
   const _DayModeCard({
     required this.mode,
+    required this.title,
+    required this.subtitle,
     required this.isEnabled,
     required this.onChanged,
   });
   final DayMode mode;
+  final String title;
+  final String subtitle;
   final bool isEnabled;
   final ValueChanged<bool> onChanged;
 
@@ -177,9 +223,9 @@ class _DayModeCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: AppSpacing.sm),
-          Text(mode.title, style: AppTypography.textTheme.labelLarge),
+          Text(title, style: AppTypography.textTheme.labelLarge),
           const SizedBox(height: 2),
-          Text(mode.subtitle, style: AppTypography.textTheme.bodySmall, maxLines: 1, overflow: TextOverflow.ellipsis),
+          Text(subtitle, style: AppTypography.textTheme.bodySmall, maxLines: 1, overflow: TextOverflow.ellipsis),
         ],
       ),
     );
@@ -189,8 +235,16 @@ class _DayModeCard extends StatelessWidget {
 // ─── Event card ───────────────────────────────────────────────────────────────
 
 class _EventCard extends StatelessWidget {
-  const _EventCard({required this.event});
+  const _EventCard({
+    required this.event,
+    required this.title,
+    required this.timeRange,
+    required this.detailText,
+  });
   final AgendaEvent event;
+  final String title;
+  final String timeRange;
+  final String detailText;
 
   @override
   Widget build(BuildContext context) {
@@ -212,15 +266,15 @@ class _EventCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(event.title, style: AppTypography.textTheme.labelLarge),
+                    Text(title, style: AppTypography.textTheme.labelLarge),
                     const SizedBox(height: 2),
-                    Text(event.timeRange, style: AppTypography.textTheme.bodySmall),
+                    Text(timeRange, style: AppTypography.textTheme.bodySmall),
                     const SizedBox(height: AppSpacing.sm),
                     Row(
                       children: [
                         Icon(event.detailIcon, size: 14, color: AppColors.textMuted),
                         const SizedBox(width: AppSpacing.xs),
-                        Text(event.detailText, style: AppTypography.textTheme.bodySmall),
+                        Text(detailText, style: AppTypography.textTheme.bodySmall),
                       ],
                     ),
                   ],

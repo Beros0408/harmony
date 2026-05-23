@@ -192,6 +192,8 @@ Synchronisation cloud, intégration wearables, APIs tierces, assistant vocal, mo
 | ADR-006 | 2026-05-23 | compileSdk relevé à 35 | Compatibilité sqflite_sqlcipher + androidx (exigent >= 34) | Phase 0 |
 | ADR-007 | 2026-05-23 | compileSdk relevé à 36 | local_auth_android + flutter_plugin_android_lifecycle exigent >= 36 | Phase 0 |
 | ADR-008 | 2026-05-24 | GitHub Actions + subosito/flutter-action@v2 | Intégration native GitHub, cache Flutter pub, matrix facile à étendre | Phase 0+ |
+| ADR-009 | 2026-05-24 | Sprint B — maquettes interactives (mock data) avant backend | Permet de valider le design system et les flux UX sans attendre les APIs | Phase 1 |
+| ADR-010 | 2026-05-24 | flutter_localizations (SDK) + ARB files pour l'i18n | Standard Flutter officiel, génération de code, pluriels ICU, 5 locales dès le départ (FR/EN/ES/PT/IT) | Toutes phases |
 
 ---
 
@@ -214,6 +216,8 @@ Synchronisation cloud, intégration wearables, APIs tierces, assistant vocal, mo
 | 0.1.1 | 2026-05-23 | Phase 0 | fix(android) : compileSdk 31→35, puis 35→36 pour satisfaire sqflite_sqlcipher, local_auth_android et flutter_plugin_android_lifecycle |
 | 0.2.0 | 2026-05-24 | Sprint A | Navigation interactive : 4 modules du dashboard câblés (Sécurité, Famille, Fitness, Agenda) — slide transition 200ms, boutons retour, HarmonyEmptyState, 5 nouveaux tests |
 | 0.3.0 | 2026-05-24 | Phase 0 | CI/CD GitHub Actions : pipeline 4 jobs (analyze, test, build-android, build-ios), artifacts APK + .app.zip, concurrency cancel-in-progress |
+| 0.3.1 | 2026-05-24 | Sprint B | Maquettes interactives pour 4 modules (Sécurité, Famille, Fitness, Agenda) — mock data typés, fl_chart bar chart, interactions toggles/modes |
+| 0.4.0 | 2026-05-24 | Sprint C1 | i18n complète (FR/EN/ES/PT/IT, 97 clés ARB, pluriels ICU) + bouton retour universel HarmonyAppBar + SettingsScreen avec sélecteur de langue + LanguageCubit persistent + 14 tests (39 total) |
 
 ---
 
