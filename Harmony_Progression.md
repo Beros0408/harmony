@@ -7,12 +7,12 @@
 
 | Champ | Valeur |
 |---|---|
-| **Version actuelle** | 0.0.0 — Initialisation |
-| **Phase en cours** | Pré-développement |
-| **Avancement global** | 0 % |
-| **Date de début** | — |
-| **Date cible MVP** | J+16 semaines |
-| **Dernière mise à jour** | — |
+| **Version actuelle** | 0.1.0 — Phase 0 en cours |
+| **Phase en cours** | Phase 0 — Initialisation & architecture |
+| **Avancement global** | 18 % |
+| **Date de début** | 2026-05-23 |
+| **Date cible MVP** | 2026-09-19 (J+16 semaines) |
+| **Dernière mise à jour** | 2026-05-23 |
 
 ---
 
@@ -20,7 +20,7 @@
 
 | Phase | Nom | Durée prévue | Statut | Avancement | Date début | Date fin |
 |---|---|---|---|---|---|---|
-| **Phase 0** | Initialisation & architecture | 2 semaines | ⬜ À faire | 0 % | — | — |
+| **Phase 0** | Initialisation & architecture | 2 semaines | 🔄 En cours | 45 % | 2026-05-23 | — |
 | **Phase 1** | MVP — Fonctionnalités core | 3 – 4 mois | ⬜ À faire | 0 % | — | — |
 | **Phase 2** | Intelligence & IA | 2 – 3 mois | ⬜ À faire | 0 % | — | — |
 | **Phase 3** | Fitness & performance | 2 – 3 mois | ⬜ À faire | 0 % | — | — |
@@ -39,16 +39,16 @@ Mettre en place les fondations du projet : structure du dépôt, stack technique
 
 | # | Tâche | Responsable | Statut | Notes |
 |---|---|---|---|---|
-| 0.1 | Initialisation du dépôt Flutter | Dev Mobile | ⬜ | Structure `lib/`, `pubspec.yaml` |
-| 0.2 | Mise en place du backend FastAPI | Dev Backend | ⬜ | Endpoints de base, health check |
-| 0.3 | Configuration PostgreSQL + Redis | Dev Backend | ⬜ | Schéma initial, migrations |
-| 0.4 | Mise en place des environnements (dev / staging / prod) | DevOps | ⬜ | Variables d'env, Docker |
-| 0.5 | Configuration SQLCipher (chiffrement local) | Dev Mobile | ⬜ | — |
-| 0.6 | Design system : tokens couleurs, typographie, composants de base | Designer | ⬜ | Basé sur UI/UX Pro Max Skill |
+| 0.1 | Initialisation du dépôt Flutter | Dev Mobile | ✅ | Structure `lib/`, `pubspec.yaml`, design system |
+| 0.2 | Mise en place du backend FastAPI | Dev Backend | ✅ | Auth JWT, health check, Docker, Alembic |
+| 0.3 | Configuration PostgreSQL + Redis | Dev Backend | ✅ | docker-compose + migration initiale |
+| 0.4 | Mise en place des environnements (dev / staging / prod) | DevOps | 🔄 | `.env.example` créé, CI/CD pending |
+| 0.5 | Configuration SQLCipher (chiffrement local) | Dev Mobile | 🔄 | sqflite_sqlcipher dans pubspec.yaml |
+| 0.6 | Design system : tokens couleurs, typographie, composants de base | Designer | ✅ | 12 composants + thèmes dark/OLED/light |
 | 0.7 | Authentification biométrique + PIN (squelette) | Dev Mobile | ⬜ | Face ID / Empreinte |
-| 0.8 | Structure de navigation Flutter (routes, guards) | Dev Mobile | ⬜ | — |
+| 0.8 | Structure de navigation Flutter (routes, guards) | Dev Mobile | ✅ | go_router configuré, toutes les routes |
 | 0.9 | Pipeline CI/CD (GitHub Actions ou GitLab CI) | DevOps | ⬜ | Tests auto, lint, build |
-| 0.10 | Documentation technique initiale | Tech Lead | ⬜ | README, ADR, diagrammes |
+| 0.10 | Documentation technique initiale | Tech Lead | 🔄 | README existant, à enrichir |
 
 ---
 
@@ -206,7 +206,8 @@ Synchronisation cloud, intégration wearables, APIs tierces, assistant vocal, mo
 
 | Version | Date | Phase | Description des changements |
 |---|---|---|---|
-| 0.0.0 | — | Init | Création du fichier de suivi |
+| 0.0.0 | 2026-05-23 | Init | Création du fichier de suivi, monorepo initialisé |
+| 0.1.0 | 2026-05-23 | Phase 0 | Flutter : structure feature-first, design system (12 composants), thèmes dark/OLED/light, router, dashboard. Backend : FastAPI + JWT auth + PostgreSQL + Redis + Docker + Alembic |
 
 ---
 
