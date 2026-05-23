@@ -22,22 +22,3 @@ subprojects {
 tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
 }
-
-// Force compileSdk >= 36 sur tous les plugins Flutter (sqflite_sqlcipher, local_auth, etc.)
-// qui hardcodent encore compileSdkVersion 31 dans leur propre build.gradle.
-subprojects {
-    afterEvaluate {
-        extensions.findByType(com.android.build.gradle.BaseExtension::class)?.apply {
-            val current = compileSdkVersion
-                ?.substringAfter("android-")
-                ?.toIntOrNull() ?: 0
-            if (current < 36) {
-                compileSdkVersion(36)
-            }
-            compileOptions {
-                sourceCompatibility = JavaVersion.VERSION_17
-                targetCompatibility = JavaVersion.VERSION_17
-            }
-        }
-    }
-}
