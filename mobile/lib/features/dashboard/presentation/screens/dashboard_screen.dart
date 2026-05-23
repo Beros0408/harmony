@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
+import '../../../../core/router/route_names.dart';
 import '../../../../shared/widgets/harmony_app_bar.dart';
 import '../../../../shared/widgets/harmony_badge.dart';
 import '../../../../shared/widgets/harmony_button.dart';
@@ -68,7 +70,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             crossAxisSpacing: AppSpacing.md,
             mainAxisSpacing: AppSpacing.md,
             childAspectRatio: 1.1,
-            children: const [
+            children: [
               _ModuleCard(
                 title: 'Sécurité',
                 subtitle: 'Filtrage actif',
@@ -76,6 +78,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 iconColor: AppColors.accentBlue,
                 badge: 'actif',
                 badgeVariant: HarmonyBadgeVariant.success,
+                onTap: () => context.push(RouteNames.security),
               ),
               _ModuleCard(
                 title: 'Famille',
@@ -84,6 +87,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 iconColor: AppColors.accentPurple,
                 badge: '2 profils',
                 badgeVariant: HarmonyBadgeVariant.purple,
+                onTap: () => context.push(RouteNames.family),
               ),
               _ModuleCard(
                 title: 'Fitness',
@@ -92,14 +96,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 iconColor: AppColors.accentGreen,
                 badge: 'en cours',
                 badgeVariant: HarmonyBadgeVariant.info,
+                onTap: () => context.push(RouteNames.fitness),
               ),
               _ModuleCard(
                 title: 'Agenda',
                 subtitle: '3 événements',
                 icon: Icons.calendar_today_outlined,
                 iconColor: AppColors.accentAmber,
-                badge: 'aujourd\'hui',
+                badge: "aujourd'hui",
                 badgeVariant: HarmonyBadgeVariant.warning,
+                onTap: () => context.push(RouteNames.agenda),
               ),
             ],
           ),
@@ -285,7 +291,7 @@ class _WelcomeBanner extends StatelessWidget {
   }
 }
 
-class _ModuleCard extends StatelessWidget {
+class _ModuleCard extends StatefulWidget {
   const _ModuleCard({
     required this.title,
     required this.subtitle,
@@ -293,6 +299,7 @@ class _ModuleCard extends StatelessWidget {
     required this.iconColor,
     required this.badge,
     required this.badgeVariant,
+    this.onTap,
   });
 
   final String title;
@@ -301,40 +308,64 @@ class _ModuleCard extends StatelessWidget {
   final Color iconColor;
   final String badge;
   final HarmonyBadgeVariant badgeVariant;
+  final VoidCallback? onTap;
+
+  @override
+  State<_ModuleCard> createState() => _ModuleCardState();
+}
+
+class _ModuleCardState extends State<_ModuleCard> {
+  bool _pressed = false;
 
   @override
   Widget build(BuildContext context) {
-    return HarmonyCard(
-      padding: AppSpacing.md,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: iconColor.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(8),
+    return GestureDetector(
+      onTapDown: (_) => setState(() => _pressed = true),
+      onTapUp: (_) {
+        setState(() => _pressed = false);
+        widget.onTap?.call();
+      },
+      onTapCancel: () => setState(() => _pressed = false),
+      child: AnimatedOpacity(
+        duration: const Duration(milliseconds: 100),
+        opacity: _pressed ? 0.7 : 1.0,
+        child: AnimatedScale(
+          duration: const Duration(milliseconds: 100),
+          scale: _pressed ? 0.97 : 1.0,
+          child: HarmonyCard(
+            padding: AppSpacing.md,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      width: 36,
+                      height: 36,
+                      decoration: BoxDecoration(
+                        color: widget.iconColor.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Icon(widget.icon, color: widget.iconColor, size: 18),
+                    ),
+                    HarmonyBadge(label: widget.badge, variant: widget.badgeVariant),
+                  ],
                 ),
-                child: Icon(icon, color: iconColor, size: 18),
-              ),
-              HarmonyBadge(label: badge, variant: badgeVariant),
-            ],
+                const SizedBox(height: AppSpacing.sm),
+                Text(
+                  widget.title,
+                  style: AppTypography.textTheme.titleMedium,
+                ),
+                Text(
+                  widget.subtitle,
+                  style: AppTypography.textTheme.bodySmall,
+                ),
+              ],
+            ),
           ),
-          const SizedBox(height: AppSpacing.sm),
-          Text(
-            title,
-            style: AppTypography.textTheme.titleMedium,
-          ),
-          Text(
-            subtitle,
-            style: AppTypography.textTheme.bodySmall,
-          ),
-        ],
+        ),
       ),
     );
   }
