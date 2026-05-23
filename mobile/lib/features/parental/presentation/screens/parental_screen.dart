@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:harmony/l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_radius.dart';
 import '../../../../core/constants/app_spacing.dart';
@@ -17,80 +17,106 @@ class ParentalScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: AppColors.bgBase,
-      appBar: HarmonyAppBar(
-        title: 'Famille & Contrôle parental',
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.textPrimary, size: 20),
-          onPressed: () => context.pop(),
-        ),
-      ),
+      appBar: HarmonyAppBar(title: l10n.familyScreenTitle),
       body: ListView(
         padding: const EdgeInsets.all(AppSpacing.lg),
         children: [
           // A — Enfants
-          const _SectionHeader(title: 'MES ENFANTS'),
+          _SectionHeader(title: l10n.familySectionChildren),
           const SizedBox(height: AppSpacing.md),
           Row(
-            children: kChildren.map((child) => Expanded(
-              child: Padding(
-                padding: EdgeInsets.only(
-                  right: child == kChildren.last ? 0 : AppSpacing.md,
-                ),
-                child: _ChildCard(child: child, onTap: () {
-                  HarmonySnackBar.show(
-                    context,
-                    message: 'Détails de ${child.name} à venir au Sprint 2',
-                  );
-                },),
-              ),
-            ),).toList(),
+            children: kChildren
+                .map(
+                  (child) => Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                        right: child == kChildren.last ? 0 : AppSpacing.md,
+                      ),
+                      child: _ChildCard(
+                        child: child,
+                        onTap: () {
+                          HarmonySnackBar.show(
+                            context,
+                            message: l10n.familyChildDetailsToast(child.name),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                )
+                .toList(),
           ),
           const SizedBox(height: AppSpacing.xxl),
 
           // B — Localisation
-          const _SectionHeader(title: 'LOCALISATION EN TEMPS RÉEL'),
+          _SectionHeader(title: l10n.familySectionLocation),
           const SizedBox(height: AppSpacing.md),
           const _MapPlaceholder(),
           const SizedBox(height: AppSpacing.xxl),
 
           // C — Zones autorisées
-          const _SectionHeader(title: 'ZONES AUTORISÉES'),
+          _SectionHeader(title: l10n.familySectionZones),
           const SizedBox(height: AppSpacing.sm),
           HarmonyCard(
             padding: AppSpacing.md,
             child: Column(
-              children: kSafeZones.map((zone) => HarmonyListTile(
-                leadingIcon: zone.icon,
-                leadingColor: zone.status == HarmonyStatus.online
-                    ? AppColors.accentGreen
-                    : AppColors.accentAmber,
-                title: zone.name,
-                subtitle: zone.detail,
-                trailing: HarmonyStatusDot(status: zone.status),
-              ),).toList(),
+              children: kSafeZones
+                  .map(
+                    (zone) => HarmonyListTile(
+                      leadingIcon: zone.icon,
+                      leadingColor: zone.status == HarmonyStatus.online
+                          ? AppColors.accentGreen
+                          : AppColors.accentAmber,
+                      title: _zoneLabel(zone.key, l10n),
+                      subtitle: _zoneDetail(zone.key, l10n),
+                      trailing: HarmonyStatusDot(status: zone.status),
+                    ),
+                  )
+                  .toList(),
             ),
           ),
           const SizedBox(height: AppSpacing.xxl),
 
           // D — Limites quotidiennes
-          const _SectionHeader(title: 'LIMITES QUOTIDIENNES'),
+          _SectionHeader(title: l10n.familySectionLimits),
           const SizedBox(height: AppSpacing.md),
-          ...kDailyLimits.map((limit) => Padding(
-            padding: const EdgeInsets.only(bottom: AppSpacing.md),
-            child: _LimitCard(
-              label: limit.label,
-              value: limit.value,
-              progress: limit.progress,
-              color: limit.progress > 0.65 ? AppColors.accentBlue : AppColors.accentAmber,
+          ...kDailyLimits.map(
+            (limit) => Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.md),
+              child: _LimitCard(
+                label: _limitLabel(limit.key, l10n),
+                value: limit.value,
+                progress: limit.progress,
+                color: limit.progress > 0.65 ? AppColors.accentBlue : AppColors.accentAmber,
+              ),
             ),
-          ),),
+          ),
           const SizedBox(height: AppSpacing.xxxl),
         ],
       ),
     );
   }
+
+  String _zoneLabel(SafeZoneKey key, AppLocalizations l10n) => switch (key) {
+        SafeZoneKey.home => l10n.familyZoneHome,
+        SafeZoneKey.school => l10n.familyZoneSchool,
+        SafeZoneKey.stadium => l10n.familyZoneStadium,
+      };
+
+  String _zoneDetail(SafeZoneKey key, AppLocalizations l10n) => switch (key) {
+        SafeZoneKey.home => l10n.familyZoneHomeDesc,
+        SafeZoneKey.school => l10n.familyZoneSchoolDesc,
+        SafeZoneKey.stadium => l10n.familyZoneStadiumDesc,
+      };
+
+  String _limitLabel(LimitKey key, AppLocalizations l10n) => switch (key) {
+        LimitKey.screenTime => l10n.familyLimitScreen,
+        LimitKey.distance => l10n.familyLimitDistance,
+      };
 }
 
 // ─── Child profile card ──────────────────────────────────────────────────────
@@ -102,9 +128,11 @@ class _ChildCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scoreVariant = child.score >= 85
-        ? HarmonyBadgeVariant.success
-        : HarmonyBadgeVariant.warning;
+    final l10n = AppLocalizations.of(context)!;
+    final scoreVariant = child.score >= 85 ? HarmonyBadgeVariant.success : HarmonyBadgeVariant.warning;
+    final statusText = child.locationKey == ChildLocationKey.school
+        ? l10n.familyStatusAtSchool
+        : l10n.familyStatusAtHome;
 
     return GestureDetector(
       onTap: onTap,
@@ -118,7 +146,6 @@ class _ChildCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Avatar
             Container(
               width: 52,
               height: 52,
@@ -139,7 +166,7 @@ class _ChildCard extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.sm),
             Text(
-              '${child.name}, ${child.age} ans',
+              l10n.familyChildAge(child.name, child.age),
               style: AppTypography.textTheme.labelLarge,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -151,7 +178,7 @@ class _ChildCard extends StatelessWidget {
                 const SizedBox(width: AppSpacing.xs),
                 Expanded(
                   child: Text(
-                    child.statusText,
+                    statusText,
                     style: AppTypography.textTheme.bodySmall,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -160,7 +187,7 @@ class _ChildCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: AppSpacing.sm),
-            HarmonyBadge(label: 'Score ${child.score}', variant: scoreVariant),
+            HarmonyBadge(label: l10n.familyScoreLabel(child.score), variant: scoreVariant),
           ],
         ),
       ),
@@ -219,6 +246,7 @@ class _MapPlaceholder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       height: 200,
       decoration: BoxDecoration(
@@ -240,12 +268,9 @@ class _MapPlaceholder extends StatelessWidget {
               child: const Icon(Icons.map_outlined, color: AppColors.accentBlue, size: 26),
             ),
             const SizedBox(height: AppSpacing.sm),
-            Text('Carte interactive à venir', style: AppTypography.textTheme.titleMedium),
+            Text(l10n.familyMapPlaceholderTitle, style: AppTypography.textTheme.titleMedium),
             const SizedBox(height: AppSpacing.xs),
-            Text(
-              'Google Maps — Sprint 2',
-              style: AppTypography.textTheme.bodySmall,
-            ),
+            Text(l10n.familyMapPlaceholderSubtitle, style: AppTypography.textTheme.bodySmall),
           ],
         ),
       ),

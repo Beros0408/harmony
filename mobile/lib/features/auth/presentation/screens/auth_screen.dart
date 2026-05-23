@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:harmony/l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
@@ -55,8 +56,7 @@ class AuthScreen extends StatelessWidget {
             body: Center(
               child: Text(
                 state.message,
-                style: AppTypography.textTheme.bodyMedium
-                    ?.copyWith(color: AppColors.accentRed),
+                style: AppTypography.textTheme.bodyMedium?.copyWith(color: AppColors.accentRed),
               ),
             ),
           );
@@ -119,6 +119,8 @@ class _PinSetupFlowState extends State<_PinSetupFlow> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: AppColors.bgBase,
       body: SafeArea(
@@ -126,25 +128,19 @@ class _PinSetupFlowState extends State<_PinSetupFlow> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(
-                Icons.lock_outline,
-                color: AppColors.accentBlue,
-                size: 48,
-              ),
+              const Icon(Icons.lock_outline, color: AppColors.accentBlue, size: 48),
               const SizedBox(height: AppSpacing.xl),
               Text(
-                _confirming
-                    ? 'Confirmez votre code PIN'
-                    : 'Créez votre code PIN',
+                _confirming ? l10n.authConfirmPinTitle : l10n.authCreatePinTitle,
                 style: AppTypography.textTheme.titleLarge,
               ),
               const SizedBox(height: AppSpacing.sm),
               Text(
                 _mismatch
-                    ? 'Les codes ne correspondent pas'
+                    ? l10n.authPinMismatch
                     : _confirming
-                        ? 'Saisissez à nouveau le code PIN'
-                        : 'Choisissez un code à 4 chiffres',
+                        ? l10n.authReenterPin
+                        : l10n.authChoosePin,
                 style: AppTypography.textTheme.bodyMedium?.copyWith(
                   color: _mismatch ? AppColors.accentRed : AppColors.textSecondary,
                 ),
@@ -188,7 +184,6 @@ class _PinEntryScreenState extends State<_PinEntryScreen> {
     setState(() => _input += digit);
     if (_input.length == 4) {
       context.read<AuthBloc>().add(AuthPinSubmitted(_input));
-      // Efface l'input après soumission pour permettre une nouvelle tentative
       Future.delayed(const Duration(milliseconds: 300), () {
         if (mounted) setState(() => _input = '');
       });
@@ -202,6 +197,7 @@ class _PinEntryScreenState extends State<_PinEntryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final showBiometric = widget.biometricAvailable && widget.biometricEnabled;
     final hasError = widget.errorAttemptsLeft != null;
 
@@ -212,21 +208,14 @@ class _PinEntryScreenState extends State<_PinEntryScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(
-                Icons.lock_outline,
-                color: AppColors.accentBlue,
-                size: 48,
-              ),
+              const Icon(Icons.lock_outline, color: AppColors.accentBlue, size: 48),
               const SizedBox(height: AppSpacing.xl),
-              Text(
-                'Bienvenue sur Harmony',
-                style: AppTypography.textTheme.titleLarge,
-              ),
+              Text(l10n.authWelcomeTitle, style: AppTypography.textTheme.titleLarge),
               const SizedBox(height: AppSpacing.sm),
               Text(
                 hasError
-                    ? 'Code incorrect · ${widget.errorAttemptsLeft} essai(s) restant(s)'
-                    : 'Saisissez votre code PIN',
+                    ? '${l10n.authIncorrectCode} · ${l10n.authAttemptsLeft(widget.errorAttemptsLeft!)}'
+                    : l10n.authEnterPin,
                 style: AppTypography.textTheme.bodyMedium?.copyWith(
                   color: hasError ? AppColors.accentRed : AppColors.textSecondary,
                 ),
@@ -239,9 +228,7 @@ class _PinEntryScreenState extends State<_PinEntryScreen> {
                 onDelete: _onDelete,
                 extraAction: showBiometric
                     ? BiometricButton(
-                        onTap: () => context
-                            .read<AuthBloc>()
-                            .add(const AuthBiometricRequested()),
+                        onTap: () => context.read<AuthBloc>().add(const AuthBiometricRequested()),
                       )
                     : null,
               ),
@@ -262,6 +249,8 @@ class _BiometricSetupScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: AppColors.bgBase,
       body: SafeArea(
@@ -274,13 +263,13 @@ class _BiometricSetupScreen extends StatelessWidget {
                 const Icon(Icons.fingerprint, color: AppColors.accentBlue, size: 72),
                 const SizedBox(height: AppSpacing.xl),
                 Text(
-                  'Activer la biométrie ?',
+                  l10n.authBiometricSetupTitle,
                   style: AppTypography.textTheme.titleLarge,
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: AppSpacing.sm),
                 Text(
-                  'Déverrouillez Harmony avec Face ID ou votre empreinte digitale.',
+                  l10n.authBiometricSetupDesc,
                   style: AppTypography.textTheme.bodyMedium?.copyWith(
                     color: AppColors.textSecondary,
                   ),
@@ -293,7 +282,7 @@ class _BiometricSetupScreen extends StatelessWidget {
                     onPressed: () => context
                         .read<AuthBloc>()
                         .add(const AuthBiometricToggled(enabled: true)),
-                    child: const Text('Activer'),
+                    child: Text(l10n.authBiometricEnable),
                   ),
                 ),
                 const SizedBox(height: AppSpacing.md),
@@ -303,7 +292,7 @@ class _BiometricSetupScreen extends StatelessWidget {
                     onPressed: () => context
                         .read<AuthBloc>()
                         .add(const AuthBiometricToggled(enabled: false)),
-                    child: const Text('Plus tard'),
+                    child: Text(l10n.authBiometricLater),
                   ),
                 ),
               ],

@@ -7,6 +7,7 @@ import 'package:harmony/features/call_filter/presentation/screens/call_filter_sc
 import 'package:harmony/features/dashboard/presentation/screens/dashboard_screen.dart';
 import 'package:harmony/features/fitness/presentation/screens/fitness_screen.dart';
 import 'package:harmony/features/parental/presentation/screens/parental_screen.dart';
+import 'package:harmony/l10n/app_localizations.dart';
 import 'package:harmony/shared/theme/app_theme.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
@@ -40,6 +41,9 @@ GoRouter _testRouter() => GoRouter(
 Widget _buildTestApp() => MaterialApp.router(
       theme: AppTheme.darkTheme,
       routerConfig: _testRouter(),
+      locale: const Locale('fr'),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: const [Locale('fr')],
     );
 
 // Avance passé l'animation de navigation (par défaut 300ms + marge)

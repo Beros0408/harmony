@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:harmony/l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
@@ -30,24 +31,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: HarmonyAppBar(
-        title: 'Harmony',
+        title: l10n.dashboardTitle,
         showGradient: true,
+        automaticallyImplyLeading: false,
         actions: [
           IconButton(
-            icon: const Icon(
-              Icons.notifications_outlined,
-              color: AppColors.textSecondary,
-            ),
+            icon: const Icon(Icons.notifications_outlined, color: AppColors.textSecondary),
             onPressed: () {},
           ),
           IconButton(
-            icon: const Icon(
-              Icons.person_outline,
-              color: AppColors.textSecondary,
-            ),
+            icon: const Icon(Icons.person_outline, color: AppColors.textSecondary),
             onPressed: () {},
+          ),
+          IconButton(
+            icon: const Icon(Icons.settings_outlined, color: AppColors.textSecondary),
+            onPressed: () => context.go(RouteNames.settings),
           ),
         ],
       ),
@@ -57,11 +59,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           _WelcomeBanner(date: _formattedDate),
           const SizedBox(height: AppSpacing.xl),
 
-          // Grille 2×2 des modules
-          Text(
-            'MES MODULES',
-            style: AppTypography.textTheme.titleSmall,
-          ),
+          Text(l10n.dashboardSectionModules, style: AppTypography.textTheme.titleSmall),
           const SizedBox(height: AppSpacing.md),
           GridView.count(
             crossAxisCount: 2,
@@ -72,38 +70,38 @@ class _DashboardScreenState extends State<DashboardScreen> {
             childAspectRatio: 1.1,
             children: [
               _ModuleCard(
-                title: 'Sécurité',
-                subtitle: 'Filtrage actif',
+                title: l10n.moduleSecurityTitle,
+                subtitle: l10n.moduleSecuritySubtitle,
                 icon: Icons.shield_outlined,
                 iconColor: AppColors.accentBlue,
-                badge: 'actif',
+                badge: l10n.moduleSecurityBadge,
                 badgeVariant: HarmonyBadgeVariant.success,
                 onTap: () => context.push(RouteNames.security),
               ),
               _ModuleCard(
-                title: 'Famille',
-                subtitle: 'Contrôle parental',
+                title: l10n.moduleFamilyTitle,
+                subtitle: l10n.moduleFamilySubtitle,
                 icon: Icons.family_restroom,
                 iconColor: AppColors.accentPurple,
-                badge: '2 profils',
+                badge: l10n.moduleFamilyBadgeProfiles(2),
                 badgeVariant: HarmonyBadgeVariant.purple,
                 onTap: () => context.push(RouteNames.family),
               ),
               _ModuleCard(
-                title: 'Fitness',
-                subtitle: '0 / 8 000 pas',
+                title: l10n.moduleFitnessTitle,
+                subtitle: l10n.moduleFitnessSubtitle(0, 8000),
                 icon: Icons.directions_run,
                 iconColor: AppColors.accentGreen,
-                badge: 'en cours',
+                badge: l10n.moduleFitnessBadge,
                 badgeVariant: HarmonyBadgeVariant.info,
                 onTap: () => context.push(RouteNames.fitness),
               ),
               _ModuleCard(
-                title: 'Agenda',
-                subtitle: '3 événements',
+                title: l10n.moduleAgendaTitle,
+                subtitle: l10n.moduleAgendaSubtitle(3),
                 icon: Icons.calendar_today_outlined,
                 iconColor: AppColors.accentAmber,
-                badge: "aujourd'hui",
+                badge: l10n.moduleAgendaBadge,
                 badgeVariant: HarmonyBadgeVariant.warning,
                 onTap: () => context.push(RouteNames.agenda),
               ),
@@ -112,56 +110,28 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
           const SizedBox(height: AppSpacing.xxl),
 
-          // Section design system
-          Text(
-            'COMPOSANTS DU DESIGN SYSTEM',
-            style: AppTypography.textTheme.titleSmall,
-          ),
+          // Design system showcase — dev scaffold, intentionally hardcoded
+          Text('COMPOSANTS DU DESIGN SYSTEM', style: AppTypography.textTheme.titleSmall),
           const SizedBox(height: AppSpacing.md),
 
-          // Boutons
           HarmonyCard(
             title: 'Boutons',
             child: Wrap(
               spacing: AppSpacing.sm,
               runSpacing: AppSpacing.sm,
               children: [
-                HarmonyButton(
-                  label: 'Primary',
-                  onPressed: () {},
-                ),
-                HarmonyButton(
-                  label: 'Secondary',
-                  onPressed: () {},
-                  variant: HarmonyButtonVariant.secondary,
-                ),
-                HarmonyButton(
-                  label: 'Danger',
-                  onPressed: () {},
-                  variant: HarmonyButtonVariant.danger,
-                ),
-                HarmonyButton(
-                  label: 'Ghost',
-                  onPressed: () {},
-                  variant: HarmonyButtonVariant.ghost,
-                ),
-                HarmonyButton(
-                  label: 'Chargement',
-                  onPressed: () {},
-                  isLoading: true,
-                ),
-                HarmonyButton(
-                  label: 'Avec icône',
-                  onPressed: () {},
-                  icon: Icons.add,
-                ),
+                HarmonyButton(label: 'Primary', onPressed: () {}),
+                HarmonyButton(label: 'Secondary', onPressed: () {}, variant: HarmonyButtonVariant.secondary),
+                HarmonyButton(label: 'Danger', onPressed: () {}, variant: HarmonyButtonVariant.danger),
+                HarmonyButton(label: 'Ghost', onPressed: () {}, variant: HarmonyButtonVariant.ghost),
+                HarmonyButton(label: 'Chargement', onPressed: () {}, isLoading: true),
+                HarmonyButton(label: 'Avec icône', onPressed: () {}, icon: Icons.add),
               ],
             ),
           ),
 
           const SizedBox(height: AppSpacing.md),
 
-          // Badges
           const HarmonyCard(
             title: 'Badges',
             child: Wrap(
@@ -180,15 +150,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
           const SizedBox(height: AppSpacing.md),
 
-          // Status dots
           const HarmonyCard(
             title: 'Indicateurs de statut',
             child: Row(
               children: [
-                HarmonyStatusDot(
-                  status: HarmonyStatus.online,
-                  pulse: true,
-                ),
+                HarmonyStatusDot(status: HarmonyStatus.online, pulse: true),
                 SizedBox(width: AppSpacing.lg),
                 HarmonyStatusDot(status: HarmonyStatus.warning),
                 SizedBox(width: AppSpacing.lg),
@@ -201,7 +167,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
           const SizedBox(height: AppSpacing.md),
 
-          // Toggles
           HarmonyCard(
             title: 'Interrupteurs',
             child: Column(
@@ -210,7 +175,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 HarmonyToggle(
                   value: _filterEnabled,
                   onChanged: (v) => setState(() => _filterEnabled = v),
-                  label: 'Filtrage d\'appels',
+                  label: "Filtrage d'appels",
                 ),
                 const SizedBox(height: AppSpacing.md),
                 HarmonyToggle(
@@ -224,7 +189,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
           const SizedBox(height: AppSpacing.xxxl),
 
-          // Footer
           Center(
             child: Text(
               'Harmony v0.1.0 · Sprint 0',
@@ -244,6 +208,8 @@ class _WelcomeBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Container(
       padding: const EdgeInsets.all(AppSpacing.xl),
       decoration: BoxDecoration(
@@ -258,26 +224,17 @@ class _WelcomeBanner extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Bienvenue 👋',
-            style: AppTypography.textTheme.headlineSmall,
-          ),
+          Text(l10n.dashboardWelcomeWave, style: AppTypography.textTheme.headlineSmall),
           const SizedBox(height: AppSpacing.xs),
-          Text(
-            date,
-            style: AppTypography.textTheme.bodyMedium,
-          ),
+          Text(date, style: AppTypography.textTheme.bodyMedium),
           const SizedBox(height: AppSpacing.lg),
-          const Row(
+          Row(
             children: [
-              HarmonyStatusDot(
-                status: HarmonyStatus.online,
-                pulse: true,
-              ),
-              SizedBox(width: AppSpacing.sm),
+              const HarmonyStatusDot(status: HarmonyStatus.online, pulse: true),
+              const SizedBox(width: AppSpacing.sm),
               Text(
-                'Tous les services actifs',
-                style: TextStyle(
+                l10n.dashboardAllServicesActive,
+                style: const TextStyle(
                   color: AppColors.accentGreen,
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
@@ -354,14 +311,8 @@ class _ModuleCardState extends State<_ModuleCard> {
                   ],
                 ),
                 const SizedBox(height: AppSpacing.sm),
-                Text(
-                  widget.title,
-                  style: AppTypography.textTheme.titleMedium,
-                ),
-                Text(
-                  widget.subtitle,
-                  style: AppTypography.textTheme.bodySmall,
-                ),
+                Text(widget.title, style: AppTypography.textTheme.titleMedium),
+                Text(widget.subtitle, style: AppTypography.textTheme.bodySmall),
               ],
             ),
           ),
