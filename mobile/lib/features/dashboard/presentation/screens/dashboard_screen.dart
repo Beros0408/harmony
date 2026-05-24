@@ -118,6 +118,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 badgeVariant: HarmonyBadgeVariant.info,
                 onTap: () => context.push(RouteNames.contacts),
               ),
+              _ModuleCard(
+                title: l10n.voicemailScreenTitle,
+                subtitle: l10n.voicemailNewCount(2),
+                icon: Icons.voicemail_rounded,
+                iconColor: AppColors.accentPurple,
+                badge: l10n.voicemailNewCount(2),
+                badgeVariant: HarmonyBadgeVariant.purple,
+                onTap: () => context.push(RouteNames.voicemail),
+              ),
             ],
           ),
 
@@ -262,7 +271,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
           Center(
             child: Text(
-              'Harmony v0.2.0 · Sprint C2',
+              'Harmony v0.3.0 · Sprint C3',
               style: AppTypography.textTheme.labelSmall,
             ),
           ),
