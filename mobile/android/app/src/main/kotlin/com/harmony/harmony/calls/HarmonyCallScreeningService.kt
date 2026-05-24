@@ -29,6 +29,8 @@ class HarmonyCallScreeningService : CallScreeningService() {
         val phoneNumber = callDetails.handle?.schemeSpecificPart ?: ""
 
         Log.d(TAG, "Appel entrant détecté : $phoneNumber")
+        Log.d(TAG, "Snapshot actif : mode=${CallDecisionEngine.currentMode}, " +
+            "whitelist=${CallDecisionEngine.whitelistSize}, blacklist=${CallDecisionEngine.blacklistSize}")
 
         // Décision synchrone en mémoire — latence typique < 1 ms
         val shouldBlock = CallDecisionEngine.shouldBlock(phoneNumber)

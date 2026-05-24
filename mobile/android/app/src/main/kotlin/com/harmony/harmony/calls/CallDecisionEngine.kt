@@ -28,6 +28,11 @@ object CallDecisionEngine {
         rules = newRules
     }
 
+    // Exposé pour les logs dans HarmonyCallScreeningService.
+    val currentMode: FilterMode get() = rules.currentMode
+    val whitelistSize: Int get() = rules.whitelist.size
+    val blacklistSize: Int get() = rules.blacklist.size
+
     /** Retourne true si l'appel doit être bloqué. Appel synchrone, < 1 ms. */
     fun shouldBlock(phoneNumber: String): Boolean {
         val r = rules // lecture atomique du snapshot immuable
