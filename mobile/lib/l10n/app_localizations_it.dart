@@ -551,4 +551,35 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get voicemailPlay => 'Ascolta';
+
+  @override
+  String get callScreeningEnableTitle => 'Attiva protezione';
+
+  @override
+  String get callScreeningEnableDescription =>
+      'Per bloccare le chiamate indesiderate, Harmony deve essere la tua app di filtraggio predefinita';
+
+  @override
+  String get callScreeningEnableButton => 'Attiva';
+
+  @override
+  String get callScreeningActiveStatus => 'Protezione attiva';
+
+  @override
+  String get callLogScreenTitle => 'Registro blocchi';
+
+  @override
+  String get callLogFilterToday => 'Oggi';
+
+  @override
+  String get callLogFilterWeek => 'Questa settimana';
+
+  @override
+  String get callLogFilterAll => 'Tutto';
+
+  @override
+  String get callLogEmptyState => 'Nessuna chiamata bloccata';
+
+  @override
+  String get callLogClearAllButton => 'Cancella tutto';
 }

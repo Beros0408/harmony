@@ -37,6 +37,15 @@ kotlin {
     }
 }
 
+dependencies {
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.assertj:assertj-core:3.25.1")
+}
+
+tasks.withType<Test> {
+    testLogging { showStandardStreams = true }
+}
+
 flutter {
     source = "../.."
 }
