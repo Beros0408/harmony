@@ -1261,6 +1261,90 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Mode actif'**
   String get filterModeCurrentActive;
+
+  /// No description provided for @blacklistScreenTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Liste noire'**
+  String get blacklistScreenTitle;
+
+  /// No description provided for @blacklistSearchHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rechercher un numéro ou une étiquette...'**
+  String get blacklistSearchHint;
+
+  /// No description provided for @blacklistEmptyTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun numéro bloqué'**
+  String get blacklistEmptyTitle;
+
+  /// No description provided for @blacklistAddTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter un numéro'**
+  String get blacklistAddTitle;
+
+  /// No description provided for @blacklistEditTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier l\'entrée'**
+  String get blacklistEditTitle;
+
+  /// No description provided for @blacklistPhoneLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Numéro de téléphone'**
+  String get blacklistPhoneLabel;
+
+  /// No description provided for @blacklistPhoneHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'+33 6 12 34 56 78'**
+  String get blacklistPhoneHint;
+
+  /// No description provided for @blacklistLabelHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Étiquette (optionnel)'**
+  String get blacklistLabelHint;
+
+  /// No description provided for @blacklistReasonLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Raison du blocage'**
+  String get blacklistReasonLabel;
+
+  /// No description provided for @blacklistSaveButton.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enregistrer'**
+  String get blacklistSaveButton;
+
+  /// No description provided for @blacklistReasonSpam.
+  ///
+  /// In fr, this message translates to:
+  /// **'Spam'**
+  String get blacklistReasonSpam;
+
+  /// No description provided for @blacklistReasonTelemarketing.
+  ///
+  /// In fr, this message translates to:
+  /// **'Démarchage'**
+  String get blacklistReasonTelemarketing;
+
+  /// No description provided for @blacklistReasonHarassment.
+  ///
+  /// In fr, this message translates to:
+  /// **'Harcèlement'**
+  String get blacklistReasonHarassment;
+
+  /// No description provided for @blacklistReasonOther.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autre'**
+  String get blacklistReasonOther;
 }
 
 class _AppLocalizationsDelegate

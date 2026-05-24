@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:harmony/l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
@@ -15,6 +16,7 @@ import '../../../../shared/widgets/harmony_toggle.dart';
 import '../../data/mock/security_mocks.dart';
 import '../../data/native/call_filter_channel.dart';
 import '../../data/repositories/blacklist_repository.dart';
+import '../../logic/blacklist_cubit.dart';
 
 class CallFilterScreen extends StatefulWidget {
   const CallFilterScreen({super.key});
@@ -28,6 +30,7 @@ class _CallFilterScreenState extends State<CallFilterScreen>
   int _activeModeIndex = 0;
   late List<bool> _ruleStates;
   bool _isDefaultScreeningApp = false;
+  List<BlockedCallEntry> _recentCalls = [];
 
   @override
   void initState() {
@@ -36,6 +39,7 @@ class _CallFilterScreenState extends State<CallFilterScreen>
     WidgetsBinding.instance.addObserver(this);
     _checkScreeningStatus();
     BlacklistRepository.instance.syncToNative();
+    _loadRecentCalls();
   }
 
   @override
@@ -58,6 +62,11 @@ class _CallFilterScreenState extends State<CallFilterScreen>
     await CallFilterChannel.requestScreeningRole();
   }
 
+  Future<void> _loadRecentCalls() async {
+    final calls = await CallFilterChannel.getBlockedCalls();
+    if (mounted) setState(() => _recentCalls = calls.take(3).toList());
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -66,14 +75,6 @@ class _CallFilterScreenState extends State<CallFilterScreen>
       l10n.securityModeNormal,
       l10n.securityModeFocus,
       l10n.securityModeNight,
-    ];
-
-    final ruleTexts = [
-      (l10n.securityRuleUnknownNumbers, l10n.securityRuleUnknownNumbersDesc),
-      (l10n.securityRuleSpam, l10n.securityRuleSpamDesc),
-      (l10n.securityRuleBlacklist, l10n.securityRuleBlacklistDesc(12)),
-      (l10n.securityRuleForeign, l10n.securityRuleForeignDesc),
-      (l10n.securityRuleWhitelist, l10n.securityRuleWhitelistDesc(8)),
     ];
 
     return Scaffold(
@@ -119,23 +120,41 @@ class _CallFilterScreenState extends State<CallFilterScreen>
           // C — Règles
           _SectionHeader(title: l10n.securitySectionRules),
           const SizedBox(height: AppSpacing.sm),
-          HarmonyCard(
-            padding: AppSpacing.md,
-            child: Column(
-              children: List.generate(kFilterRules.length, (i) {
-                final rule = kFilterRules[i];
-                return HarmonyListTile(
-                  leadingIcon: rule.icon,
-                  leadingColor: AppColors.accentBlue,
-                  title: ruleTexts[i].$1,
-                  subtitle: ruleTexts[i].$2,
-                  trailing: HarmonyToggle(
-                    value: _ruleStates[i],
-                    onChanged: (v) => setState(() => _ruleStates[i] = v),
-                  ),
-                );
-              }),
-            ),
+          BlocBuilder<BlacklistCubit, BlacklistState>(
+            builder: (context, blacklistState) {
+              final count = blacklistState.entries.length;
+              final dynamicRuleTexts = [
+                (l10n.securityRuleUnknownNumbers, l10n.securityRuleUnknownNumbersDesc),
+                (l10n.securityRuleSpam, l10n.securityRuleSpamDesc),
+                (l10n.securityRuleBlacklist, l10n.securityRuleBlacklistDesc(count)),
+                (l10n.securityRuleForeign, l10n.securityRuleForeignDesc),
+                (l10n.securityRuleWhitelist, l10n.securityRuleWhitelistDesc(8)),
+              ];
+              return HarmonyCard(
+                padding: AppSpacing.md,
+                child: Column(
+                  children: List.generate(kFilterRules.length, (i) {
+                    final rule = kFilterRules[i];
+                    final isBlacklist = rule.type == FilterRuleType.blacklist;
+                    return HarmonyListTile(
+                      leadingIcon: rule.icon,
+                      leadingColor: AppColors.accentBlue,
+                      title: dynamicRuleTexts[i].$1,
+                      subtitle: dynamicRuleTexts[i].$2,
+                      trailing: isBlacklist
+                          ? const Icon(Icons.chevron_right, color: AppColors.textMuted)
+                          : HarmonyToggle(
+                              value: _ruleStates[i],
+                              onChanged: (v) => setState(() => _ruleStates[i] = v),
+                            ),
+                      onTap: isBlacklist
+                          ? () => context.push(RouteNames.blacklist)
+                          : null,
+                    );
+                  }),
+                ),
+              );
+            },
           ),
           const SizedBox(height: AppSpacing.xxl),
 
@@ -144,24 +163,35 @@ class _CallFilterScreenState extends State<CallFilterScreen>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _SectionHeader(title: l10n.securitySectionRecentBlocked),
-              Text(l10n.securitySeeAll, style: AppTypography.textTheme.labelMedium),
+              GestureDetector(
+                onTap: () => context.push(RouteNames.callLog),
+                child: Text(l10n.securitySeeAll, style: AppTypography.textTheme.labelMedium),
+              ),
             ],
           ),
           const SizedBox(height: AppSpacing.sm),
           HarmonyCard(
             padding: AppSpacing.md,
-            child: Column(
-              children: kRecentBlockedCalls
-                  .map(
-                    (call) => HarmonyListTile(
-                      leadingIcon: Icons.phone_disabled,
-                      leadingColor: AppColors.accentRed,
-                      title: call.number,
-                      subtitle: call.detail,
+            child: _recentCalls.isEmpty
+                ? const Padding(
+                    padding: EdgeInsets.symmetric(vertical: AppSpacing.sm),
+                    child: Text(
+                      '—',
+                      style: TextStyle(color: AppColors.textMuted, fontSize: 13),
                     ),
                   )
-                  .toList(),
-            ),
+                : Column(
+                    children: _recentCalls
+                        .map(
+                          (call) => HarmonyListTile(
+                            leadingIcon: Icons.phone_disabled,
+                            leadingColor: AppColors.accentRed,
+                            title: call.phoneNumber.isEmpty ? 'Numéro inconnu' : call.phoneNumber,
+                            subtitle: '${call.latencyMs}ms · ${call.timestamp.hour.toString().padLeft(2, '0')}:${call.timestamp.minute.toString().padLeft(2, '0')}',
+                          ),
+                        )
+                        .toList(),
+                  ),
           ),
           // E — Journal des appels bloqués
           _SectionHeader(title: l10n.callLogScreenTitle),

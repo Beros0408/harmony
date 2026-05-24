@@ -227,5 +227,20 @@
   "filterModeEmergency": "Emergency",
   "filterModeActivate": "Activate",
   "filterModeConfigure": "Configure",
-  "filterModeCurrentActive": "Active mode"
+  "filterModeCurrentActive": "Active mode",
+
+  "blacklistScreenTitle": "Blocklist",
+  "blacklistSearchHint": "Search a number or label...",
+  "blacklistEmptyTitle": "No blocked numbers",
+  "blacklistAddTitle": "Add a number",
+  "blacklistEditTitle": "Edit entry",
+  "blacklistPhoneLabel": "Phone number",
+  "blacklistPhoneHint": "+33 6 12 34 56 78",
+  "blacklistLabelHint": "Label (optional)",
+  "blacklistReasonLabel": "Block reason",
+  "blacklistSaveButton": "Save",
+  "blacklistReasonSpam": "Spam",
+  "blacklistReasonTelemarketing": "Telemarketing",
+  "blacklistReasonHarassment": "Harassment",
+  "blacklistReasonOther": "Other"
 }

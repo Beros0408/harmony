@@ -270,5 +270,20 @@
   "filterModeEmergency": "Urgence",
   "filterModeActivate": "Activer",
   "filterModeConfigure": "Configurer",
-  "filterModeCurrentActive": "Mode actif"
+  "filterModeCurrentActive": "Mode actif",
+
+  "blacklistScreenTitle": "Liste noire",
+  "blacklistSearchHint": "Rechercher un numéro ou une étiquette...",
+  "blacklistEmptyTitle": "Aucun numéro bloqué",
+  "blacklistAddTitle": "Ajouter un numéro",
+  "blacklistEditTitle": "Modifier l'entrée",
+  "blacklistPhoneLabel": "Numéro de téléphone",
+  "blacklistPhoneHint": "+33 6 12 34 56 78",
+  "blacklistLabelHint": "Étiquette (optionnel)",
+  "blacklistReasonLabel": "Raison du blocage",
+  "blacklistSaveButton": "Enregistrer",
+  "blacklistReasonSpam": "Spam",
+  "blacklistReasonTelemarketing": "Démarchage",
+  "blacklistReasonHarassment": "Harcèlement",
+  "blacklistReasonOther": "Autre"
 }

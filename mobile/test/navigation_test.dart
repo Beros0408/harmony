@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:harmony/core/router/route_names.dart';
 import 'package:harmony/features/agenda/presentation/screens/agenda_screen.dart';
+import 'package:harmony/features/call_filter/data/models/blacklist_entry.dart';
+import 'package:harmony/features/call_filter/data/repositories/i_blacklist_repository.dart';
+import 'package:harmony/features/call_filter/logic/blacklist_cubit.dart';
 import 'package:harmony/features/call_filter/presentation/screens/call_filter_screen.dart';
 import 'package:harmony/features/dashboard/presentation/screens/dashboard_screen.dart';
 import 'package:harmony/features/fitness/presentation/screens/fitness_screen.dart';
@@ -10,6 +14,18 @@ import 'package:harmony/features/parental/presentation/screens/parental_screen.d
 import 'package:harmony/l10n/app_localizations.dart';
 import 'package:harmony/shared/theme/app_theme.dart';
 import 'package:intl/date_symbol_data_local.dart';
+
+class _EmptyBlacklistRepo implements IBlacklistRepository {
+  @override Future<List<BlacklistEntry>> getAll() async => [];
+  @override Future<BlacklistEntry?> getById(String id) async => null;
+  @override Future<BlacklistEntry?> getByNumber(String phoneNumber) async => null;
+  @override Future<void> add(BlacklistEntry entry) async {}
+  @override Future<void> update(BlacklistEntry entry) async {}
+  @override Future<void> delete(String id) async {}
+  @override Future<void> clear() async {}
+  @override Future<List<BlacklistEntry>> search(String query) async => [];
+  @override Future<void> syncToNative() async {}
+}
 
 // Routeur de test : démarre directement au dashboard, sans auth
 GoRouter _testRouter() => GoRouter(
@@ -38,12 +54,15 @@ GoRouter _testRouter() => GoRouter(
       ],
     );
 
-Widget _buildTestApp() => MaterialApp.router(
-      theme: AppTheme.darkTheme,
-      routerConfig: _testRouter(),
-      locale: const Locale('fr'),
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: const [Locale('fr')],
+Widget _buildTestApp() => BlocProvider(
+      create: (_) => BlacklistCubit(_EmptyBlacklistRepo()),
+      child: MaterialApp.router(
+        theme: AppTheme.darkTheme,
+        routerConfig: _testRouter(),
+        locale: const Locale('fr'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: const [Locale('fr')],
+      ),
     );
 
 // Avance passé l'animation de navigation (par défaut 300ms + marge)
