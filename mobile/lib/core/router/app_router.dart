@@ -6,6 +6,7 @@ import '../../features/call_filter/presentation/screens/call_filter_screen.dart'
 import '../../features/dashboard/presentation/screens/dashboard_screen.dart';
 import '../../features/fitness/presentation/screens/fitness_screen.dart';
 import '../../features/parental/presentation/screens/parental_screen.dart';
+import '../../features/contacts/presentation/screens/contacts_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_typography.dart';
@@ -78,6 +79,13 @@ final GoRouter appRouter = GoRouter(
       pageBuilder: (context, state) => _slidePage(
         key: state.pageKey,
         child: const AgendaScreen(),
+      ),
+    ),
+    GoRoute(
+      path: RouteNames.contacts,
+      pageBuilder: (context, state) => _slidePage(
+        key: state.pageKey,
+        child: const ContactsScreen(),
       ),
     ),
     GoRoute(

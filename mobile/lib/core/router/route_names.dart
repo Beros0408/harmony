@@ -9,5 +9,6 @@ class RouteNames {
   static const String fitness = '/fitness';
   static const String agenda = '/agenda';
   static const String modes = '/modes';
+  static const String contacts = '/contacts';
   static const String settings = '/settings';
 }

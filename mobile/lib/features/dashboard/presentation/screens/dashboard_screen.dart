@@ -7,9 +7,12 @@ import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/router/route_names.dart';
 import '../../../../shared/widgets/harmony_app_bar.dart';
+import '../../../../shared/widgets/harmony_audio_waveform.dart';
 import '../../../../shared/widgets/harmony_badge.dart';
 import '../../../../shared/widgets/harmony_button.dart';
 import '../../../../shared/widgets/harmony_card.dart';
+import '../../../../shared/widgets/harmony_metric_card.dart';
+import '../../../../shared/widgets/harmony_search_bar.dart';
 import '../../../../shared/widgets/harmony_status_dot.dart';
 import '../../../../shared/widgets/harmony_toggle.dart';
 
@@ -23,6 +26,7 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   bool _filterEnabled = true;
   bool _parentalEnabled = false;
+  double _waveformProgress = 0.35;
 
   String get _formattedDate {
     final now = DateTime.now();
@@ -104,6 +108,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 badge: l10n.moduleAgendaBadge,
                 badgeVariant: HarmonyBadgeVariant.warning,
                 onTap: () => context.push(RouteNames.agenda),
+              ),
+              _ModuleCard(
+                title: l10n.moduleContactsTitle,
+                subtitle: l10n.moduleContactsSubtitle,
+                icon: Icons.contacts_outlined,
+                iconColor: AppColors.accentCyan,
+                badge: l10n.moduleContactsBadge(5),
+                badgeVariant: HarmonyBadgeVariant.info,
+                onTap: () => context.push(RouteNames.contacts),
               ),
             ],
           ),
@@ -187,11 +200,69 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
           ),
 
+          const SizedBox(height: AppSpacing.md),
+
+          const HarmonyCard(
+            title: 'Métriques',
+            child: Row(
+              children: [
+                Expanded(
+                  child: HarmonyMetricCard(
+                    icon: Icons.directions_walk,
+                    iconColor: AppColors.accentGreen,
+                    value: '6 842',
+                    label: 'Pas',
+                    unit: 'pas',
+                    trend: 12.5,
+                  ),
+                ),
+                SizedBox(width: AppSpacing.md),
+                Expanded(
+                  child: HarmonyMetricCard(
+                    icon: Icons.local_fire_department_outlined,
+                    iconColor: AppColors.accentAmber,
+                    value: '312',
+                    label: 'Calories',
+                    unit: 'kcal',
+                    trend: -3.2,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: AppSpacing.md),
+
+          HarmonyCard(
+            title: 'Waveform audio',
+            child: Column(
+              children: [
+                HarmonyAudioWaveform(
+                  progress: _waveformProgress,
+                  isPlaying: false,
+                ),
+                const SizedBox(height: AppSpacing.md),
+                Slider(
+                  value: _waveformProgress,
+                  onChanged: (v) => setState(() => _waveformProgress = v),
+                  activeColor: AppColors.accentBlue,
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: AppSpacing.md),
+
+          const HarmonyCard(
+            title: 'Recherche',
+            child: HarmonySearchBar(hintText: 'Rechercher un contact...'),
+          ),
+
           const SizedBox(height: AppSpacing.xxxl),
 
           Center(
             child: Text(
-              'Harmony v0.1.0 · Sprint 0',
+              'Harmony v0.2.0 · Sprint C2',
               style: AppTypography.textTheme.labelSmall,
             ),
           ),

@@ -907,6 +907,96 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Italiano'**
   String get settingsLanguageItalian;
+
+  /// No description provided for @settingsTheme.
+  ///
+  /// In fr, this message translates to:
+  /// **'Apparence'**
+  String get settingsTheme;
+
+  /// No description provided for @settingsThemeSystem.
+  ///
+  /// In fr, this message translates to:
+  /// **'Automatique'**
+  String get settingsThemeSystem;
+
+  /// No description provided for @settingsThemeLight.
+  ///
+  /// In fr, this message translates to:
+  /// **'Clair'**
+  String get settingsThemeLight;
+
+  /// No description provided for @settingsThemeDark.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sombre'**
+  String get settingsThemeDark;
+
+  /// No description provided for @moduleContactsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Contacts'**
+  String get moduleContactsTitle;
+
+  /// No description provided for @moduleContactsSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gestion des contacts'**
+  String get moduleContactsSubtitle;
+
+  /// No description provided for @moduleContactsBadge.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count} contacts'**
+  String moduleContactsBadge(int count);
+
+  /// No description provided for @contactsScreenTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Contacts'**
+  String get contactsScreenTitle;
+
+  /// No description provided for @contactsSectionWhitelist.
+  ///
+  /// In fr, this message translates to:
+  /// **'LISTE BLANCHE'**
+  String get contactsSectionWhitelist;
+
+  /// No description provided for @contactsSectionBlacklist.
+  ///
+  /// In fr, this message translates to:
+  /// **'LISTE NOIRE'**
+  String get contactsSectionBlacklist;
+
+  /// No description provided for @contactsAddContact.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter un contact'**
+  String get contactsAddContact;
+
+  /// No description provided for @contactsWhitelistBadge.
+  ///
+  /// In fr, this message translates to:
+  /// **'autorisé'**
+  String get contactsWhitelistBadge;
+
+  /// No description provided for @contactsBlacklistBadge.
+  ///
+  /// In fr, this message translates to:
+  /// **'bloqué'**
+  String get contactsBlacklistBadge;
+
+  /// No description provided for @contactsEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun contact'**
+  String get contactsEmpty;
+
+  /// No description provided for @contactsRemove.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retirer'**
+  String get contactsRemove;
 }
 
 class _AppLocalizationsDelegate

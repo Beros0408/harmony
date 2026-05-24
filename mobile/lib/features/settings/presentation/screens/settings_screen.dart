@@ -5,8 +5,10 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/language/language_cubit.dart';
+import '../../../../core/theme/theme_cubit.dart';
 import '../../../../shared/widgets/harmony_app_bar.dart';
 import '../../../../shared/widgets/harmony_card.dart';
+import '../../../../shared/widgets/harmony_theme_toggle.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -15,6 +17,7 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final currentLocale = context.watch<LanguageCubit>().state;
+    final currentTheme = context.watch<ThemeCubit>().state;
 
     final languages = [
       ('fr', '🇫🇷', l10n.settingsLanguageFrench),
@@ -24,12 +27,62 @@ class SettingsScreen extends StatelessWidget {
       ('it', '🇮🇹', l10n.settingsLanguageItalian),
     ];
 
+    final themeOptions = [
+      (ThemeMode.system, Icons.brightness_auto_outlined, l10n.settingsThemeSystem),
+      (ThemeMode.light, Icons.light_mode_outlined, l10n.settingsThemeLight),
+      (ThemeMode.dark, Icons.dark_mode_outlined, l10n.settingsThemeDark),
+    ];
+
     return Scaffold(
       backgroundColor: AppColors.bgBase,
       appBar: HarmonyAppBar(title: l10n.settingsTitle),
       body: ListView(
         padding: const EdgeInsets.all(AppSpacing.lg),
         children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(l10n.settingsTheme, style: AppTypography.textTheme.titleSmall),
+              HarmonyThemeToggle(
+                mode: currentTheme,
+                onChanged: (m) => context.read<ThemeCubit>().change(m),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.md),
+          HarmonyCard(
+            padding: AppSpacing.md,
+            child: Column(
+              children: themeOptions.map((entry) {
+                final (mode, icon, label) = entry;
+                final isSelected = currentTheme == mode;
+                return InkWell(
+                  onTap: () => context.read<ThemeCubit>().change(mode),
+                  borderRadius: BorderRadius.circular(8),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.sm,
+                      vertical: AppSpacing.md,
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(icon, size: 20, color: AppColors.accentBlue),
+                        const SizedBox(width: AppSpacing.md),
+                        Expanded(
+                          child: Text(label, style: AppTypography.textTheme.bodyMedium),
+                        ),
+                        if (isSelected)
+                          const Icon(Icons.check, color: AppColors.accentBlue, size: 20),
+                      ],
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+
+          const SizedBox(height: AppSpacing.xl),
+
           Text(l10n.settingsLanguage, style: AppTypography.textTheme.titleSmall),
           const SizedBox(height: AppSpacing.md),
           HarmonyCard(
