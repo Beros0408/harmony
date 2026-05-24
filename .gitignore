@@ -147,3 +147,21 @@ docker-compose.override.yml
 # Scripts générés
 # ============================================================
 scripts/__pycache__/
+
+# Claude Code local config
+.claude/
+
+# Local backup folders
+backup_*/
+
+# Tracking source folder (used by PowerShell save scripts)
+tracking/
+
+# Claude Code local config
+.claude/
+
+# Local backup folders
+backup_*/
+
+# Tracking source folder (used by PowerShell save scripts)
+tracking/
