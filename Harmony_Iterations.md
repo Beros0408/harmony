@@ -1,5 +1,6 @@
-# 🔄 Blocker — Fichier des itérations
-> Un sprint = 2 semaines · Référence : `CAHIER_DES_CHARGES_Blocker_Consolide.md` · Mise à jour : à chaque sprint
+# 🔄 Harmony — Fichier des itérations
+> Un sprint = 2 semaines (ou moins en mode rapide) · Référence : `CAHIER_DES_CHARGES_Harmony_Consolide.md`
+> Mise à jour : 24 mai 2026
 
 ---
 
@@ -18,353 +19,189 @@
 
 ## Vue d'ensemble des sprints
 
-| Sprint | Phase | Thème | Statut | Dates |
-|---|---|---|---|---|
-| **Sprint 0** | Phase 0 | Fondations & architecture | ⬜ | — |
-| **Sprint 1** | Phase 1 | Filtrage des appels (Android) | ⬜ | — |
-| **Sprint 2** | Phase 1 | Filtrage des appels (iOS) + Listes | ⬜ | — |
-| **Sprint 3** | Phase 1 | Géolocalisation + SOS + Tableau de bord | ⬜ | — |
-| **Sprint 4** | Phase 1 | Agenda + Synchronisation calendrier + Tests MVP | ⬜ | — |
-| **Sprint 5** | Phase 2 | IA spam + Score de confiance + STT | ⬜ | — |
-| **Sprint 6** | Phase 2 | Filtrage WhatsApp Android | ⬜ | — |
-| **Sprint 7** | Phase 2 | Filtrage WhatsApp iOS + NLP | ⬜ | — |
-| **Sprint 8** | Phase 2 | Geofencing avancé + Analyse comportementale | ⬜ | — |
-| **Sprint 9** | Phase 2 | Temps d'écran + Rapport parental + Tests Phase 2 | ⬜ | — |
-| **Sprint 10** | Phase 3 | Traçage GPS + Détection d'activité | ⬜ | — |
-| **Sprint 11** | Phase 3 | Cardio + Zones FC + Entraînements guidés | ⬜ | — |
-| **Sprint 12** | Phase 3 | Dashboard fitness + Statistiques + Graphiques | ⬜ | — |
-| **Sprint 13** | Phase 3 | Plans d'entraînement + Export + Apple Health/Google Fit | ⬜ | — |
-| **Sprint 14** | Phase 4 | Synchronisation cloud + Wearables | ⬜ | — |
-| **Sprint 15** | Phase 4 | Assistant vocal + SOS silencieux finalisé | ⬜ | — |
-| **Sprint 16** | Phase 4 | Monétisation + Onboarding + Audit sécurité | ⬜ | — |
-| **Sprint 17** | Phase 4 | Déploiement App Store + Google Play | ⬜ | — |
+| Sprint | Phase | Thème | Statut | Dates | Commit |
+|---|---|---|---|---|---|
+| **Sprint 0** | Phase 0 | Fondations et architecture | ✅ Terminé | 23/05/2026 | `c4a646d` et précédents |
+| **Sprint A** | UI premium | Navigation Dashboard | ✅ Terminé | 24/05/2026 | `48ecc93` |
+| **Sprint B** | UI premium | Maquettes interactives modules | ✅ Terminé | 24/05/2026 | `f36a7cb` |
+| **Sprint C1** | UI premium | i18n 5 langues + back button | ✅ Terminé | 24/05/2026 | `9c69cf3` |
+| **Fix C1** | UI premium | Bouton retour Settings + typo IT | ✅ Terminé | 24/05/2026 | `3a45086` |
+| **Sprint C2** | UI premium | Light mode + ThemeCubit + Contacts | ✅ Terminé | 24/05/2026 | `d34ce4f` |
+| **Sprint C3** | UI premium | Messagerie vocale + transcriptions | ⬜ À faire | — | — |
+| **Sprint 1** | Phase 1 | Filtrage appels Android natif | ⬜ À faire | — | — |
+| **Sprint 2** | Phase 1 | Filtrage appels iOS + Listes avancées | ⬜ À faire | — | — |
+| **Sprint 3** | Phase 1 | Géolocalisation + SOS + Tableau bord | ⬜ À faire | — | — |
+| **Sprint 4** | Phase 1 | Agenda + Sync calendrier + Tests MVP | ⬜ À faire | — | — |
+| **Sprint 5** | Phase 2 | IA spam + Score confiance + STT | ⬜ À faire | — | — |
+| **Sprint 6** | Phase 2 | Filtrage WhatsApp Android | ⬜ À faire | — | — |
+| **Sprint 7** | Phase 2 | Filtrage WhatsApp iOS + NLP | ⬜ À faire | — | — |
+| **Sprint 8** | Phase 2 | Geofencing avancé + Analyse comportementale | ⬜ À faire | — | — |
+| **Sprint 9** | Phase 2 | Temps écran + Rapports parentaux | ⬜ À faire | — | — |
+| **Sprint 10** | Phase 3 | Traçage GPS + Détection activité | ⬜ À faire | — | — |
+| **Sprint 11** | Phase 3 | Cardio + Zones FC | ⬜ À faire | — | — |
+| **Sprint 12** | Phase 3 | Dashboard fitness + Statistiques | ⬜ À faire | — | — |
+| **Sprint 13** | Phase 3 | Plans entraînement + Export | ⬜ À faire | — | — |
+| **Sprint 14** | Phase 4 | Synchronisation cloud + Wearables | ⬜ À faire | — | — |
+| **Sprint 15** | Phase 4 | Assistant vocal + SOS silencieux | ⬜ À faire | — | — |
+| **Sprint 16** | Phase 4 | Monétisation + Onboarding | ⬜ À faire | — | — |
+| **Sprint 17** | Phase 4 | Déploiement App Store + Play Store | ⬜ À faire | — | — |
 
 ---
 
-## Détail des sprints
+## Bilan des sprints terminés
+
+### Sprint 0 — Fondations et architecture ✅
+**Phase :** 0 · **Date :** 23/05/2026
+
+#### Livraisons
+- ✅ Monorepo créé (mobile/, backend/, docs/, .github/, scripts/)
+- ✅ Flutter 3.x avec architecture feature-first
+- ✅ Backend FastAPI + PostgreSQL + Redis + JWT
+- ✅ Auth biométrie + PIN (24/24 tests verts)
+- ✅ Design system Harmony (11 widgets)
+- ✅ CI/CD GitHub Actions 4-jobs
+
+#### Métriques
+- Points planifiés : 31 · Points réalisés : 31 · Vélocité : 100 %
+- Bugs ouverts : 0
 
 ---
 
-### 🏁 Sprint 0 — Fondations & architecture
-**Phase :** 0 · **Durée :** 2 semaines · **Statut :** ⬜ À faire
+### Sprint A — Navigation Dashboard ✅
+**Phase :** UI premium · **Date :** 24/05/2026
+
+#### Livraisons
+- ✅ RouteNames pour dashboard, security, family, fitness, agenda, settings
+- ✅ GoRouter avec transitions slide droite vers gauche 200 ms
+- ✅ 4 cartes Dashboard cliquables avec animation hover
+- ✅ HarmonyEmptyState sur écrans modules
+- ✅ 5 nouveaux tests de navigation
+
+#### Métriques
+- Commit : `48ecc93`
+
+---
+
+### Sprint B — Maquettes interactives modules ✅
+**Phase :** UI premium · **Date :** 24/05/2026
+
+#### Livraisons
+- ✅ 4 fichiers mock data typés (security, family, fitness, agenda)
+- ✅ Sécurité : 3 KPI, 3-mode selector, 5 toggle rules, blocked-call log
+- ✅ Famille : 2 cartes enfants, map placeholder, 3 zones, 2 progress bars
+- ✅ Fitness : 4 KPI grid, BarChart fl_chart hebdo, records, sessions
+- ✅ Agenda : date selector, 2 day-mode cards, 3 events colorés, FAB
+- ✅ 1154 lignes ajoutées · 29/29 tests verts · 0 issue analyze
+
+#### Métriques
+- Commit : `f36a7cb`
+
+---
+
+### Sprint C1 — i18n + back button universel ✅
+**Phase :** UI premium · **Date :** 24/05/2026
+
+#### Livraisons
+- ✅ flutter_localizations + intl 0.20.2 + l10n.yaml
+- ✅ 5 fichiers ARB (FR template + EN/ES/PT/IT) avec 97 clés
+- ✅ LanguageCubit avec persistance SecureStorage
+- ✅ HarmonyAppBar avec auto back button via context.canPop()
+- ✅ SettingsScreen avec sélecteur de langue (5 lignes drapeau emoji + nom natif)
+- ✅ Mock data refactorisé : strings hardcodés vers enums typés
+- ✅ 10 nouveaux tests (l10n + navigation_back)
+- ✅ 4742 lignes ajoutées · 39/39 tests verts · 0 issue analyze
+
+#### Métriques
+- Commit : `9c69cf3`
+
+---
+
+### Fix C1 — Bouton retour Settings + typo italien ✅
+**Phase :** UI premium · **Date :** 24/05/2026
+
+#### Livraisons
+- ✅ Remplacement context.go() vers context.push() pour Settings + 4 modules
+- ✅ Correction "Itallano" vers "Italiano" dans app_it.arb
+- ✅ Audit complet des appels de navigation
+
+#### Métriques
+- Commit : `3a45086`
+
+---
+
+### Sprint C2 — Premium Polish + Light Mode + Contacts ✅
+**Phase :** UI premium · **Date :** 24/05/2026
 
 #### Objectif du sprint
-Mettre en place l'intégralité de l'environnement de développement, la structure du projet, le design system et les fondations de sécurité avant tout développement fonctionnel.
+Refonte premium suite aux retours utilisateur sur l'esthétique générique, ajout du mode clair anti-fatigue et création du menu Contacts demandé.
 
-#### User stories
+#### User stories réalisées
 
-| ID | Story | Critères d'acceptation | Points | Statut |
-|---|---|---|---|---|
-| US-001 | En tant que développeur, je veux un dépôt Flutter initialisé avec la bonne architecture | Structure `lib/` (features, core, shared), `pubspec.yaml` complet, lint configuré | 3 | ⬜ |
-| US-002 | En tant que développeur, je veux un backend FastAPI opérationnel | Endpoint `/health`, structure modulaire, Dockerfile, `.env` | 5 | ⬜ |
-| US-003 | En tant que développeur, je veux une base de données PostgreSQL + Redis configurée | Schéma initial, migrations Alembic, connexion Redis testée | 5 | ⬜ |
-| US-004 | En tant que développeur, je veux le chiffrement local SQLCipher intégré | Base de données locale chiffrée AES-256, tests d'ouverture/fermeture | 3 | ⬜ |
-| US-005 | En tant que designer, je veux un design system documenté | Tokens couleurs, typographie (Geist), composants de base Flutter | 5 | ⬜ |
-| US-006 | En tant que développeur, je veux l'authentification biométrique + PIN fonctionnelle | Face ID / Empreinte + PIN de secours, persistance sécurisée | 5 | ⬜ |
-| US-007 | En tant que DevOps, je veux un pipeline CI/CD configuré | Build Flutter Android + iOS, tests auto, lint, déploiement staging | 5 | ⬜ |
-
-#### Définition of Done (DoD) Sprint 0
-- [ ] Le projet Flutter compile sans erreur sur Android et iOS
-- [ ] Le backend FastAPI répond sur `/health` en staging
-- [ ] PostgreSQL et Redis sont connectés et fonctionnels
-- [ ] L'authentification biométrique + PIN est opérationnelle
-- [ ] Le design system est documenté dans `docs/design-system.md`
-- [ ] Le pipeline CI/CD exécute les builds automatiquement
-
-#### Risques identifiés
-- Configuration de l'environnement iOS (certificats Xcode, provisioning) peut prendre du temps
-- Compatibilité SQLCipher avec les dernières versions Flutter à vérifier
-
-#### Notes & décisions
-> *(À remplir en cours de sprint)*
+| ID | Story | Critères d'acceptation | Statut |
+|---|---|---|---|
+| US-C2-001 | Tokens light mode complets | ivoire #FAF8F5, gris #1F2937, WCAG AAA badges | ✅ |
+| US-C2-002 | ThemeCubit 3 états | system/light/dark + persistance SecureStorage | ✅ |
+| US-C2-003 | HarmonyTheme.light() et .dark() | ThemeData complets (colorScheme, textTheme, cardTheme) | ✅ |
+| US-C2-004 | Refonte widgets shared (4) | Card padding 14 radius 16, Badge AAA, StatusDot double-layer, Button focus ring | ✅ |
+| US-C2-005 | Nouveau HarmonyMetricCard | Icône + chiffre + label + trend | ✅ |
+| US-C2-006 | Nouveau HarmonyThemeToggle | Cycle 3 modes avec animation 200 ms | ✅ |
+| US-C2-007 | Nouveau HarmonyAudioWaveform | 35 barres animées avec curseur lecture | ✅ |
+| US-C2-008 | Nouveau HarmonySearchBar | Focus border, bouton clear | ✅ |
+| US-C2-009 | Écran Contacts (/contacts) | 5 mocks, recherche, filtres, badges adaptatifs | ✅ |
+| US-C2-010 | Module Contacts sur Dashboard | Carte cliquable + showcase nouveaux widgets | ✅ |
+| US-C2-011 | 12 clés i18n x 5 langues | Theme + Contacts traduits (FR/EN/ES/PT/IT) | ✅ |
+| US-C2-012 | Sélecteur thème dans Settings | 3 options + HarmonyThemeToggle | ✅ |
+| US-C2-013 | 13 nouveaux tests | ThemeCubit x6 + ContactsScreen x7 | ✅ |
 
 #### Bilan du sprint
-> *(À remplir en fin de sprint)*
 
 | Métrique | Valeur |
 |---|---|
-| Points planifiés | 31 |
-| Points réalisés | — |
-| Vélocité | — |
-| Bugs ouverts | — |
-| Blocages rencontrés | — |
+| Points planifiés | 13 |
+| Points réalisés | 13 |
+| Vélocité | 100 % |
+| Tests totaux | **52 verts** |
+| Issues `flutter analyze` | **0** |
+| Lignes ajoutées | +2 096 |
+| Lignes supprimées | -362 |
+| Fichiers créés | 10 |
+| Fichiers modifiés | 22 |
+| Commit | **`d34ce4f`** |
+| Bugs ouverts | 0 |
+
+#### Définition of Done atteinte
+- ✅ Light + Dark themes complets et toggables
+- ✅ Tous les widgets adaptatifs selon Theme.brightness
+- ✅ Contrastes WCAG AAA dans les 2 thèmes
+- ✅ Persistance des préférences (langue + thème)
+- ✅ Tests verts (52 / 52)
+- ✅ Aucune issue analyze
+- ✅ Documentation à jour (ARB, ADR, README)
 
 ---
 
-### 🏁 Sprint 1 — Filtrage des appels (Android)
-**Phase :** 1 · **Durée :** 2 semaines · **Statut :** ⬜ À faire
+## Sprint C3 — Messagerie vocale (À VENIR) ⬜
 
-#### Objectif du sprint
-Implémenter le filtrage des appels entrants et sortants sur Android avec `TelecomManager`, en respectant la contrainte de latence inférieure à 200 ms.
-
-#### User stories
-
-| ID | Story | Critères d'acceptation | Points | Statut |
-|---|---|---|---|---|
-| US-008 | En tant qu'utilisateur, je veux bloquer automatiquement les numéros de ma blacklist | Appels bloqués en < 200 ms, notification silencieuse, log créé | 8 | ⬜ |
-| US-009 | En tant qu'utilisateur, je veux recevoir les appels de ma whitelist même en mode blocage | Les contacts whitelist passent toujours, même en mode Nuit | 5 | ⬜ |
-| US-010 | En tant qu'utilisateur, je veux restreindre les appels sortants vers les numéros surtaxés | Blocage 0 899, numéros premium, alerte avant composition | 5 | ⬜ |
-| US-011 | En tant qu'utilisateur, je veux consulter le journal des appels bloqués | Liste chronologique : numéro, heure, motif de blocage, durée tentative | 3 | ⬜ |
-| US-012 | En tant qu'utilisateur, je veux qu'un SMS automatique soit envoyé aux appels bloqués | Template SMS configurable dans les paramètres | 3 | ⬜ |
-
-#### Définition of Done Sprint 1
-- [ ] TelecomManager correctement configuré avec les permissions Android
-- [ ] Latence de blocage mesurée et validée < 200 ms (5 tests consécutifs)
-- [ ] Journal des appels bloqués persisté en base locale (SQLCipher)
-- [ ] Tests unitaires des règles de filtrage (couverture > 70 %)
-- [ ] Interface de la blacklist de base fonctionnelle
-
-#### Notes & décisions
-> *(À remplir en cours de sprint)*
-
-#### Bilan du sprint
-> *(À remplir en fin de sprint)*
-
-| Métrique | Valeur |
-|---|---|
-| Points planifiés | 24 |
-| Points réalisés | — |
-| Vélocité | — |
-| Bugs ouverts | — |
+#### Périmètre prévu
+- Écran Voicemail (/voicemail)
+- 4-5 messages vocaux mockés avec transcriptions
+- VoicemailItemCard widget (header, transcription preview, footer actions)
+- Expand pour voir transcription complète + HarmonyAudioWaveform (déjà créé)
+- Simulation push notification toast en haut de l'écran
+- ~15 nouvelles clés i18n x 5 langues
+- 5-7 nouveaux tests
 
 ---
 
-### 🏁 Sprint 2 — Filtrage des appels (iOS) + Gestion des listes
-**Phase :** 1 · **Durée :** 2 semaines · **Statut :** ⬜ À faire
-
-#### Objectif du sprint
-Implémenter le filtrage iOS via CallKit et compléter la gestion avancée des listes (blacklist / whitelist) avec la programmation temporelle.
-
-#### User stories
-
-| ID | Story | Critères d'acceptation | Points | Statut |
-|---|---|---|---|---|
-| US-013 | En tant qu'utilisateur iOS, je veux bloquer les appels indésirables via CallKit | Appels bloqués sans affichage à l'écran, comportement identique à Android | 8 | ⬜ |
-| US-014 | En tant qu'utilisateur, je veux créer des règles de blocage par plage horaire | Règle « bloquer tous sauf whitelist de 22 h à 7 h » opérationnelle | 5 | ⬜ |
-| US-015 | En tant qu'utilisateur, je veux utiliser les modes prédéfinis (Nuit, Travail, Focus) | Activation/désactivation en 1 tap, transitions automatiques configurables | 5 | ⬜ |
-| US-016 | En tant qu'utilisateur, je veux bloquer des plages de numéros et des pays entiers | Masques +33 6 XX XX XX XX et +44 (pays entier) fonctionnels | 5 | ⬜ |
-| US-017 | En tant qu'utilisateur, je veux que le contournement d'urgence (3 appels en 5 min) fonctionne | Déblocage temporaire automatique après 3 appels répétés | 3 | ⬜ |
-
-#### Définition of Done Sprint 2
-- [ ] CallKit intégré et testé sur iOS 16+
-- [ ] 5 modes prédéfinis disponibles et fonctionnels
-- [ ] Plages horaires et jours de la semaine configurables
-- [ ] Blacklist / Whitelist persistées localement (SQLCipher)
-- [ ] Contournement d'urgence testé et validé
-
-#### Notes & décisions
-> *(À remplir en cours de sprint)*
-
-#### Bilan du sprint
-> *(À remplir en fin de sprint)*
-
----
-
-### 🏁 Sprint 3 — Géolocalisation + SOS + Tableau de bord
-**Phase :** 1 · **Durée :** 2 semaines · **Statut :** ⬜ À faire
-
-#### Objectif du sprint
-Implémenter la géolocalisation basique de l'enfant, le bouton SOS et construire le tableau de bord principal.
-
-#### User stories
-
-| ID | Story | Critères d'acceptation | Points | Statut |
-|---|---|---|---|---|
-| US-018 | En tant que parent, je veux voir la position de mon enfant en temps réel | Position GPS affichée sur carte, mise à jour toutes les 5 min (mouvement) / 15 min (repos) | 8 | ⬜ |
-| US-019 | En tant qu'enfant, je veux déclencher une alerte SOS depuis l'écran verrouillé | Widget SOS accessible sans déverrouiller, localisation + alerte envoyées aux contacts d'urgence | 8 | ⬜ |
-| US-020 | En tant que parent, je veux recevoir une alerte si mon enfant ne répond pas au SOS | Appel automatique au 112 après 2 min sans réponse | 5 | ⬜ |
-| US-021 | En tant qu'utilisateur, je veux un tableau de bord clair avec 3 sections principales | Dashboard : Sécurité / Famille / Fitness, alertes récentes, prochain RDV | 5 | ⬜ |
-| US-022 | En tant que parent, je veux basculer vers l'interface parent via un code PIN | Bascule protégée, interface parent avec toutes les options de supervision | 3 | ⬜ |
-
-#### Définition of Done Sprint 3
-- [ ] Géolocalisation fonctionnelle sur Android et iOS (foreground + background)
-- [ ] Consommation batterie GPS < 10 % lors des tests (cible finale : < 8 %)
-- [ ] Widget SOS accessible depuis l'écran verrouillé (iOS : widget, Android : notification persistante)
-- [ ] Tableau de bord affiche données réelles (non mockées)
-- [ ] Interface Parent / Enfant avec bascule PIN opérationnelle
-
-#### Notes & décisions
-> *(À remplir en cours de sprint)*
-
-#### Bilan du sprint
-> *(À remplir en fin de sprint)*
-
----
-
-### 🏁 Sprint 4 — Agenda + Tests MVP complets
-**Phase :** 1 · **Durée :** 2 semaines · **Statut :** ⬜ À faire
-
-#### Objectif du sprint
-Finaliser le module agenda, intégrer la synchronisation calendrier et effectuer les tests complets de la Phase 1 avant validation du MVP.
-
-#### User stories
-
-| ID | Story | Critères d'acceptation | Points | Statut |
-|---|---|---|---|---|
-| US-023 | En tant qu'utilisateur, je veux synchroniser mon agenda avec Google Calendar | Événements importés en temps réel, création depuis l'app reflétée sur Google | 8 | ⬜ |
-| US-024 | En tant qu'utilisateur, je veux que les appels soient bloqués automatiquement pendant un événement « Important » | Lien agenda ↔ blocage actif pendant la durée de l'événement marqué | 5 | ⬜ |
-| US-025 | En tant qu'utilisateur, je veux des rappels intelligents basés sur ma localisation et le trafic | Notification « Partez dans 15 min » calculée à partir de Google Maps | 5 | ⬜ |
-| US-026 | En tant que développeur, je veux une suite de tests complète pour la Phase 1 | Couverture unitaire > 70 %, tests d'intégration pour tous les flux critiques | 8 | ⬜ |
-
-#### Définition of Done Sprint 4 (= validation MVP)
-- [ ] Tous les flux de la Phase 1 testés et validés
-- [ ] Aucun bug bloquant ou critique ouvert
-- [ ] Performances mesurées (latence, batterie)
-- [ ] Build stable sur Android 10+ et iOS 16+
-- [ ] Version 1.0.0-beta publiée en interne (TestFlight + Firebase App Distribution)
-
-#### Notes & décisions
-> *(À remplir en cours de sprint)*
-
-#### Bilan du sprint
-> *(À remplir en fin de sprint)*
-
----
-
-### 🏁 Sprint 5 — IA spam + Score de confiance + STT
-**Phase :** 2 · **Durée :** 2 semaines · **Statut :** ⬜ À faire
-
-#### Objectif du sprint
-Intégrer l'intelligence artificielle de détection de spam, le score de confiance de l'appelant et la transcription vocale STT.
-
-#### User stories
-
-| ID | Story | Critères d'acceptation | Points | Statut |
-|---|---|---|---|---|
-| US-027 | En tant qu'utilisateur, je veux que les numéros spam soient automatiquement détectés et signalés | TensorFlow Lite détecte > 85 % des spams connus, score affiché à l'appel entrant | 13 | ⬜ |
-| US-028 | En tant qu'utilisateur, je veux voir le score de confiance de chaque appelant inconnu | Score 0-100 affiché, couleur rouge/orange/vert, source du signalement | 5 | ⬜ |
-| US-029 | En tant qu'utilisateur, je veux que mes messages vocaux soient transcrits automatiquement | Transcription STT disponible dans le journal, précision > 80 % en FR/EN | 8 | ⬜ |
-| US-030 | En tant qu'utilisateur, je veux contribuer à la base communautaire en signalant un numéro | Bouton « Signaler comme spam », contribution anonyme au modèle partagé | 3 | ⬜ |
-
-#### Bilan du sprint
-> *(À remplir en fin de sprint)*
-
----
-
-### 🏁 Sprint 6 — Filtrage WhatsApp (Android)
-**Phase :** 2 · **Durée :** 2 semaines · **Statut :** ⬜ À faire
-
-#### Objectif du sprint
-Implémenter le filtrage complet de WhatsApp sur Android via `NotificationListenerService`.
-
-#### User stories
-
-| ID | Story | Critères d'acceptation | Points | Statut |
-|---|---|---|---|---|
-| US-031 | En tant que parent, je veux bloquer les messages WhatsApp d'un contact spécifique | Messages ignorés sans notification, log créé pour le parent | 8 | ⬜ |
-| US-032 | En tant que parent, je veux définir des plages horaires pour WhatsApp | WhatsApp inaccessible la nuit (ex. 22 h – 7 h), sauf urgences | 5 | ⬜ |
-| US-033 | En tant que parent, je veux recevoir une alerte si mon enfant reçoit un message suspect | NLP détecte mots-clés sensibles → notification parent en temps réel | 8 | ⬜ |
-| US-034 | En tant que parent, je veux empêcher l'ajout de mon enfant dans des groupes non autorisés | Quitter automatiquement les groupes non whitelistés | 5 | ⬜ |
-
-#### Bilan du sprint
-> *(À remplir en fin de sprint)*
-
----
-
-### 🏁 Sprint 7 — Filtrage WhatsApp (iOS) + NLP avancé
-**Phase :** 2 · **Durée :** 2 semaines · **Statut :** ⬜ À faire
-
-> ⚠️ Contrainte iOS : implémentation via profil MDM + Screen Time API. Fonctionnalités réduites par rapport à Android.
-
-#### User stories
-
-| ID | Story | Critères d'acceptation | Points | Statut |
-|---|---|---|---|---|
-| US-035 | En tant que parent iOS, je veux limiter WhatsApp via Screen Time | Restriction horaire WhatsApp effective sur iOS via Screen Time API | 8 | ⬜ |
-| US-036 | En tant que parent, je veux un rapport hebdomadaire d'activité WhatsApp | Email / notification récapitulatif : temps d'utilisation, contacts actifs, signalements | 5 | ⬜ |
-| US-037 | En tant que développeur, je veux affiner le modèle NLP de détection | Précision > 90 % sur jeu de test de 1 000 messages | 8 | ⬜ |
-
-#### Bilan du sprint
-> *(À remplir en fin de sprint)*
-
----
-
-### 🏁 Sprint 8 — Geofencing avancé + Analyse comportementale
-**Phase :** 2 · **Durée :** 2 semaines · **Statut :** ⬜ À faire
-
-#### User stories
-
-| ID | Story | Critères d'acceptation | Points | Statut |
-|---|---|---|---|---|
-| US-038 | En tant que parent, je veux définir des zones géographiques sécurisées | Zone dessinée sur carte, alerte immédiate si sortie de zone (< 30 s) | 8 | ⬜ |
-| US-039 | En tant que parent, je veux consulter le trajet de mon enfant sur 30 jours | Historique horodaté, reconstruction du trajet sur carte, export possible | 5 | ⬜ |
-| US-040 | En tant que parent, je veux être alerté si le comportement de mon enfant est anormal | IA détecte sortie des habitudes (horaire, lieu) → notification parent | 8 | ⬜ |
-| US-041 | En tant que parent, je veux voir un score de sécurité global pour mon enfant | Indicateur visuel 🟢 / 🟠 / 🔴 mis à jour quotidiennement | 5 | ⬜ |
-
-#### Bilan du sprint
-> *(À remplir en fin de sprint)*
-
----
-
-### 🏁 Sprint 9 — Temps d'écran + Rapports + Tests Phase 2
-**Phase :** 2 · **Durée :** 2 semaines · **Statut :** ⬜ À faire
-
-#### Bilan du sprint
-> *(À remplir en fin de sprint)*
-
----
-
-### 🏁 Sprint 10 — Traçage GPS + Détection d'activité
-**Phase :** 3 · **Durée :** 2 semaines · **Statut :** ⬜ À faire
-
-#### Bilan du sprint
-> *(À remplir en fin de sprint)*
-
----
-
-### 🏁 Sprint 11 — Cardio + Zones FC + Entraînements guidés
-**Phase :** 3 · **Durée :** 2 semaines · **Statut :** ⬜ À faire
-
-#### Bilan du sprint
-> *(À remplir en fin de sprint)*
-
----
-
-### 🏁 Sprint 12 — Dashboard fitness + Statistiques + Graphiques
-**Phase :** 3 · **Durée :** 2 semaines · **Statut :** ⬜ À faire
-
-#### Bilan du sprint
-> *(À remplir en fin de sprint)*
-
----
-
-### 🏁 Sprint 13 — Plans d'entraînement + Export + Intégrations santé
-**Phase :** 3 · **Durée :** 2 semaines · **Statut :** ⬜ À faire
-
-#### Bilan du sprint
-> *(À remplir en fin de sprint)*
-
----
-
-### 🏁 Sprint 14 — Synchronisation cloud + Wearables
-**Phase :** 4 · **Durée :** 2 semaines · **Statut :** ⬜ À faire
-
-#### Bilan du sprint
-> *(À remplir en fin de sprint)*
-
----
-
-### 🏁 Sprint 15 — Assistant vocal + SOS silencieux finalisé
-**Phase :** 4 · **Durée :** 2 semaines · **Statut :** ⬜ À faire
-
-#### Bilan du sprint
-> *(À remplir en fin de sprint)*
-
----
-
-### 🏁 Sprint 16 — Monétisation + Onboarding + Audit sécurité
-**Phase :** 4 · **Durée :** 2 semaines · **Statut :** ⬜ À faire
-
-#### Bilan du sprint
-> *(À remplir en fin de sprint)*
-
----
-
-### 🏁 Sprint 17 — Déploiement App Store + Google Play
-**Phase :** 4 · **Durée :** 2 semaines · **Statut :** ⬜ À faire
-
-#### Bilan du sprint
-> *(À remplir en fin de sprint)*
+## Sprint 1 — Filtrage appels Android natif (À VENIR) ⬜
+
+#### Périmètre prévu (cf. cahier des charges section 3.1.1)
+- TelecomManager + CallScreeningService en Kotlin
+- MethodChannel Flutter et Android natif
+- Latence inférieure à 200 ms (KPI critique)
+- Logique de décision : blacklist/whitelist/horaires
+- Permissions Android (RoleManager, CallScreening default app)
+- Tests d'intégration sur émulateur
 
 ---
 
@@ -372,17 +209,33 @@ Implémenter le filtrage complet de WhatsApp sur Android via `NotificationListen
 
 | Sprint | Points planifiés | Points réalisés | Vélocité | Bugs |
 |---|---|---|---|---|
-| Sprint 0 | 31 | — | — | — |
-| Sprint 1 | 24 | — | — | — |
-| Sprint 2 | 26 | — | — | — |
-| Sprint 3 | 29 | — | — | — |
-| Sprint 4 | 26 | — | — | — |
-| Sprint 5 | 29 | — | — | — |
-| Sprint 6 | 26 | — | — | — |
-| Sprint 7 | 21 | — | — | — |
-| Sprint 8 | 26 | — | — | — |
-| … | … | … | … | … |
+| Sprint 0 | 31 | 31 | 100 % | 0 |
+| Sprint A | 5 | 5 | 100 % | 0 |
+| Sprint B | 12 | 12 | 100 % | 0 |
+| Sprint C1 | 13 | 13 | 100 % | 0 |
+| Fix C1 | 2 | 2 | 100 % | 0 |
+| Sprint C2 | 13 | 13 | 100 % | 0 |
+
+**Vélocité moyenne sur les 6 derniers sprints : 12.7 points/sprint** (mode rapide)
 
 ---
 
-*Ce fichier est la référence opérationnelle du projet. Il complète `Blocker_Progression.md` (vue stratégique) et `Blocker_Instructions_Prompts.md` (guide d'implémentation).*
+## Référence des commits sur main
+
+```
+d34ce4f feat(sprint-c2): premium polish — light mode, ThemeCubit, contacts, new widgets
+243f786 chore: merge fix/sprint-c1-settings-back-button into main
+3a45086 fix(navigation): SettingsScreen back button + audit navigation calls
+1b92449 Merge feat/sprint-c1-i18n-back-button into main (Sprint C1)
+9c69cf3 feat(sprint-c1): i18n complète 5 locales + bouton retour universel
+e78060c chore: merge feat/sprint-b-mockup-screens into main
+f36a7cb feat(ui): Sprint B — rich mockup screens for all 4 modules
+4b4be52 chore: merge feat/sprint-0-cicd into main
+8669a0d feat(ci): add GitHub Actions CI/CD pipeline (Phase 0.9)
+df6ff26 chore: merge feat/sprint-a-dashboard-navigation into main
+48ecc93 feat(navigation): wire dashboard cards to all main screens
+```
+
+---
+
+*Ce fichier est la référence opérationnelle du projet. Il est mis à jour automatiquement par `Save-Sprint-C2.ps1` à la fin de chaque sprint.*
