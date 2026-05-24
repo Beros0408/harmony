@@ -245,5 +245,30 @@
   "callLogFilterWeek": "Cette semaine",
   "callLogFilterAll": "Tout",
   "callLogEmptyState": "Aucun appel bloqué",
-  "callLogClearAllButton": "Tout effacer"
+  "callLogClearAllButton": "Tout effacer",
+
+  "iosFilteringTitle": "Filtrage iOS",
+  "iosFilteringInstructions": "Pour activer le blocage d'appels sur iOS, activez l'extension dans Réglages.",
+  "iosFilteringStep1": "Ouvrez Réglages → Téléphone → Blocage et identification d'appels",
+  "iosFilteringStep2": "Activez Harmony dans la liste",
+  "iosFilteringOpenSettingsButton": "Ouvrir les réglages",
+
+  "outgoingCallAlertTitle": "Appel potentiellement surtaxé",
+  "outgoingCallAlertEstimatedCost": "Coût estimé : {cost} €/min",
+  "@outgoingCallAlertEstimatedCost": {
+    "placeholders": {"cost": {"type": "String"}}
+  },
+  "outgoingCallAlertCancel": "Annuler",
+  "outgoingCallAlertContinueButton": "Continuer l'appel",
+  "outgoingCallAlertDontAskAgain": "Ne plus demander pour ce numéro",
+
+  "filterModeOff": "Désactivé",
+  "filterModeNight": "Nuit",
+  "filterModeWork": "Travail",
+  "filterModeFocus": "Focus",
+  "filterModeWeekend": "Week-end",
+  "filterModeEmergency": "Urgence",
+  "filterModeActivate": "Activer",
+  "filterModeConfigure": "Configurer",
+  "filterModeCurrentActive": "Mode actif"
 }

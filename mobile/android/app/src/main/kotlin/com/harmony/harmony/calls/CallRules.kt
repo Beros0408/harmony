@@ -22,4 +22,13 @@ data class CallRules(
             h in blockHourStart until blockHourEnd
         }
     }
+
+    /** Vrai si aujourd'hui est un jour ouvré (lun–ven). */
+    fun isWeekday(): Boolean {
+        val dow = Calendar.getInstance().get(Calendar.DAY_OF_WEEK)
+        return dow in Calendar.MONDAY..Calendar.FRIDAY
+    }
+
+    /** Vrai si aujourd'hui est un week-end (sam–dim). */
+    fun isWeekend(): Boolean = !isWeekday()
 }

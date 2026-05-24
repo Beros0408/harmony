@@ -581,4 +581,66 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get callLogClearAllButton => 'Clear all';
+
+  @override
+  String get iosFilteringTitle => 'iOS Filtering';
+
+  @override
+  String get iosFilteringInstructions =>
+      'To enable call blocking on iOS, activate the extension in Settings.';
+
+  @override
+  String get iosFilteringStep1 =>
+      'Open Settings → Phone → Call Blocking & Identification';
+
+  @override
+  String get iosFilteringStep2 => 'Enable Harmony in the list';
+
+  @override
+  String get iosFilteringOpenSettingsButton => 'Open settings';
+
+  @override
+  String get outgoingCallAlertTitle => 'Potentially premium-rate call';
+
+  @override
+  String outgoingCallAlertEstimatedCost(String cost) {
+    return 'Estimated cost: $cost €/min';
+  }
+
+  @override
+  String get outgoingCallAlertCancel => 'Cancel';
+
+  @override
+  String get outgoingCallAlertContinueButton => 'Continue call';
+
+  @override
+  String get outgoingCallAlertDontAskAgain =>
+      'Don\'t ask again for this number';
+
+  @override
+  String get filterModeOff => 'Off';
+
+  @override
+  String get filterModeNight => 'Night';
+
+  @override
+  String get filterModeWork => 'Work';
+
+  @override
+  String get filterModeFocus => 'Focus';
+
+  @override
+  String get filterModeWeekend => 'Weekend';
+
+  @override
+  String get filterModeEmergency => 'Emergency';
+
+  @override
+  String get filterModeActivate => 'Activate';
+
+  @override
+  String get filterModeConfigure => 'Configure';
+
+  @override
+  String get filterModeCurrentActive => 'Active mode';
 }

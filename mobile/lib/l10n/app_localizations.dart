@@ -1147,6 +1147,120 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Tout effacer'**
   String get callLogClearAllButton;
+
+  /// No description provided for @iosFilteringTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Filtrage iOS'**
+  String get iosFilteringTitle;
+
+  /// No description provided for @iosFilteringInstructions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pour activer le blocage d\'appels sur iOS, activez l\'extension dans Réglages.'**
+  String get iosFilteringInstructions;
+
+  /// No description provided for @iosFilteringStep1.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ouvrez Réglages → Téléphone → Blocage et identification d\'appels'**
+  String get iosFilteringStep1;
+
+  /// No description provided for @iosFilteringStep2.
+  ///
+  /// In fr, this message translates to:
+  /// **'Activez Harmony dans la liste'**
+  String get iosFilteringStep2;
+
+  /// No description provided for @iosFilteringOpenSettingsButton.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ouvrir les réglages'**
+  String get iosFilteringOpenSettingsButton;
+
+  /// No description provided for @outgoingCallAlertTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Appel potentiellement surtaxé'**
+  String get outgoingCallAlertTitle;
+
+  /// No description provided for @outgoingCallAlertEstimatedCost.
+  ///
+  /// In fr, this message translates to:
+  /// **'Coût estimé : {cost} €/min'**
+  String outgoingCallAlertEstimatedCost(String cost);
+
+  /// No description provided for @outgoingCallAlertCancel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler'**
+  String get outgoingCallAlertCancel;
+
+  /// No description provided for @outgoingCallAlertContinueButton.
+  ///
+  /// In fr, this message translates to:
+  /// **'Continuer l\'appel'**
+  String get outgoingCallAlertContinueButton;
+
+  /// No description provided for @outgoingCallAlertDontAskAgain.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ne plus demander pour ce numéro'**
+  String get outgoingCallAlertDontAskAgain;
+
+  /// No description provided for @filterModeOff.
+  ///
+  /// In fr, this message translates to:
+  /// **'Désactivé'**
+  String get filterModeOff;
+
+  /// No description provided for @filterModeNight.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nuit'**
+  String get filterModeNight;
+
+  /// No description provided for @filterModeWork.
+  ///
+  /// In fr, this message translates to:
+  /// **'Travail'**
+  String get filterModeWork;
+
+  /// No description provided for @filterModeFocus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Focus'**
+  String get filterModeFocus;
+
+  /// No description provided for @filterModeWeekend.
+  ///
+  /// In fr, this message translates to:
+  /// **'Week-end'**
+  String get filterModeWeekend;
+
+  /// No description provided for @filterModeEmergency.
+  ///
+  /// In fr, this message translates to:
+  /// **'Urgence'**
+  String get filterModeEmergency;
+
+  /// No description provided for @filterModeActivate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Activer'**
+  String get filterModeActivate;
+
+  /// No description provided for @filterModeConfigure.
+  ///
+  /// In fr, this message translates to:
+  /// **'Configurer'**
+  String get filterModeConfigure;
+
+  /// No description provided for @filterModeCurrentActive.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mode actif'**
+  String get filterModeCurrentActive;
 }
 
 class _AppLocalizationsDelegate

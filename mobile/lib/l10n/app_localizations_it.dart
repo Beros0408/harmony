@@ -582,4 +582,67 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get callLogClearAllButton => 'Cancella tutto';
+
+  @override
+  String get iosFilteringTitle => 'Filtro iOS';
+
+  @override
+  String get iosFilteringInstructions =>
+      'Per attivare il blocco delle chiamate su iOS, attiva l\'estensione nelle Impostazioni.';
+
+  @override
+  String get iosFilteringStep1 =>
+      'Apri Impostazioni → Telefono → Blocco e identificazione chiamate';
+
+  @override
+  String get iosFilteringStep2 => 'Attiva Harmony nell\'elenco';
+
+  @override
+  String get iosFilteringOpenSettingsButton => 'Apri impostazioni';
+
+  @override
+  String get outgoingCallAlertTitle =>
+      'Chiamata potenzialmente a tariffa speciale';
+
+  @override
+  String outgoingCallAlertEstimatedCost(String cost) {
+    return 'Costo stimato: $cost €/min';
+  }
+
+  @override
+  String get outgoingCallAlertCancel => 'Annulla';
+
+  @override
+  String get outgoingCallAlertContinueButton => 'Continua chiamata';
+
+  @override
+  String get outgoingCallAlertDontAskAgain =>
+      'Non chiedere più per questo numero';
+
+  @override
+  String get filterModeOff => 'Disattivato';
+
+  @override
+  String get filterModeNight => 'Notte';
+
+  @override
+  String get filterModeWork => 'Lavoro';
+
+  @override
+  String get filterModeFocus => 'Focus';
+
+  @override
+  String get filterModeWeekend => 'Weekend';
+
+  @override
+  String get filterModeEmergency => 'Emergenza';
+
+  @override
+  String get filterModeActivate => 'Attiva';
+
+  @override
+  String get filterModeConfigure => 'Configura';
+
+  @override
+  String get filterModeCurrentActive => 'Modalità attiva';
 }
