@@ -9,6 +9,7 @@ import 'features/auth/data/repositories/auth_repository.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/auth/presentation/bloc/auth_event.dart';
 import 'shared/theme/harmony_theme.dart';
+import 'shared/widgets/harmony_responsive_wrapper.dart';
 
 class HarmonyApp extends StatelessWidget {
   const HarmonyApp({super.key});
@@ -43,6 +44,9 @@ class HarmonyApp extends StatelessWidget {
                 locale: locale,
                 localizationsDelegates: AppLocalizations.localizationsDelegates,
                 supportedLocales: AppLocalizations.supportedLocales,
+                builder: (context, child) => HarmonyResponsiveWrapper(
+                  child: child ?? const SizedBox.shrink(),
+                ),
               );
             },
           );
