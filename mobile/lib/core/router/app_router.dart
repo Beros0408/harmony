@@ -8,6 +8,7 @@ import '../../features/fitness/presentation/screens/fitness_screen.dart';
 import '../../features/parental/presentation/screens/parental_screen.dart';
 import '../../features/contacts/presentation/screens/contacts_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
+import '../../features/call_log/presentation/screens/call_log_screen.dart';
 import '../../features/voicemail/presentation/screens/voicemail_screen.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_typography.dart';
@@ -87,6 +88,13 @@ final GoRouter appRouter = GoRouter(
       pageBuilder: (context, state) => _slidePage(
         key: state.pageKey,
         child: const ContactsScreen(),
+      ),
+    ),
+    GoRoute(
+      path: RouteNames.callLog,
+      pageBuilder: (context, state) => _slidePage(
+        key: state.pageKey,
+        child: const CallLogScreen(),
       ),
     ),
     GoRoute(

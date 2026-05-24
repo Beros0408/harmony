@@ -191,5 +191,16 @@
   "voicemailTranscriptionLabel": "Transcription",
   "voicemailExpandHint": "View transcription",
   "voicemailMockNote": "Simulated transcriptions — real STT in Sprint 5",
-  "voicemailPlay": "Play"
+  "voicemailPlay": "Play",
+
+  "callScreeningEnableTitle": "Enable protection",
+  "callScreeningEnableDescription": "To block unwanted calls, Harmony must be your default call screening app",
+  "callScreeningEnableButton": "Enable",
+  "callScreeningActiveStatus": "Protection active",
+  "callLogScreenTitle": "Block log",
+  "callLogFilterToday": "Today",
+  "callLogFilterWeek": "This week",
+  "callLogFilterAll": "All",
+  "callLogEmptyState": "No blocked calls",
+  "callLogClearAllButton": "Clear all"
 }

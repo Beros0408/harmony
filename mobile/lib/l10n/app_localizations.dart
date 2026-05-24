@@ -1087,6 +1087,66 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Écouter'**
   String get voicemailPlay;
+
+  /// No description provided for @callScreeningEnableTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Activer la protection'**
+  String get callScreeningEnableTitle;
+
+  /// No description provided for @callScreeningEnableDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pour bloquer les appels indésirables, Harmony doit être votre application de filtrage par défaut'**
+  String get callScreeningEnableDescription;
+
+  /// No description provided for @callScreeningEnableButton.
+  ///
+  /// In fr, this message translates to:
+  /// **'Activer'**
+  String get callScreeningEnableButton;
+
+  /// No description provided for @callScreeningActiveStatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Protection active'**
+  String get callScreeningActiveStatus;
+
+  /// No description provided for @callLogScreenTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Journal des blocages'**
+  String get callLogScreenTitle;
+
+  /// No description provided for @callLogFilterToday.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aujourd\'hui'**
+  String get callLogFilterToday;
+
+  /// No description provided for @callLogFilterWeek.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette semaine'**
+  String get callLogFilterWeek;
+
+  /// No description provided for @callLogFilterAll.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tout'**
+  String get callLogFilterAll;
+
+  /// No description provided for @callLogEmptyState.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun appel bloqué'**
+  String get callLogEmptyState;
+
+  /// No description provided for @callLogClearAllButton.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tout effacer'**
+  String get callLogClearAllButton;
 }
 
 class _AppLocalizationsDelegate

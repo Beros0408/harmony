@@ -2,15 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:harmony/l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/router/route_names.dart';
 import '../../../../core/constants/app_radius.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
+import '../../../../core/router/route_names.dart';
 import '../../../../shared/widgets/harmony_app_bar.dart';
+import '../../../../shared/widgets/harmony_badge.dart';
 import '../../../../shared/widgets/harmony_card.dart';
 import '../../../../shared/widgets/harmony_list_tile.dart';
+import '../../../../shared/widgets/harmony_status_dot.dart';
 import '../../../../shared/widgets/harmony_toggle.dart';
 import '../../data/mock/security_mocks.dart';
+import '../../data/native/call_filter_channel.dart';
 
 class CallFilterScreen extends StatefulWidget {
   const CallFilterScreen({super.key});
@@ -19,14 +22,38 @@ class CallFilterScreen extends StatefulWidget {
   State<CallFilterScreen> createState() => _CallFilterScreenState();
 }
 
-class _CallFilterScreenState extends State<CallFilterScreen> {
+class _CallFilterScreenState extends State<CallFilterScreen>
+    with WidgetsBindingObserver {
   int _activeModeIndex = 0;
   late List<bool> _ruleStates;
+  bool _isDefaultScreeningApp = false;
 
   @override
   void initState() {
     super.initState();
     _ruleStates = kFilterRules.map((r) => r.defaultEnabled).toList();
+    WidgetsBinding.instance.addObserver(this);
+    _checkScreeningStatus();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _checkScreeningStatus();
+  }
+
+  Future<void> _checkScreeningStatus() async {
+    final active = await CallFilterChannel.isDefaultScreeningApp();
+    if (mounted) setState(() => _isDefaultScreeningApp = active);
+  }
+
+  Future<void> _requestRole() async {
+    await CallFilterChannel.requestScreeningRole();
   }
 
   @override
@@ -53,6 +80,14 @@ class _CallFilterScreenState extends State<CallFilterScreen> {
       body: ListView(
         padding: const EdgeInsets.all(AppSpacing.lg),
         children: [
+          // 0 — Bannière statut CallScreeningService
+          _ScreeningStatusBanner(
+            isActive: _isDefaultScreeningApp,
+            l10n: l10n,
+            onActivate: _requestRole,
+          ),
+          const SizedBox(height: AppSpacing.lg),
+
           // A — KPIs
           _KpiRow(),
           const SizedBox(height: AppSpacing.xxl),
@@ -123,7 +158,26 @@ class _CallFilterScreenState extends State<CallFilterScreen> {
                   .toList(),
             ),
           ),
-          // E — Messagerie vocale
+          // E — Journal des appels bloqués
+          _SectionHeader(title: l10n.callLogScreenTitle),
+          const SizedBox(height: AppSpacing.sm),
+          HarmonyCard(
+            padding: AppSpacing.md,
+            child: HarmonyListTile(
+              leadingIcon: Icons.format_list_bulleted_rounded,
+              leadingColor: AppColors.accentRed,
+              title: l10n.callLogScreenTitle,
+              subtitle: l10n.securityStatsBlocked,
+              trailing: const Icon(
+                Icons.chevron_right,
+                color: AppColors.textMuted,
+              ),
+              onTap: () => context.push(RouteNames.callLog),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.xxl),
+
+          // F — Messagerie vocale
           _SectionHeader(title: l10n.voicemailScreenTitle),
           const SizedBox(height: AppSpacing.sm),
           HarmonyCard(
@@ -262,5 +316,95 @@ class _SectionHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(title, style: AppTypography.textTheme.titleSmall);
+  }
+}
+
+// ─── Bannière statut CallScreeningService ───────────────────────────────────
+
+class _ScreeningStatusBanner extends StatelessWidget {
+  const _ScreeningStatusBanner({
+    required this.isActive,
+    required this.l10n,
+    required this.onActivate,
+  });
+
+  final bool isActive;
+  final AppLocalizations l10n;
+  final VoidCallback onActivate;
+
+  @override
+  Widget build(BuildContext context) {
+    if (isActive) {
+      return HarmonyCard(
+        padding: AppSpacing.md,
+        child: Row(
+          children: [
+            const HarmonyStatusDot(status: HarmonyStatus.online, pulse: true),
+            const SizedBox(width: AppSpacing.md),
+            Expanded(
+              child: Text(
+                l10n.callScreeningActiveStatus,
+                style: const TextStyle(
+                  color: AppColors.accentGreen,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                ),
+              ),
+            ),
+            const HarmonyBadge(
+              label: 'Android',
+              variant: HarmonyBadgeVariant.success,
+            ),
+          ],
+        ),
+      );
+    }
+
+    return HarmonyCard(
+      padding: AppSpacing.md,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(
+                Icons.warning_amber_rounded,
+                color: AppColors.accentAmber,
+                size: 20,
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Text(
+                l10n.callScreeningEnableTitle,
+                style: const TextStyle(
+                  color: AppColors.accentAmber,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 14,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Text(
+            l10n.callScreeningEnableDescription,
+            style: const TextStyle(
+              fontSize: 12,
+              color: AppColors.textSecondary,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton(
+              onPressed: onActivate,
+              style: FilledButton.styleFrom(
+                backgroundColor: AppColors.accentBlue,
+                padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+              ),
+              child: Text(l10n.callScreeningEnableButton),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

@@ -550,4 +550,35 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get voicemailPlay => 'Play';
+
+  @override
+  String get callScreeningEnableTitle => 'Enable protection';
+
+  @override
+  String get callScreeningEnableDescription =>
+      'To block unwanted calls, Harmony must be your default call screening app';
+
+  @override
+  String get callScreeningEnableButton => 'Enable';
+
+  @override
+  String get callScreeningActiveStatus => 'Protection active';
+
+  @override
+  String get callLogScreenTitle => 'Block log';
+
+  @override
+  String get callLogFilterToday => 'Today';
+
+  @override
+  String get callLogFilterWeek => 'This week';
+
+  @override
+  String get callLogFilterAll => 'All';
+
+  @override
+  String get callLogEmptyState => 'No blocked calls';
+
+  @override
+  String get callLogClearAllButton => 'Clear all';
 }
