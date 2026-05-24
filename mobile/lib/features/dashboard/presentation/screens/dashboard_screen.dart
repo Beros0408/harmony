@@ -49,7 +49,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
           IconButton(
             icon: const Icon(Icons.settings_outlined, color: AppColors.textSecondary),
-            onPressed: () => context.go(RouteNames.settings),
+            onPressed: () => context.push(RouteNames.settings),
           ),
         ],
       ),
