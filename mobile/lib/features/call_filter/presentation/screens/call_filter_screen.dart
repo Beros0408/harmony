@@ -14,6 +14,7 @@ import '../../../../shared/widgets/harmony_status_dot.dart';
 import '../../../../shared/widgets/harmony_toggle.dart';
 import '../../data/mock/security_mocks.dart';
 import '../../data/native/call_filter_channel.dart';
+import '../../data/repositories/blacklist_repository.dart';
 
 class CallFilterScreen extends StatefulWidget {
   const CallFilterScreen({super.key});
@@ -34,6 +35,7 @@ class _CallFilterScreenState extends State<CallFilterScreen>
     _ruleStates = kFilterRules.map((r) => r.defaultEnabled).toList();
     WidgetsBinding.instance.addObserver(this);
     _checkScreeningStatus();
+    BlacklistRepository.instance.syncToNative();
   }
 
   @override
@@ -105,7 +107,10 @@ class _CallFilterScreenState extends State<CallFilterScreen>
                 mode: kFilterModes[i],
                 title: modeTitles[i],
                 isActive: _activeModeIndex == i,
-                onTap: () => setState(() => _activeModeIndex = i),
+                onTap: () {
+                  setState(() => _activeModeIndex = i);
+                  BlacklistRepository.instance.setMode(kFilterModes[i].type);
+                },
               ),
             ),
           ),

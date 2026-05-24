@@ -77,10 +77,12 @@ class CallFilterMethodChannel(private val activity: Activity) :
                 "blacklist" -> (raw["phoneNumber"] as? String)?.let { blacklist.add(it) }
                 "mode" -> {
                     mode = when (raw["value"] as? String) {
-                        "focus" -> FilterMode.FOCUS
-                        "night" -> FilterMode.NIGHT
+                        "focus"     -> FilterMode.FOCUS
+                        "night"     -> FilterMode.NIGHT
+                        "work"      -> FilterMode.WORK
+                        "weekend"   -> FilterMode.WEEKEND
                         "emergency" -> FilterMode.EMERGENCY
-                        else -> FilterMode.NORMAL
+                        else        -> FilterMode.NORMAL
                     }
                 }
                 "blockHours" -> {
