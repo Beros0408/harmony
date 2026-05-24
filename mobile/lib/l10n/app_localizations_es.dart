@@ -439,4 +439,51 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get settingsLanguageItalian => 'Italiano';
+
+  @override
+  String get settingsTheme => 'Apariencia';
+
+  @override
+  String get settingsThemeSystem => 'Automático';
+
+  @override
+  String get settingsThemeLight => 'Claro';
+
+  @override
+  String get settingsThemeDark => 'Oscuro';
+
+  @override
+  String get moduleContactsTitle => 'Contactos';
+
+  @override
+  String get moduleContactsSubtitle => 'Gestión de contactos';
+
+  @override
+  String moduleContactsBadge(int count) {
+    return '$count contactos';
+  }
+
+  @override
+  String get contactsScreenTitle => 'Contactos';
+
+  @override
+  String get contactsSectionWhitelist => 'LISTA BLANCA';
+
+  @override
+  String get contactsSectionBlacklist => 'LISTA NEGRA';
+
+  @override
+  String get contactsAddContact => 'Añadir un contacto';
+
+  @override
+  String get contactsWhitelistBadge => 'permitido';
+
+  @override
+  String get contactsBlacklistBadge => 'bloqueado';
+
+  @override
+  String get contactsEmpty => 'Sin contactos';
+
+  @override
+  String get contactsRemove => 'Eliminar';
 }

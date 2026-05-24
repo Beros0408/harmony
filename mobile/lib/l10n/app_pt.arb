@@ -146,5 +146,25 @@
   "settingsLanguageEnglish": "English",
   "settingsLanguageSpanish": "Español",
   "settingsLanguagePortuguese": "Português",
-  "settingsLanguageItalian": "Italiano"
+  "settingsLanguageItalian": "Italiano",
+  "settingsTheme": "Aparência",
+  "settingsThemeSystem": "Automático",
+  "settingsThemeLight": "Claro",
+  "settingsThemeDark": "Escuro",
+
+  "moduleContactsTitle": "Contactos",
+  "moduleContactsSubtitle": "Gestão de contactos",
+  "moduleContactsBadge": "{count} contactos",
+  "@moduleContactsBadge": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+
+  "contactsScreenTitle": "Contactos",
+  "contactsSectionWhitelist": "LISTA BRANCA",
+  "contactsSectionBlacklist": "LISTA NEGRA",
+  "contactsAddContact": "Adicionar um contacto",
+  "contactsWhitelistBadge": "permitido",
+  "contactsBlacklistBadge": "bloqueado",
+  "contactsEmpty": "Sem contactos",
+  "contactsRemove": "Remover"
 }
