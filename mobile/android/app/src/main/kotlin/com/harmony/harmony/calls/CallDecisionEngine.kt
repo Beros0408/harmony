@@ -9,10 +9,14 @@ package com.harmony.harmony.calls
  *
  * Ordre de priorité :
  *   1. Whitelist → toujours autoriser
- *   2. Mode EMERGENCY → tout passer sauf whitelist (déjà géré ci-dessus)
- *   3. Blacklist → bloquer
- *   4. Plage horaire nocturne active → bloquer si mode non-NORMAL
- *   5. Par défaut → autoriser
+ *   2. Mode EMERGENCY → bloquer tout sauf whitelist
+ *   3. Blacklist → bloquer dans tous les modes
+ *   4. Mode NORMAL → tout autoriser (pas de règle temporelle)
+ *   5. Mode NIGHT : plage horaire → bloquer
+ *   6. Mode FOCUS : plage horaire → bloquer
+ *   7. Mode WORK : jour ouvré + plage horaire → bloquer
+ *   8. Mode WEEKEND : week-end → bloquer
+ *   9. Par défaut → autoriser
  */
 object CallDecisionEngine {
 
@@ -29,11 +33,26 @@ object CallDecisionEngine {
         val r = rules // lecture atomique du snapshot immuable
         val normalized = normalizeNumber(phoneNumber)
 
+        // 1. Whitelist — priorité absolue
         if (r.whitelist.any { normalizeNumber(it) == normalized }) return false
-        if (r.currentMode == FilterMode.EMERGENCY) return false
+
+        // 2. EMERGENCY — whitelist uniquement
+        if (r.currentMode == FilterMode.EMERGENCY) return true
+
+        // 3. Blacklist — bloqué dans tous les modes (y compris NORMAL)
         if (r.blacklist.any { normalizeNumber(it) == normalized }) return true
-        if (r.isBlockingHour() && r.currentMode != FilterMode.NORMAL) return true
-        return false
+
+        // 4. NORMAL — aucune règle temporelle, laisser passer
+        if (r.currentMode == FilterMode.NORMAL) return false
+
+        // 5-8. Modes temporels
+        return when (r.currentMode) {
+            FilterMode.NIGHT -> r.isBlockingHour()
+            FilterMode.FOCUS -> r.isBlockingHour()
+            FilterMode.WORK  -> r.isWeekday() && r.isBlockingHour()
+            FilterMode.WEEKEND -> r.isWeekend()
+            else -> false
+        }
     }
 
     /** Normalise un numéro pour comparaison : retire espaces, tirets, parenthèses. */

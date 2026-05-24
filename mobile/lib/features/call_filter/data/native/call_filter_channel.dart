@@ -1,6 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
-/// Règle de filtrage synchronisée avec le moteur Kotlin natif.
+/// Règle de filtrage synchronisée avec le moteur natif (Android Kotlin / iOS CallKit).
 enum CallRuleType { whitelist, blacklist, mode, blockHours }
 
 class CallRule {
@@ -8,7 +9,7 @@ class CallRule {
 
   final CallRuleType type;
   final String? phoneNumber;
-  final String? value; // pour type=mode : 'normal', 'focus', 'night', 'emergency'
+  final String? value; // pour type=mode : 'normal', 'focus', 'night', 'work', 'weekend', 'emergency'
   final int? start;   // pour type=blockHours
   final int? end;
 
@@ -21,7 +22,7 @@ class CallRule {
       };
 }
 
-/// Entrée du journal des appels bloqués.
+/// Entrée du journal des appels bloqués (Android uniquement).
 class BlockedCallEntry {
   const BlockedCallEntry({
     required this.phoneNumber,
@@ -42,52 +43,111 @@ class BlockedCallEntry {
       );
 }
 
-/// Pont Flutter ↔ Android natif pour le filtrage d'appels.
-/// Channel : "com.harmony.app/call_filter"
+/// Pont Flutter ↔ natif cross-platform pour le filtrage d'appels.
+///
+/// Android : MethodChannel "com.harmony.app/call_filter" → CallScreeningService Kotlin
+/// iOS     : MethodChannel "com.harmony.app/call_filter_ios" → CXCallDirectoryProvider Swift
 class CallFilterChannel {
-  static const _channel = MethodChannel('com.harmony.app/call_filter');
+  static const _androidChannel = MethodChannel('com.harmony.app/call_filter');
+  static const _iosChannel = MethodChannel('com.harmony.app/call_filter_ios');
 
-  /// Vérifie si Harmony est le CallScreeningService par défaut du système.
+  static bool get _isIOS => defaultTargetPlatform == TargetPlatform.iOS;
+
+  // ──────────────────────────────── Android ────────────────────────────────
+
+  /// Vérifie si Harmony est le CallScreeningService par défaut (Android uniquement).
   static Future<bool> isDefaultScreeningApp() async {
+    if (_isIOS) return false;
     try {
-      final result = await _channel.invokeMethod<bool>('isDefaultScreeningApp');
+      final result = await _androidChannel.invokeMethod<bool>('isDefaultScreeningApp');
       return result ?? false;
     } on PlatformException {
       return false;
     }
   }
 
-  /// Demande à l'utilisateur de définir Harmony comme app de filtrage par défaut.
-  /// Fire-and-forget — appeler [isDefaultScreeningApp] ensuite pour confirmer.
+  /// Demande à l'utilisateur de définir Harmony comme app de filtrage par défaut (Android).
   static Future<void> requestScreeningRole() async {
+    if (_isIOS) return;
     try {
-      await _channel.invokeMethod<void>('requestScreeningRole');
+      await _androidChannel.invokeMethod<void>('requestScreeningRole');
     } on PlatformException catch (e) {
-      // L'appareil ne supporte pas le rôle (< Android 10) — ignorer
-      assert(e.code.isNotEmpty); // évite unused warning
+      assert(e.code.isNotEmpty);
     }
   }
 
-  /// Synchronise les règles de filtrage avec le moteur Kotlin natif.
+  /// Synchronise les règles de filtrage avec le moteur Kotlin natif (Android).
   static Future<void> syncRules(List<CallRule> rules) async {
+    if (_isIOS) return;
     final payload = rules.map((r) => r.toJson()).toList();
-    await _channel.invokeMethod<void>('syncRules', {'rules': payload});
+    await _androidChannel.invokeMethod<void>('syncRules', {'rules': payload});
   }
 
-  /// Récupère l'historique des appels bloqués depuis le journal natif.
+  /// Récupère l'historique des appels bloqués (Android uniquement).
   static Future<List<BlockedCallEntry>> getBlockedCalls() async {
+    if (_isIOS) return [];
     try {
-      final result = await _channel.invokeListMethod<Map<Object?, Object?>>('getBlockedCalls');
+      final result = await _androidChannel.invokeListMethod<Map<Object?, Object?>>('getBlockedCalls');
       return result?.map(BlockedCallEntry.fromJson).toList() ?? [];
     } on PlatformException {
       return [];
     }
   }
 
-  /// Efface le journal des appels bloqués.
+  /// Efface le journal des appels bloqués (Android uniquement).
   static Future<void> clearBlockedCalls() async {
+    if (_isIOS) return;
     try {
-      await _channel.invokeMethod<void>('clearBlockedCalls');
+      await _androidChannel.invokeMethod<void>('clearBlockedCalls');
+    } on PlatformException {
+      return;
+    }
+  }
+
+  // ──────────────────────────────── iOS ────────────────────────────────────
+
+  /// Vérifie si l'extension CallDirectory est activée dans Réglages (iOS uniquement).
+  static Future<bool> isExtensionEnabled() async {
+    if (!_isIOS) return false;
+    try {
+      final result = await _iosChannel.invokeMethod<bool>('isExtensionEnabled');
+      return result ?? false;
+    } on PlatformException {
+      return false;
+    }
+  }
+
+  /// Déclenche le rechargement de l'extension (iOS uniquement).
+  static Future<void> reloadExtension() async {
+    if (!_isIOS) return;
+    try {
+      await _iosChannel.invokeMethod<void>('reloadExtension');
+    } on PlatformException {
+      return;
+    }
+  }
+
+  /// Synchronise blacklist + whitelist dans les UserDefaults partagés et recharge l'extension (iOS).
+  static Future<void> syncRulesToExtension({
+    required List<String> blacklist,
+    required List<String> whitelist,
+  }) async {
+    if (!_isIOS) return;
+    try {
+      await _iosChannel.invokeMethod<void>('syncRulesToExtension', {
+        'blacklist': blacklist,
+        'whitelist': whitelist,
+      });
+    } on PlatformException {
+      return;
+    }
+  }
+
+  /// Ouvre les Réglages iOS (iOS uniquement).
+  static Future<void> openSettings() async {
+    if (!_isIOS) return;
+    try {
+      await _iosChannel.invokeMethod<void>('openSettings');
     } on PlatformException {
       return;
     }
