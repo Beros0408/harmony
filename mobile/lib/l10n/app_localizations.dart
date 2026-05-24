@@ -997,6 +997,96 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Retirer'**
   String get contactsRemove;
+
+  /// No description provided for @voicemailScreenTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Messagerie vocale'**
+  String get voicemailScreenTitle;
+
+  /// No description provided for @voicemailNewCount.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =0{Aucun nouveau message} =1{1 nouveau message} other{{count} nouveaux messages}}'**
+  String voicemailNewCount(int count);
+
+  /// No description provided for @voicemailTotal.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =1{1 message au total} other{{count} messages au total}}'**
+  String voicemailTotal(int count);
+
+  /// No description provided for @voicemailPushInfo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Simulation de push activée'**
+  String get voicemailPushInfo;
+
+  /// No description provided for @voicemailMarkRead.
+  ///
+  /// In fr, this message translates to:
+  /// **'Marquer comme lu'**
+  String get voicemailMarkRead;
+
+  /// No description provided for @voicemailDelete.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer'**
+  String get voicemailDelete;
+
+  /// No description provided for @voicemailCallBack.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rappeler'**
+  String get voicemailCallBack;
+
+  /// No description provided for @voicemailUrgent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Urgent'**
+  String get voicemailUrgent;
+
+  /// No description provided for @voicemailNewMessageToastTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouveau message vocal'**
+  String get voicemailNewMessageToastTitle;
+
+  /// No description provided for @voicemailNewMessageToastBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Message de {name}'**
+  String voicemailNewMessageToastBody(String name);
+
+  /// No description provided for @voicemailViewButton.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir'**
+  String get voicemailViewButton;
+
+  /// No description provided for @voicemailTranscriptionLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Transcription'**
+  String get voicemailTranscriptionLabel;
+
+  /// No description provided for @voicemailExpandHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir la transcription'**
+  String get voicemailExpandHint;
+
+  /// No description provided for @voicemailMockNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Transcriptions simulées — vraie STT au Sprint 5'**
+  String get voicemailMockNote;
+
+  /// No description provided for @voicemailPlay.
+  ///
+  /// In fr, this message translates to:
+  /// **'Écouter'**
+  String get voicemailPlay;
 }
 
 class _AppLocalizationsDelegate

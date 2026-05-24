@@ -486,4 +486,69 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get contactsRemove => 'Eliminar';
+
+  @override
+  String get voicemailScreenTitle => 'Buzón de voz';
+
+  @override
+  String voicemailNewCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count mensajes nuevos',
+      one: '1 mensaje nuevo',
+      zero: 'Sin mensajes nuevos',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String voicemailTotal(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count mensajes en total',
+      one: '1 mensaje en total',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get voicemailPushInfo => 'Simulación de push activada';
+
+  @override
+  String get voicemailMarkRead => 'Marcar como leído';
+
+  @override
+  String get voicemailDelete => 'Eliminar';
+
+  @override
+  String get voicemailCallBack => 'Devolver llamada';
+
+  @override
+  String get voicemailUrgent => 'Urgente';
+
+  @override
+  String get voicemailNewMessageToastTitle => 'Nuevo mensaje de voz';
+
+  @override
+  String voicemailNewMessageToastBody(String name) {
+    return 'Mensaje de $name';
+  }
+
+  @override
+  String get voicemailViewButton => 'Ver';
+
+  @override
+  String get voicemailTranscriptionLabel => 'Transcripción';
+
+  @override
+  String get voicemailExpandHint => 'Ver transcripción';
+
+  @override
+  String get voicemailMockNote =>
+      'Transcripciones simuladas — STT real en Sprint 5';
+
+  @override
+  String get voicemailPlay => 'Escuchar';
 }

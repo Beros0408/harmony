@@ -8,6 +8,7 @@ import '../../features/fitness/presentation/screens/fitness_screen.dart';
 import '../../features/parental/presentation/screens/parental_screen.dart';
 import '../../features/contacts/presentation/screens/contacts_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
+import '../../features/voicemail/presentation/screens/voicemail_screen.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_typography.dart';
 import 'route_names.dart';
@@ -86,6 +87,13 @@ final GoRouter appRouter = GoRouter(
       pageBuilder: (context, state) => _slidePage(
         key: state.pageKey,
         child: const ContactsScreen(),
+      ),
+    ),
+    GoRoute(
+      path: RouteNames.voicemail,
+      pageBuilder: (context, state) => _slidePage(
+        key: state.pageKey,
+        child: const VoicemailScreen(),
       ),
     ),
     GoRoute(

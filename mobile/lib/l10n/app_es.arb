@@ -166,5 +166,30 @@
   "contactsWhitelistBadge": "permitido",
   "contactsBlacklistBadge": "bloqueado",
   "contactsEmpty": "Sin contactos",
-  "contactsRemove": "Eliminar"
+  "contactsRemove": "Eliminar",
+
+  "voicemailScreenTitle": "Buzón de voz",
+  "voicemailNewCount": "{count, plural, =0{Sin mensajes nuevos} =1{1 mensaje nuevo} other{{count} mensajes nuevos}}",
+  "@voicemailNewCount": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "voicemailTotal": "{count, plural, =1{1 mensaje en total} other{{count} mensajes en total}}",
+  "@voicemailTotal": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "voicemailPushInfo": "Simulación de push activada",
+  "voicemailMarkRead": "Marcar como leído",
+  "voicemailDelete": "Eliminar",
+  "voicemailCallBack": "Devolver llamada",
+  "voicemailUrgent": "Urgente",
+  "voicemailNewMessageToastTitle": "Nuevo mensaje de voz",
+  "voicemailNewMessageToastBody": "Mensaje de {name}",
+  "@voicemailNewMessageToastBody": {
+    "placeholders": {"name": {"type": "String"}}
+  },
+  "voicemailViewButton": "Ver",
+  "voicemailTranscriptionLabel": "Transcripción",
+  "voicemailExpandHint": "Ver transcripción",
+  "voicemailMockNote": "Transcripciones simuladas — STT real en Sprint 5",
+  "voicemailPlay": "Escuchar"
 }

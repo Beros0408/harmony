@@ -10,5 +10,6 @@ class RouteNames {
   static const String agenda = '/agenda';
   static const String modes = '/modes';
   static const String contacts = '/contacts';
+  static const String voicemail = '/voicemail';
   static const String settings = '/settings';
 }

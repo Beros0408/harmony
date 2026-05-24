@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:harmony/l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/router/route_names.dart';
 import '../../../../core/constants/app_radius.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
@@ -119,6 +121,23 @@ class _CallFilterScreenState extends State<CallFilterScreen> {
                     ),
                   )
                   .toList(),
+            ),
+          ),
+          // E — Messagerie vocale
+          _SectionHeader(title: l10n.voicemailScreenTitle),
+          const SizedBox(height: AppSpacing.sm),
+          HarmonyCard(
+            padding: AppSpacing.md,
+            child: HarmonyListTile(
+              leadingIcon: Icons.voicemail_rounded,
+              leadingColor: AppColors.accentPurple,
+              title: l10n.voicemailScreenTitle,
+              subtitle: l10n.voicemailMockNote,
+              trailing: const Icon(
+                Icons.chevron_right,
+                color: AppColors.textMuted,
+              ),
+              onTap: () => context.push(RouteNames.voicemail),
             ),
           ),
           const SizedBox(height: AppSpacing.xxxl),
