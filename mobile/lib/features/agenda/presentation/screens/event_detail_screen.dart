@@ -6,7 +6,6 @@ import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_radius.dart';
 import '../../../../core/constants/app_spacing.dart';
-import '../../../../core/constants/app_typography.dart';
 import '../../../../core/router/route_names.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/harmony_app_bar.dart';
@@ -34,26 +33,25 @@ class EventDetailScreen extends StatelessWidget {
 
         if (event == null) {
           return Scaffold(
-            backgroundColor: AppColors.bgBase,
             appBar: HarmonyAppBar(title: l10n.agendaEventDetailTitle),
             body: Center(
               child: Text(
                 l10n.emptyStateComingSoon,
-                style: AppTypography.textTheme.bodyMedium,
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
             ),
           );
         }
 
         return Scaffold(
-          backgroundColor: AppColors.bgBase,
           appBar: HarmonyAppBar(
             title: l10n.agendaEventDetailTitle,
             actions: [
               // Modifier
               IconButton(
                 tooltip: l10n.agendaEventEdit,
-                icon: const Icon(Icons.edit_outlined, color: AppColors.textSecondary),
+                icon: Icon(Icons.edit_outlined,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,),
                 onPressed: () =>
                     context.push('${RouteNames.agendaEventEdit}/${event.id}'),
               ),
@@ -64,7 +62,7 @@ class EventDetailScreen extends StatelessWidget {
                   event.important ? Icons.star_rounded : Icons.star_outline_rounded,
                   color: event.important
                       ? AppColors.accentAmber
-                      : AppColors.textMuted,
+                      : Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
                 onPressed: () {
                   context.read<AgendaEventCubit>().markImportant(
@@ -93,14 +91,16 @@ class EventDetailScreen extends StatelessWidget {
     AppLocalizations l10n,
     AgendaEvent event,
   ) async {
+    final cs = Theme.of(context).colorScheme;
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        backgroundColor: AppColors.bgElevated,
+        backgroundColor: cs.surfaceContainerHighest,
         title: Text(l10n.agendaEventDelete,
-            style: AppTypography.textTheme.titleSmall,),
+            style: Theme.of(context).textTheme.titleSmall,),
         content: Text(l10n.agendaEventDeleteConfirm,
-            style: AppTypography.textTheme.bodyMedium,),
+            style: Theme.of(context).textTheme.bodyMedium,),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -134,6 +134,7 @@ class _EventDetailBody extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final locale = Localizations.localeOf(context).languageCode;
     final dtFmt = DateFormat('EEEE d MMMM yyyy · HH:mm', locale);
+    final cs = Theme.of(context).colorScheme;
 
     return ListView(
       padding: const EdgeInsets.all(AppSpacing.lg),
@@ -142,7 +143,7 @@ class _EventDetailBody extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(AppSpacing.lg),
           decoration: BoxDecoration(
-            color: AppColors.bgSurface,
+            color: cs.surface,
             borderRadius: AppRadius.lgRadius,
             border: Border(
               left: BorderSide(color: event.color, width: 4),
@@ -162,12 +163,12 @@ class _EventDetailBody extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: AppSpacing.sm),
-              Text(event.title, style: AppTypography.textTheme.titleMedium),
+              Text(event.title, style: Theme.of(context).textTheme.titleMedium),
               if (event.description.isNotEmpty) ...[
                 const SizedBox(height: AppSpacing.xs),
                 Text(event.description,
-                    style: AppTypography.textTheme.bodyMedium?.copyWith(
-                      color: AppColors.textSecondary,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: cs.onSurfaceVariant,
                     ),),
               ],
             ],
@@ -230,20 +231,22 @@ class _DetailRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 18, color: AppColors.textSecondary),
+        Icon(icon, size: 18, color: cs.onSurfaceVariant),
         const SizedBox(width: AppSpacing.sm),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label, style: AppTypography.textTheme.labelMedium),
+              Text(label, style: Theme.of(context).textTheme.labelMedium),
               const SizedBox(height: 2),
               Text(sublabel,
-                  style: AppTypography.textTheme.bodySmall?.copyWith(
-                    color: AppColors.textSecondary,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: cs.onSurfaceVariant,
                   ),),
             ],
           ),

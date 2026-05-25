@@ -4,7 +4,6 @@ import 'package:harmony/l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
-import '../../../../core/constants/app_typography.dart';
 import '../../../../core/router/route_names.dart';
 import '../../../../shared/widgets/harmony_app_bar.dart';
 import '../../../../shared/widgets/harmony_audio_waveform.dart';
@@ -36,6 +35,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final cs = Theme.of(context).colorScheme;
 
     return Scaffold(
       appBar: HarmonyAppBar(
@@ -44,15 +44,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
         automaticallyImplyLeading: false,
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications_outlined, color: AppColors.textSecondary),
+            icon: Icon(Icons.notifications_outlined, color: cs.onSurfaceVariant),
             onPressed: () {},
           ),
           IconButton(
-            icon: const Icon(Icons.person_outline, color: AppColors.textSecondary),
+            icon: Icon(Icons.person_outline, color: cs.onSurfaceVariant),
             onPressed: () {},
           ),
           IconButton(
-            icon: const Icon(Icons.settings_outlined, color: AppColors.textSecondary),
+            icon: Icon(Icons.settings_outlined, color: cs.onSurfaceVariant),
             onPressed: () => context.push(RouteNames.settings),
           ),
         ],
@@ -63,7 +63,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           _WelcomeBanner(date: _formattedDate),
           const SizedBox(height: AppSpacing.xl),
 
-          Text(l10n.dashboardSectionModules, style: AppTypography.textTheme.titleSmall),
+          Text(l10n.dashboardSectionModules, style: Theme.of(context).textTheme.titleSmall),
           const SizedBox(height: AppSpacing.md),
           GridView.count(
             crossAxisCount: 2,
@@ -133,7 +133,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           const SizedBox(height: AppSpacing.xxl),
 
           // Design system showcase — dev scaffold, intentionally hardcoded
-          Text('COMPOSANTS DU DESIGN SYSTEM', style: AppTypography.textTheme.titleSmall),
+          Text('COMPOSANTS DU DESIGN SYSTEM', style: Theme.of(context).textTheme.titleSmall),
           const SizedBox(height: AppSpacing.md),
 
           HarmonyCard(
@@ -272,7 +272,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           Center(
             child: Text(
               'Harmony v0.3.0 · Sprint C3',
-              style: AppTypography.textTheme.labelSmall,
+              style: Theme.of(context).textTheme.labelSmall,
             ),
           ),
           const SizedBox(height: AppSpacing.xl),
@@ -289,24 +289,30 @@ class _WelcomeBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final cs = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final gradientColors = isDark
+        ? const [Color(0xFF1E2D45), Color(0xFF0F1729)]
+        : [cs.primaryContainer, cs.surface];
 
     return Container(
       padding: const EdgeInsets.all(AppSpacing.xl),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF1E2D45), Color(0xFF0F1729)],
+        gradient: LinearGradient(
+          colors: gradientColors,
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.borderDefault),
+        border: Border.all(color: cs.outline),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(l10n.dashboardWelcomeWave, style: AppTypography.textTheme.headlineSmall),
+          Text(l10n.dashboardWelcomeWave, style: Theme.of(context).textTheme.headlineSmall),
           const SizedBox(height: AppSpacing.xs),
-          Text(date, style: AppTypography.textTheme.bodyMedium),
+          Text(date, style: Theme.of(context).textTheme.bodyMedium),
           const SizedBox(height: AppSpacing.lg),
           Row(
             children: [
@@ -391,8 +397,8 @@ class _ModuleCardState extends State<_ModuleCard> {
                   ],
                 ),
                 const SizedBox(height: AppSpacing.sm),
-                Text(widget.title, style: AppTypography.textTheme.titleMedium),
-                Text(widget.subtitle, style: AppTypography.textTheme.bodySmall),
+                Text(widget.title, style: Theme.of(context).textTheme.titleMedium),
+                Text(widget.subtitle, style: Theme.of(context).textTheme.bodySmall),
               ],
             ),
           ),

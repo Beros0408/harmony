@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:harmony/l10n/app_localizations.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_spacing.dart';
-import '../../core/constants/app_typography.dart';
 
 class HarmonyAppBar extends StatelessWidget implements PreferredSizeWidget {
   const HarmonyAppBar({
@@ -35,6 +34,8 @@ class HarmonyAppBar extends StatelessWidget implements PreferredSizeWidget {
       effectiveLeading = _BackButton(tooltip: label);
     }
 
+    final cs = Theme.of(context).colorScheme;
+
     return AppBar(
       backgroundColor: showGradient ? null : Colors.transparent,
       flexibleSpace: showGradient
@@ -50,14 +51,14 @@ class HarmonyAppBar extends StatelessWidget implements PreferredSizeWidget {
           : null,
       automaticallyImplyLeading: false,
       leading: effectiveLeading,
-      title: Text(title, style: AppTypography.textTheme.titleLarge),
+      title: Text(title, style: Theme.of(context).textTheme.titleLarge),
       actions: [
         if (actions != null) ...actions!,
         const SizedBox(width: AppSpacing.sm),
       ],
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(1),
-        child: Container(height: 1, color: AppColors.borderSubtle),
+        child: Container(height: 1, color: cs.outlineVariant),
       ),
     );
   }
@@ -76,6 +77,8 @@ class _BackButtonState extends State<_BackButton> {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       onEnter: (_) => setState(() => _hovered = true),
@@ -92,9 +95,9 @@ class _BackButtonState extends State<_BackButton> {
                 width: 36,
                 height: 36,
                 decoration: BoxDecoration(
-                  color: AppColors.bgSurface,
+                  color: cs.surface,
                   shape: BoxShape.circle,
-                  border: Border.all(color: AppColors.borderSubtle),
+                  border: Border.all(color: cs.outlineVariant),
                 ),
                 child: const Icon(
                   Icons.arrow_back_ios_new,

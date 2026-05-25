@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_radius.dart';
 import '../../core/constants/app_spacing.dart';
-import '../../core/constants/app_typography.dart';
 
 class HarmonyListTile extends StatelessWidget {
   const HarmonyListTile({
@@ -52,9 +51,9 @@ class HarmonyListTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: AppTypography.textTheme.bodyLarge),
+                  Text(title, style: Theme.of(context).textTheme.bodyLarge),
                   if (subtitle != null)
-                    Text(subtitle!, style: AppTypography.textTheme.bodySmall),
+                    Text(subtitle!, style: Theme.of(context).textTheme.bodySmall),
                 ],
               ),
             ),

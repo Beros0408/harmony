@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_spacing.dart';
-import '../../core/constants/app_typography.dart';
 
 class HarmonyCard extends StatefulWidget {
   const HarmonyCard({
@@ -73,7 +72,7 @@ class _HarmonyCardState extends State<HarmonyCard> {
                           Expanded(
                             child: Text(
                               widget.title!,
-                              style: AppTypography.textTheme.titleSmall,
+                              style: Theme.of(context).textTheme.titleSmall,
                             ),
                           ),
                         if (widget.badge != null) ...[

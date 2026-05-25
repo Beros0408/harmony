@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../core/constants/app_colors.dart';
 
 class HarmonyTextField extends StatelessWidget {
   const HarmonyTextField({
@@ -27,18 +26,20 @@ class HarmonyTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+
     return TextFormField(
       controller: controller,
       validator: validator,
       obscureText: obscureText,
       keyboardType: keyboardType,
       onChanged: onChanged,
-      style: const TextStyle(color: AppColors.textPrimary),
+      style: TextStyle(color: cs.onSurface),
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,
         prefixIcon: prefixIcon != null
-            ? Icon(prefixIcon, color: AppColors.textMuted, size: 18)
+            ? Icon(prefixIcon, color: cs.onSurfaceVariant, size: 18)
             : null,
         suffixIcon: suffixIcon,
       ),

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_spacing.dart';
-import '../../core/constants/app_typography.dart';
 
 class HarmonyEmptyState extends StatelessWidget {
   const HarmonyEmptyState({
@@ -21,6 +19,8 @@ class HarmonyEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.xxxl),
@@ -30,23 +30,23 @@ class HarmonyEmptyState extends StatelessWidget {
             Container(
               width: 72,
               height: 72,
-              decoration: const BoxDecoration(
-                color: AppColors.bgElevated,
+              decoration: BoxDecoration(
+                color: cs.surfaceContainerHighest,
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon, color: AppColors.textMuted, size: 32),
+              child: Icon(icon, color: cs.onSurfaceVariant, size: 32),
             ),
             const SizedBox(height: AppSpacing.lg),
             Text(
               title,
-              style: AppTypography.textTheme.titleMedium,
+              style: Theme.of(context).textTheme.titleMedium,
               textAlign: TextAlign.center,
             ),
             if (subtitle != null) ...[
               const SizedBox(height: AppSpacing.sm),
               Text(
                 subtitle!,
-                style: AppTypography.textTheme.bodyMedium,
+                style: Theme.of(context).textTheme.bodyMedium,
                 textAlign: TextAlign.center,
               ),
             ],

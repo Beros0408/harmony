@@ -122,13 +122,16 @@ class _HarmonyButtonState extends State<HarmonyButton>
     };
   }
 
-  Border? get _border => switch (widget.variant) {
-        HarmonyButtonVariant.secondary =>
-          Border.all(color: AppColors.borderDefault),
-        HarmonyButtonVariant.ghost =>
-          Border.all(color: Colors.transparent),
-        _ => null,
-      };
+  Border? _border(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return switch (widget.variant) {
+      HarmonyButtonVariant.secondary =>
+        Border.all(color: cs.outline),
+      HarmonyButtonVariant.ghost =>
+        Border.all(color: Colors.transparent),
+      _ => null,
+    };
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -172,7 +175,7 @@ class _HarmonyButtonState extends State<HarmonyButton>
                     borderRadius: AppRadius.mdRadius,
                     border: _isFocused
                         ? Border.all(color: AppColors.accentBlue, width: 2)
-                        : _border,
+                        : _border(context),
                   ),
                   alignment: Alignment.center,
                   child: widget.isLoading
