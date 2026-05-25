@@ -15,6 +15,12 @@ class RouteNames {
   static const String settings = '/settings';
   static const String blacklist = '/blacklist';
 
+  // Sprint 4 — Agenda
+  static const String agendaEvent = '/agenda/event';
+  static const String agendaEventEdit = '/agenda/event/edit';
+  static const String agendaTasks = '/agenda/tasks';
+  static const String agendaGoogle = '/agenda/google';
+
   // Sprint 3 — Parental
   static const String childDetail = '/parental/child';
   static const String safeZones = '/parental/zones';

@@ -20,6 +20,14 @@ import 'features/parental/logic/child_profile_cubit.dart';
 import 'features/parental/logic/location_cubit.dart';
 import 'features/parental/logic/safe_zone_cubit.dart';
 import 'features/parental/logic/sos_cubit.dart';
+// Sprint 4 — Agenda
+import 'features/agenda/data/repositories/agenda_event_repository.dart';
+import 'features/agenda/data/repositories/google_calendar_repository.dart';
+import 'features/agenda/data/repositories/task_repository.dart';
+import 'features/agenda/logic/agenda_event_cubit.dart';
+import 'features/agenda/logic/calendar_view_cubit.dart';
+import 'features/agenda/logic/google_calendar_cubit.dart';
+import 'features/agenda/logic/task_cubit.dart';
 import 'shared/theme/harmony_theme.dart';
 import 'shared/widgets/harmony_responsive_wrapper.dart';
 
@@ -64,6 +72,20 @@ class HarmonyApp extends StatelessWidget {
             LocationRepository.instance,
             LocationService.instance,
           ),
+        ),
+        // Sprint 4 — Agenda
+        BlocProvider(
+          create: (_) => AgendaEventCubit(
+            repository: AgendaEventRepository.instance,
+          ),
+        ),
+        BlocProvider(create: (_) => CalendarViewCubit()),
+        BlocProvider(
+          create: (_) => TaskCubit(repository: TaskRepository.instance),
+        ),
+        BlocProvider(
+          create: (_) =>
+              GoogleCalendarCubit(repository: GoogleCalendarRepository.instance),
         ),
       ],
       child: BlocBuilder<LanguageCubit, Locale>(

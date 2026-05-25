@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/agenda/presentation/screens/agenda_screen.dart';
+import '../../features/agenda/presentation/screens/event_detail_screen.dart';
+import '../../features/agenda/presentation/screens/event_editor_screen.dart';
+import '../../features/agenda/presentation/screens/tasks_screen.dart';
+import '../../features/agenda/presentation/screens/google_calendar_settings_screen.dart';
 import '../../features/auth/presentation/screens/auth_screen.dart';
 import '../../features/call_filter/presentation/screens/blacklist_screen.dart';
 import '../../features/call_filter/presentation/screens/call_filter_screen.dart';
@@ -121,6 +125,42 @@ final GoRouter appRouter = GoRouter(
       pageBuilder: (context, state) => _slidePage(
         key: state.pageKey,
         child: const BlacklistScreen(),
+      ),
+    ),
+    // ── Sprint 4 — Agenda ─────────────────────────────────────────────────
+    GoRoute(
+      path: '${RouteNames.agendaEvent}/:id',
+      pageBuilder: (context, state) => _slidePage(
+        key: state.pageKey,
+        child: EventDetailScreen(eventId: state.pathParameters['id']!),
+      ),
+    ),
+    GoRoute(
+      path: RouteNames.agendaEventEdit,
+      pageBuilder: (context, state) => _slidePage(
+        key: state.pageKey,
+        child: const EventEditorScreen(),
+      ),
+    ),
+    GoRoute(
+      path: '${RouteNames.agendaEventEdit}/:id',
+      pageBuilder: (context, state) => _slidePage(
+        key: state.pageKey,
+        child: EventEditorScreen(eventId: state.pathParameters['id']),
+      ),
+    ),
+    GoRoute(
+      path: RouteNames.agendaTasks,
+      pageBuilder: (context, state) => _slidePage(
+        key: state.pageKey,
+        child: const TasksScreen(),
+      ),
+    ),
+    GoRoute(
+      path: RouteNames.agendaGoogle,
+      pageBuilder: (context, state) => _slidePage(
+        key: state.pageKey,
+        child: const GoogleCalendarSettingsScreen(),
       ),
     ),
     // ── Sprint 3 — Parental ───────────────────────────────────────────────

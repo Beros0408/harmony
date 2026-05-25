@@ -1501,6 +1501,288 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Autoriser'**
   String get permissionLocationGrant;
+
+  /// No description provided for @agendaNoEvents.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun événement'**
+  String get agendaNoEvents;
+
+  /// No description provided for @agendaTasksShortcut.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mes tâches'**
+  String get agendaTasksShortcut;
+
+  /// No description provided for @agendaGoogleShortcut.
+  ///
+  /// In fr, this message translates to:
+  /// **'Google Calendar'**
+  String get agendaGoogleShortcut;
+
+  /// No description provided for @agendaEventDetailTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Détails'**
+  String get agendaEventDetailTitle;
+
+  /// No description provided for @agendaEventEdit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier'**
+  String get agendaEventEdit;
+
+  /// No description provided for @agendaEventImportant.
+  ///
+  /// In fr, this message translates to:
+  /// **'Marquer important'**
+  String get agendaEventImportant;
+
+  /// No description provided for @agendaEventDelete.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer'**
+  String get agendaEventDelete;
+
+  /// No description provided for @agendaEventDeleteConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer cet événement ?'**
+  String get agendaEventDeleteConfirm;
+
+  /// No description provided for @agendaEventDeleteConfirmYes.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer'**
+  String get agendaEventDeleteConfirmYes;
+
+  /// No description provided for @agendaEventDeleteConfirmNo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler'**
+  String get agendaEventDeleteConfirmNo;
+
+  /// No description provided for @agendaEventLocation.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lieu'**
+  String get agendaEventLocation;
+
+  /// No description provided for @agendaEventReminder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rappel'**
+  String get agendaEventReminder;
+
+  /// No description provided for @agendaEventReminderMinutes.
+  ///
+  /// In fr, this message translates to:
+  /// **'{n} min avant'**
+  String agendaEventReminderMinutes(int n);
+
+  /// No description provided for @agendaEventRecurrence.
+  ///
+  /// In fr, this message translates to:
+  /// **'Récurrence'**
+  String get agendaEventRecurrence;
+
+  /// No description provided for @agendaEditorNewTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouvel événement'**
+  String get agendaEditorNewTitle;
+
+  /// No description provided for @agendaEditorEditTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier l\'événement'**
+  String get agendaEditorEditTitle;
+
+  /// No description provided for @agendaEditorSave.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enregistrer'**
+  String get agendaEditorSave;
+
+  /// No description provided for @agendaEditorFieldTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Titre'**
+  String get agendaEditorFieldTitle;
+
+  /// No description provided for @agendaEditorFieldDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Description (optionnel)'**
+  String get agendaEditorFieldDescription;
+
+  /// No description provided for @agendaEditorFieldLocation.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lieu (optionnel)'**
+  String get agendaEditorFieldLocation;
+
+  /// No description provided for @agendaEditorFieldStart.
+  ///
+  /// In fr, this message translates to:
+  /// **'Début'**
+  String get agendaEditorFieldStart;
+
+  /// No description provided for @agendaEditorFieldEnd.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fin'**
+  String get agendaEditorFieldEnd;
+
+  /// No description provided for @agendaEditorFieldReminder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rappel'**
+  String get agendaEditorFieldReminder;
+
+  /// No description provided for @agendaEditorFieldCategory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Catégorie'**
+  String get agendaEditorFieldCategory;
+
+  /// No description provided for @agendaEditorMarkImportant.
+  ///
+  /// In fr, this message translates to:
+  /// **'Marquer comme important'**
+  String get agendaEditorMarkImportant;
+
+  /// No description provided for @agendaEditorValidationTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Titre requis'**
+  String get agendaEditorValidationTitle;
+
+  /// No description provided for @agendaTasksTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mes Tâches'**
+  String get agendaTasksTitle;
+
+  /// No description provided for @agendaTasksQuadrantDoFirst.
+  ///
+  /// In fr, this message translates to:
+  /// **'Urgent & Important'**
+  String get agendaTasksQuadrantDoFirst;
+
+  /// No description provided for @agendaTasksQuadrantSchedule.
+  ///
+  /// In fr, this message translates to:
+  /// **'Important, non urgent'**
+  String get agendaTasksQuadrantSchedule;
+
+  /// No description provided for @agendaTasksQuadrantDelegate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Urgent, non important'**
+  String get agendaTasksQuadrantDelegate;
+
+  /// No description provided for @agendaTasksQuadrantDelete.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ni urgent, ni important'**
+  String get agendaTasksQuadrantDelete;
+
+  /// No description provided for @agendaTasksEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune tâche'**
+  String get agendaTasksEmpty;
+
+  /// No description provided for @agendaTasksAdd.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouvelle tâche'**
+  String get agendaTasksAdd;
+
+  /// No description provided for @agendaGoogleTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Google Calendar'**
+  String get agendaGoogleTitle;
+
+  /// No description provided for @agendaGoogleConnectButton.
+  ///
+  /// In fr, this message translates to:
+  /// **'Connecter Google Calendar'**
+  String get agendaGoogleConnectButton;
+
+  /// No description provided for @agendaGoogleConnectedAs.
+  ///
+  /// In fr, this message translates to:
+  /// **'Connecté en tant que'**
+  String get agendaGoogleConnectedAs;
+
+  /// No description provided for @agendaGoogleDisconnect.
+  ///
+  /// In fr, this message translates to:
+  /// **'Déconnecter'**
+  String get agendaGoogleDisconnect;
+
+  /// No description provided for @agendaGoogleSync.
+  ///
+  /// In fr, this message translates to:
+  /// **'Synchroniser'**
+  String get agendaGoogleSync;
+
+  /// No description provided for @agendaGoogleSyncing.
+  ///
+  /// In fr, this message translates to:
+  /// **'Synchronisation...'**
+  String get agendaGoogleSyncing;
+
+  /// No description provided for @agendaGoogleLastSync.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dernière sync.'**
+  String get agendaGoogleLastSync;
+
+  /// No description provided for @agendaGoogleNotConnected.
+  ///
+  /// In fr, this message translates to:
+  /// **'Non connecté'**
+  String get agendaGoogleNotConnected;
+
+  /// No description provided for @agendaCategorySport.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sport'**
+  String get agendaCategorySport;
+
+  /// No description provided for @agendaCategoryMedical.
+  ///
+  /// In fr, this message translates to:
+  /// **'Médical'**
+  String get agendaCategoryMedical;
+
+  /// No description provided for @agendaCategoryProfessional.
+  ///
+  /// In fr, this message translates to:
+  /// **'Professionnel'**
+  String get agendaCategoryProfessional;
+
+  /// No description provided for @agendaCategorySchool.
+  ///
+  /// In fr, this message translates to:
+  /// **'École'**
+  String get agendaCategorySchool;
+
+  /// No description provided for @agendaCategoryLeisure.
+  ///
+  /// In fr, this message translates to:
+  /// **'Loisirs'**
+  String get agendaCategoryLeisure;
+
+  /// No description provided for @agendaCategoryOther.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autre'**
+  String get agendaCategoryOther;
 }
 
 class _AppLocalizationsDelegate
