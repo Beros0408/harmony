@@ -60,7 +60,7 @@ class _ParentalScreenState extends State<ParentalScreen> {
         label: Text(l10n.familyAddZoneFAB, style: const TextStyle(color: Colors.white)),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(AppSpacing.lg),
+        padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.lg, AppSpacing.lg, 96),
         children: [
           // A — Enfants
           _SectionHeader(title: l10n.familyChildrenSection),

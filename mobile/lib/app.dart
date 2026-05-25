@@ -4,6 +4,7 @@ import 'package:harmony/l10n/app_localizations.dart';
 import 'core/language/language_cubit.dart';
 import 'core/router/app_router.dart';
 import 'core/security/secure_storage.dart';
+import 'core/theme/system_ui_adapter.dart';
 import 'core/theme/theme_cubit.dart';
 import 'features/auth/data/repositories/auth_repository.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
@@ -69,6 +70,7 @@ class HarmonyApp extends StatelessWidget {
         builder: (context, locale) {
           return BlocBuilder<ThemeCubit, ThemeMode>(
             builder: (context, themeMode) {
+              SystemUiAdapter.apply(themeMode);
               return MaterialApp.router(
                 title: 'Harmony',
                 debugShowCheckedModeBanner: false,
