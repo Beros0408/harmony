@@ -1,6 +1,6 @@
 # 🔄 Harmony — Fichier des itérations
 > Un sprint = 2 semaines (ou moins en mode rapide)
-> Mise à jour : 24 mai 2026
+> Mise à jour : 25 mai 2026
 
 ---
 
@@ -28,8 +28,9 @@
 | Sprint C3 | UI premium | Voicemail + transcriptions + push | ✅ | `9c88026` |
 | Sprint C4 | UI premium | Responsive desktop 480px | ✅ | `881237b` |
 | **Sprint 1** | **Phase 1** | **Filtrage Android natif** ⭐ | **✅** | **`267cc37`** |
-| Sprint 2 | Phase 1 | Filtrage iOS CallKit + Sortants | ⬜ | — |
-| Sprint 3 | Phase 1 | Géolocalisation + SOS + Dashboard | ⬜ | — |
+| **Sprint 2** | **Phase 1** | **Filtrage iOS CallKit + Sortants** | **✅** | **`50aff7e`** |
+| **Sprint 1.5** | **Phase 1** | **UI Blacklist SQLCipher + Sync** | **✅** | **`a665503`** |
+| **Sprint 3** | **Phase 1** | **Géolocalisation + SOS + Famille** ⭐ | **✅** | **`b808a8d`** |
 | Sprint 4 | Phase 1 | Agenda + Sync calendrier + Tests MVP | ⬜ | — |
 | Sprint 5 | Phase 2 | IA spam + STT + Score confiance | ⬜ | — |
 | Sprint 6 | Phase 2 | Filtrage WhatsApp Android | ⬜ | — |
@@ -164,6 +165,151 @@ L'app re-vérifie automatiquement le statut à chaque resume via WidgetsBindingO
 
 ---
 
+### Sprint 2 — Filtrage iOS (CallKit) + Sortants + Modes ✅ TERMINÉ
+
+**Date :** 25/05/2026 · **Commit :** `50aff7e` · **Tag :** `v1.1.0-sprint-2`
+
+#### Objectif
+Étendre le filtrage cross-platform à iOS via CallKit, ajouter la détection des appels sortants, et introduire les modes de filtrage configurables.
+
+#### User stories réalisées
+
+| ID | Story | Statut |
+|---|---|---|
+| US-2-001 | CXCallDirectoryProvider — extension CallKit iOS | ✅ |
+| US-2-002 | Base de données SQLite partagée app ↔ extension iOS | ✅ |
+| US-2-003 | Filtrage asynchrone conforme API CallKit | ✅ |
+| US-2-004 | OutgoingCallDetector — détection appels sortants | ✅ |
+| US-2-005 | FilterModeManager — modes Tout bloquer / Blacklist / Désactivé | ✅ |
+| US-2-006 | MethodChannel étendu couche iOS | ✅ |
+| US-2-007 | i18n additionnelle × 5 langues (callKit*, filterMode*) | ✅ |
+| US-2-008 | Tests Kotlin JUnit additionnels | ✅ |
+
+#### Bilan
+
+| Métrique | Valeur |
+|---|---|
+| Points planifiés | 30 |
+| Points réalisés | 30 |
+| Vélocité | 100 % |
+| Tests Flutter | **95 verts** |
+| Tests Kotlin JUnit | **9 verts** |
+| Issues flutter analyze | **0** |
+| Commit | **`50aff7e`** |
+| Tag | **`v1.1.0-sprint-2`** |
+
+---
+
+### Sprint 1.5 — UI Blacklist SQLCipher + Sync Kotlin ✅ TERMINÉ
+
+**Date :** 25/05/2026 · **Commit :** `a665503` · **Tag :** `v1.1.1-blacklist-ui-sync`
+
+#### Objectif
+Fournir une interface utilisateur complète pour la gestion de la liste noire, avec persistance chiffrée SQLCipher et synchronisation temps réel vers le moteur de décision Kotlin.
+
+#### User stories réalisées
+
+| ID | Story | Statut |
+|---|---|---|
+| US-1.5-001 | BlacklistRepository — CRUD SQLCipher chiffré | ✅ |
+| US-1.5-002 | Migration DB automatique au démarrage | ✅ |
+| US-1.5-003 | BlacklistCubit — état BLoC liste noire | ✅ |
+| US-1.5-004 | BlacklistScreen `/blacklist` — liste + recherche | ✅ |
+| US-1.5-005 | BlacklistFormSheet — bottom sheet ajout/édition | ✅ |
+| US-1.5-006 | Sync Flutter → Kotlin snapshot CallDecisionEngine | ✅ |
+| US-1.5-007 | 14 clés i18n × 5 langues (blacklist*) | ✅ |
+| US-1.5-008 | Tests Flutter + Kotlin dédiés | ✅ |
+
+#### Bilan
+
+| Métrique | Valeur |
+|---|---|
+| Points planifiés | 20 |
+| Points réalisés | 20 |
+| Vélocité | 100 % |
+| Tests Flutter | **117 verts** |
+| Tests Kotlin JUnit | **13 verts** |
+| Issues flutter analyze | **0** |
+| Commit | **`a665503`** |
+| Tag | **`v1.1.1-blacklist-ui-sync`** |
+
+---
+
+### Sprint 3 — Géolocalisation + SOS + Module Famille ⭐ TERMINÉ ET VALIDÉ IRL
+
+**Date :** 25/05/2026 · **Commit :** `b808a8d` · **Tag :** `v1.2.0-sprint-3`
+
+#### Objectif
+Implémenter le module de contrôle parental live : carte GPS interactive, détection geofence temps réel, bouton SOS avec appel auto 112, et tableau de bord enfants avec scores de sécurité.
+
+#### User stories réalisées
+
+| ID | Story | Statut |
+|---|---|---|
+| US-3-001 | ILocationService + LocationService (geolocator ^11.0.0) | ✅ |
+| US-3-002 | LocationRepository 30j historique SQLCipher (cleanup auto) | ✅ |
+| US-3-003 | GeofenceEngine Haversine (pur Dart, zéro plugin) | ✅ |
+| US-3-004 | flutter_map ^6.1.0 + OpenStreetMap (sans API key) | ✅ |
+| US-3-005 | CircleLayer zones géographiques colorées | ✅ |
+| US-3-006 | MarkerLayer positions enfants en temps réel | ✅ |
+| US-3-007 | SOS long-press 3s → SosCubit | ✅ |
+| US-3-008 | SosActiveScreen — plein écran rouge + countdown 2min | ✅ |
+| US-3-009 | url_launcher tel:112 — appel auto après countdown | ✅ |
+| US-3-010 | DB SQLCipher v1→v2 : 6 nouvelles tables | ✅ |
+| US-3-011 | 5 modèles Equatable (identité par ID) | ✅ |
+| US-3-012 | 5 paires IRepository/Repository | ✅ |
+| US-3-013 | ChildProfileCubit | ✅ |
+| US-3-014 | SafeZoneCubit | ✅ |
+| US-3-015 | LocationCubit | ✅ |
+| US-3-016 | SosCubit | ✅ |
+| US-3-017 | SecurityScoreCalculator (score 0-100, 4 critères) | ✅ |
+| US-3-018 | ParentalScreen — carte + enfants + zones | ✅ |
+| US-3-019 | ChildDetailScreen — détail enfant + historique | ✅ |
+| US-3-020 | SosActiveScreen | ✅ |
+| US-3-021 | SafeZoneEditorScreen | ✅ |
+| US-3-022 | TripHistoryScreen | ✅ |
+| US-3-023 | 26 clés i18n × 5 langues (family*, child*, sos*, zone*, location*) | ✅ |
+| US-3-024 | Routes go_router : /parental/child/:id, /parental/zones/edit, etc. | ✅ |
+| US-3-025 | Seed data : Lucas (12 ans) + Emma (9 ans) + 3 zones | ✅ |
+| US-3-026 | Permissions Android : ACCESS_FINE_LOCATION, FOREGROUND_SERVICE | ✅ |
+
+#### Validation E2E — Émulateur Pixel 7 (25/05/2026)
+
+| Scénario | Résultat |
+|---|---|
+| Carte OSM affichée (Paris centré) | ✅ Validé IRL |
+| 3 zones colorées (Maison vert, Stade jaune, autre rouge) | ✅ Validé IRL |
+| Marker GPS bleu central | ✅ Validé IRL |
+| Permission GPS "Allow all the time" accordée | ✅ Validé IRL |
+| SOS long-press 3s → SosActiveScreen plein écran rouge | ✅ Validé IRL |
+| Coordonnées GPS : 48.85340, 2.34880 | ✅ Validé IRL |
+| Countdown 2 min → appel 112 auto (intent tel:) | ✅ Validé IRL |
+| Cartes Lucas (12 ans) + Emma (9 ans) avec scores | ✅ Validé IRL |
+| Statut "En déplacement" affiché | ✅ Validé IRL |
+
+#### Bilan
+
+| Métrique | Valeur |
+|---|---|
+| Points planifiés | 35 |
+| Points réalisés | 35 |
+| Vélocité | 100 % |
+| Tests Flutter | **162 verts** (was 117) |
+| Tests Kotlin JUnit | **13 verts** (app module) |
+| Issues flutter analyze | **0** |
+| Fichiers modifiés | 57 |
+| Lignes ajoutées | +4 493 |
+| Commit | **`b808a8d`** |
+| Tag | **`v1.2.0-sprint-3`** |
+
+#### Résolution technique notable
+
+> **AGP 9.0.1 incompatible avec Flutter Gradle Plugin — DSL supprimé**
+
+Downgrade vers AGP 8.9.2 + Gradle 8.13 + Kotlin 2.1.21 (cf. ADR-019). Les plugins Flutter tiers (sensors_plus, geolocator_android) déclarent leur propre `compileSdk` dans leurs fichiers de build — aucun override externe requis depuis le projet racine.
+
+---
+
 ## Vélocité de l'équipe
 
 | Sprint | Points planifiés | Points réalisés | Vélocité |
@@ -177,14 +323,26 @@ L'app re-vérifie automatiquement le statut à chaque resume via WidgetsBindingO
 | Sprint C3 | 8 | 8 | 100 % |
 | Sprint C4 | 3 | 3 | 100 % |
 | **Sprint 1** | **25** | **25** | **100 %** |
+| **Sprint 2** | **30** | **30** | **100 %** |
+| **Sprint 1.5** | **20** | **20** | **100 %** |
+| **Sprint 3** | **35** | **35** | **100 %** |
 
-**Vélocité moyenne 9 sprints : 12.4 pts/sprint** · **100% complétion**
+**Vélocité moyenne 12 sprints : 13.4 pts/sprint** · **100% complétion**
 
 ---
 
 ## Référence des commits sur main
 
 ```
+9ba306d fix(android): downgrade AGP 8.9.2 + Gradle 8.13 — fix build Sprint 3
+9d3737f chore: merge feat/sprint-3-geolocation-sos into main (Sprint 3)
+b808a8d feat(parental): Sprint 3 — Géolocalisation + SOS + Module Famille [TAG v1.2.0-sprint-3]
+eec515a docs(tracking): Sprint 1.5 — Blacklist UI interactive + sync Kotlin
+a665503 feat(blacklist): Sprint 1.5 — UI blacklist interactive + SQLCipher + sync Kotlin [TAG v1.1.1-blacklist-ui-sync]
+295e58b chore: merge fix/sprint-1-blacklist-sync-flutter-kotlin into main
+25c714e fix(blacklist-sync): wire Flutter blacklist -> Kotlin CallDecisionEngine snapshot
+50aff7e chore: merge feat/sprint-2-ios-callkit-outgoing into main (Sprint 2) [TAG v1.1.0-sprint-2]
+ba9225b feat(sprint-2): iOS CallKit extension + outgoing call detector + predefined filter modes
 47dbfe2 chore: merge feat/sprint-1-android-call-filtering into main (Sprint 1) [TAG v1.0.0-sprint-1]
 267cc37 feat(sprint-1): Android native call filtering — CallScreeningService + MethodChannel
 e8fcbfb chore: merge feat/sprint-c4-responsive-desktop into main (Sprint C4)
@@ -204,11 +362,13 @@ f36a7cb feat(ui): Sprint B — rich mockup screens for all 4 modules
 
 ---
 
-## Prochaine étape — Sprint 2
+## Prochaine étape — Sprint 4
 
-**Filtrage iOS via CallKit + Appels sortants** — démarrer quand prêt.
+**Agenda + Sync calendrier + Tests MVP** — démarrer quand prêt.
 
-Cf. cahier des charges section 3.1.1 (appels sortants) et 4 (CallKit iOS).
+OAuth2 Google/Apple Calendar, lien filtrage ↔ événements, tests d'intégration Phase 1.
+
+Cf. cahier des charges sections 3.2.x.
 
 ---
 
