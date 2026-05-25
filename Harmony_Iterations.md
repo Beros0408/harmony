@@ -32,6 +32,7 @@
 | **Sprint 1.5** | **Phase 1** | **UI Blacklist SQLCipher + Sync** | **✅** | **`a665503`** |
 | **Sprint 3** | **Phase 1** | **Géolocalisation + SOS + Famille** ⭐ | **✅** | **`b808a8d`** |
 | **Sprint 4** | **Phase 1** | **Agenda + Planification Intelligente** ⭐ | **✅** | **`6e2505c`** |
+| **Sprint 3.2** | **UI premium** | **Light Mode complet et cohérent** | **✅** | **`f2be549`** |
 | Sprint 5 | Phase 2 | IA spam + STT + Score confiance | ⬜ | — |
 | Sprint 6 | Phase 2 | Filtrage WhatsApp Android | ⬜ | — |
 | Sprint 7 | Phase 2 | Filtrage WhatsApp iOS + NLP | ⬜ | — |
@@ -362,6 +363,57 @@ Implémenter le module Agenda complet avec planification intelligente : calendri
 
 ---
 
+### Sprint 3.2 — Light Mode complet et cohérent ✅ TERMINÉ
+
+**Date :** 25/05/2026 · **Commit :** `f2be549` · **Tag :** `v1.3.1-light-mode`
+
+#### Objectif
+
+Corriger les BUGs 3, 4, 5 identifiés : textes quasi-invisibles en mode clair (dashboard cards, welcome banner, HarmonyAppBar). Étendre le correctif à tous les widgets du design system et aux écrans Sprint 4.
+
+#### Bugs corrigés
+
+| BUG | Symptôme | Cause | Fix |
+|---|---|---|---|
+| **BUG 3** | Titres modules Dashboard invisibles en clair | `AppTypography.textTheme` hardcodé dark | `Theme.of(context).textTheme.*` |
+| **BUG 4** | Carte Bienvenue reste sombre | Gradient `0xFF1E2D45/0xFF0F1729` hardcodé | Gradient adaptatif `cs.primaryContainer/cs.surface` |
+| **BUG 5** | Header "Harmony" + icônes invisibles | `HarmonyAppBar` utilise `AppColors.textPrimary` | `Theme.of(context).textTheme.titleLarge` + `cs.outlineVariant` |
+
+#### Fichiers modifiés
+
+| Fichier | Changement |
+|---|---|
+| `harmony_theme.dart` | Remplace `.apply()` par `.copyWith()` précis — hiérarchie sémantique primary/secondary/muted conservée |
+| `harmony_app_bar.dart` | Titre adaptatif, séparateur `cs.outlineVariant`, `_BackButton` → `cs.surface` |
+| `dashboard_screen.dart` | Icônes AppBar `cs.onSurfaceVariant`, banner adaptatif, textes `Theme.textTheme` |
+| `harmony_toggle.dart` | Track `cs.surfaceContainerHighest`, border `cs.outline`, thumb `cs.onSurfaceVariant` |
+| `harmony_empty_state.dart` | Cercle `cs.surfaceContainerHighest`, icône `cs.onSurfaceVariant` |
+| `harmony_loading_skeleton.dart` | Fond `cs.surfaceContainerHighest` |
+| `harmony_snack_bar.dart` | Fond `cs.inverseSurface`, texte `cs.onInverseSurface` |
+| `harmony_text_field.dart` | Style `cs.onSurface`, prefix `cs.onSurfaceVariant` |
+| `harmony_card.dart` | Titre `Theme.textTheme.titleSmall` |
+| `harmony_button.dart` | Border secondary `cs.outline` |
+| `harmony_list_tile.dart` | Textes `Theme.textTheme.*` |
+| `agenda_screen.dart` | CalendarStyle/HeaderStyle adaptatifs, divider `cs.outlineVariant` |
+| `event_detail_screen.dart` | Dialog `cs.surfaceContainerHighest`, surfaces `cs.surface`, textes adaptatifs |
+| `event_editor_screen.dart` | Surfaces `cs.surface`, pickers sans override ColorScheme.dark, selectors adaptatifs |
+| `tasks_screen.dart` | Surfaces `cs.surface`, bottom sheet `cs.surfaceContainerHighest`, textes adaptatifs |
+| `google_calendar_settings_screen.dart` | StatusCard `cs.surface`, border `cs.outlineVariant`, textes adaptatifs |
+| `event_list_tile.dart` | Surface `cs.surface`, border `cs.outlineVariant`, textes `cs.onSurfaceVariant` |
+
+#### Bilan
+
+| Métrique | Valeur |
+|---|---|
+| Tests Flutter | **218 verts** (inchangés) |
+| Tests Kotlin JUnit | **13 verts** (inchangés) |
+| Issues flutter analyze | **0** |
+| Fichiers modifiés | 17 |
+| Commit | **`f2be549`** |
+| Tag | **`v1.3.1-light-mode`** |
+
+---
+
 ## Vélocité de l'équipe
 
 | Sprint | Points planifiés | Points réalisés | Vélocité |
@@ -379,8 +431,9 @@ Implémenter le module Agenda complet avec planification intelligente : calendri
 | **Sprint 1.5** | **20** | **20** | **100 %** |
 | **Sprint 3** | **35** | **35** | **100 %** |
 | **Sprint 4** | **40** | **40** | **100 %** |
+| **Sprint 3.2** | **15** | **15** | **100 %** |
 
-**Vélocité moyenne 13 sprints : 14.2 pts/sprint** · **100% complétion**
+**Vélocité moyenne 14 sprints : 14.1 pts/sprint** · **100% complétion**
 
 ---
 

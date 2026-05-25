@@ -7,9 +7,9 @@
 
 | Champ | Valeur |
 |---|---|
-| **Version actuelle** | **1.3.0 — Sprints 1, 2, 1.5, 3, 4 livrés (Agenda + Planification)** ⭐ |
-| **Phase en cours** | Phase 1 (Cœur métier) — ~100 % |
-| **Avancement global** | ~75 % |
+| **Version actuelle** | **1.3.1 — Sprint 3.2 livré (Light Mode complet)** ⭐ |
+| **Phase en cours** | Phase 0+ finalisée — Light Mode cohérent sur tous les widgets |
+| **Avancement global** | ~76 % |
 | **Date de début** | 23 mai 2026 |
 | **Date cible MVP** | J+16 semaines |
 | **Dernière mise à jour** | 25 mai 2026 |
