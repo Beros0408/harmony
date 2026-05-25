@@ -8,7 +8,7 @@ class DatabaseHelper {
   DatabaseHelper._();
 
   static const _dbName = 'harmony.db';
-  static const _dbVersion = 2;
+  static const _dbVersion = 3;
   // ignore: constant_identifier_names
   static const _passphrase = 'harmony_mvp_2026';
 
@@ -30,11 +30,15 @@ class DatabaseHelper {
   static Future<void> _onCreate(Database db, int version) async {
     await _createBlacklistTable(db);
     await _createParentalTables(db);
+    await _createAgendaTables(db);
   }
 
   static Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
     if (oldVersion < 2) {
       await _createParentalTables(db);
+    }
+    if (oldVersion < 3) {
+      await _createAgendaTables(db);
     }
   }
 
@@ -139,6 +143,56 @@ class DatabaseHelper {
         child_id    TEXT PRIMARY KEY,
         value       INTEGER NOT NULL,
         last_update INTEGER NOT NULL
+      )
+    ''');
+  }
+
+  static Future<void> _createAgendaTables(Database db) async {
+    // Événements agenda
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS agenda_events (
+        id                      TEXT PRIMARY KEY,
+        title                   TEXT NOT NULL,
+        description             TEXT NOT NULL DEFAULT '',
+        category                INTEGER NOT NULL,
+        start_date              INTEGER NOT NULL,
+        end_date                INTEGER NOT NULL,
+        location                TEXT,
+        recurrence_rule         TEXT,
+        reminder_minutes_before INTEGER NOT NULL DEFAULT 30,
+        important               INTEGER NOT NULL DEFAULT 0,
+        google_event_id         TEXT,
+        family_member_ids       TEXT NOT NULL DEFAULT '',
+        color                   INTEGER NOT NULL
+      )
+    ''');
+    await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_agenda_dates ON agenda_events(start_date, end_date)',
+    );
+    await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_agenda_google ON agenda_events(google_event_id)',
+    );
+
+    // Tâches Eisenhower
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS agenda_tasks (
+        id              TEXT PRIMARY KEY,
+        title           TEXT NOT NULL,
+        urgency         INTEGER NOT NULL,
+        importance      INTEGER NOT NULL,
+        deadline        INTEGER,
+        completed       INTEGER NOT NULL DEFAULT 0,
+        linked_event_id TEXT
+      )
+    ''');
+
+    // Sync Google Calendar
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS google_calendar_sync (
+        id              TEXT PRIMARY KEY,
+        account_email   TEXT NOT NULL,
+        last_sync_at    INTEGER,
+        next_sync_token TEXT
       )
     ''');
   }

@@ -768,4 +768,147 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get permissionLocationGrant => 'Autoriser';
+
+  @override
+  String get agendaNoEvents => 'Aucun événement';
+
+  @override
+  String get agendaTasksShortcut => 'Mes tâches';
+
+  @override
+  String get agendaGoogleShortcut => 'Google Calendar';
+
+  @override
+  String get agendaEventDetailTitle => 'Détails';
+
+  @override
+  String get agendaEventEdit => 'Modifier';
+
+  @override
+  String get agendaEventImportant => 'Marquer important';
+
+  @override
+  String get agendaEventDelete => 'Supprimer';
+
+  @override
+  String get agendaEventDeleteConfirm => 'Supprimer cet événement ?';
+
+  @override
+  String get agendaEventDeleteConfirmYes => 'Supprimer';
+
+  @override
+  String get agendaEventDeleteConfirmNo => 'Annuler';
+
+  @override
+  String get agendaEventLocation => 'Lieu';
+
+  @override
+  String get agendaEventReminder => 'Rappel';
+
+  @override
+  String agendaEventReminderMinutes(int n) {
+    return '$n min avant';
+  }
+
+  @override
+  String get agendaEventRecurrence => 'Récurrence';
+
+  @override
+  String get agendaEditorNewTitle => 'Nouvel événement';
+
+  @override
+  String get agendaEditorEditTitle => 'Modifier l\'événement';
+
+  @override
+  String get agendaEditorSave => 'Enregistrer';
+
+  @override
+  String get agendaEditorFieldTitle => 'Titre';
+
+  @override
+  String get agendaEditorFieldDescription => 'Description (optionnel)';
+
+  @override
+  String get agendaEditorFieldLocation => 'Lieu (optionnel)';
+
+  @override
+  String get agendaEditorFieldStart => 'Début';
+
+  @override
+  String get agendaEditorFieldEnd => 'Fin';
+
+  @override
+  String get agendaEditorFieldReminder => 'Rappel';
+
+  @override
+  String get agendaEditorFieldCategory => 'Catégorie';
+
+  @override
+  String get agendaEditorMarkImportant => 'Marquer comme important';
+
+  @override
+  String get agendaEditorValidationTitle => 'Titre requis';
+
+  @override
+  String get agendaTasksTitle => 'Mes Tâches';
+
+  @override
+  String get agendaTasksQuadrantDoFirst => 'Urgent & Important';
+
+  @override
+  String get agendaTasksQuadrantSchedule => 'Important, non urgent';
+
+  @override
+  String get agendaTasksQuadrantDelegate => 'Urgent, non important';
+
+  @override
+  String get agendaTasksQuadrantDelete => 'Ni urgent, ni important';
+
+  @override
+  String get agendaTasksEmpty => 'Aucune tâche';
+
+  @override
+  String get agendaTasksAdd => 'Nouvelle tâche';
+
+  @override
+  String get agendaGoogleTitle => 'Google Calendar';
+
+  @override
+  String get agendaGoogleConnectButton => 'Connecter Google Calendar';
+
+  @override
+  String get agendaGoogleConnectedAs => 'Connecté en tant que';
+
+  @override
+  String get agendaGoogleDisconnect => 'Déconnecter';
+
+  @override
+  String get agendaGoogleSync => 'Synchroniser';
+
+  @override
+  String get agendaGoogleSyncing => 'Synchronisation...';
+
+  @override
+  String get agendaGoogleLastSync => 'Dernière sync.';
+
+  @override
+  String get agendaGoogleNotConnected => 'Non connecté';
+
+  @override
+  String get agendaCategorySport => 'Sport';
+
+  @override
+  String get agendaCategoryMedical => 'Médical';
+
+  @override
+  String get agendaCategoryProfessional => 'Professionnel';
+
+  @override
+  String get agendaCategorySchool => 'École';
+
+  @override
+  String get agendaCategoryLeisure => 'Loisirs';
+
+  @override
+  String get agendaCategoryOther => 'Autre';
 }

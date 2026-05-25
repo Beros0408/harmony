@@ -3,6 +3,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:harmony/core/router/route_names.dart';
+import 'package:harmony/features/agenda/data/models/agenda_event.dart';
+import 'package:harmony/features/agenda/data/models/google_calendar_sync.dart';
+import 'package:harmony/features/agenda/data/models/task_item.dart';
+import 'package:harmony/features/agenda/data/repositories/i_agenda_event_repository.dart';
+import 'package:harmony/features/agenda/data/repositories/i_google_calendar_repository.dart';
+import 'package:harmony/features/agenda/data/repositories/i_task_repository.dart';
+import 'package:harmony/features/agenda/logic/agenda_event_cubit.dart';
+import 'package:harmony/features/agenda/logic/calendar_view_cubit.dart';
+import 'package:harmony/features/agenda/logic/google_calendar_cubit.dart';
+import 'package:harmony/features/agenda/logic/task_cubit.dart';
 import 'package:harmony/features/agenda/presentation/screens/agenda_screen.dart';
 import 'package:harmony/features/call_filter/data/models/blacklist_entry.dart';
 import 'package:harmony/features/call_filter/data/repositories/i_blacklist_repository.dart';
@@ -29,6 +39,37 @@ import 'package:harmony/shared/theme/app_theme.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 // ─── Stubs minimalistes ──────────────────────────────────────────────────────
+
+class _EmptyAgendaEventRepo implements IAgendaEventRepository {
+  @override Future<List<AgendaEvent>> getEventsInRange(DateTime from, DateTime to) async => [];
+  @override Future<List<AgendaEvent>> getUpcomingEvents({int limit = 5}) async => [];
+  @override Future<List<AgendaEvent>> getImportantEventsNow() async => [];
+  @override Future<List<AgendaEvent>> searchEvents(String query) async => [];
+  @override Future<void> add(AgendaEvent event) async {}
+  @override Future<void> update(AgendaEvent event) async {}
+  @override Future<void> delete(String id) async {}
+  @override Future<AgendaEvent?> getById(String id) async => null;
+}
+
+class _EmptyTaskRepo implements ITaskRepository {
+  @override Future<List<TaskItem>> getAll() async => [];
+  @override Future<List<TaskItem>> getTasksByQuadrant(EisenhowerQuadrant quadrant) async => [];
+  @override Future<List<TaskItem>> getOverdueTasks() async => [];
+  @override Future<List<TaskItem>> getTasksDueToday() async => [];
+  @override Future<void> add(TaskItem task) async {}
+  @override Future<void> update(TaskItem task) async {}
+  @override Future<void> delete(String id) async {}
+  @override Future<void> toggleComplete(String id) async {}
+}
+
+class _EmptyGoogleCalendarRepo implements IGoogleCalendarRepository {
+  @override Future<bool> isSignedIn() async => false;
+  @override Future<GoogleCalendarSync?> getCurrentAccount() async => null;
+  @override Future<void> signIn() async {}
+  @override Future<void> signOut() async {}
+  @override Future<List<AgendaEvent>> syncFromGoogle() async => [];
+  @override Future<void> syncToGoogle(AgendaEvent event) async {}
+}
 
 class _EmptyBlacklistRepo implements IBlacklistRepository {
   @override Future<List<BlacklistEntry>> getAll() async => [];
@@ -122,6 +163,11 @@ Widget _buildTestApp() => MultiBlocProvider(
         BlocProvider(
           create: (_) => SosCubit(_EmptySosRepo(), _EmptyLocationRepo(), _EmptyLocationService()),
         ),
+        // Sprint 4 — Agenda cubits
+        BlocProvider(create: (_) => AgendaEventCubit(repository: _EmptyAgendaEventRepo())),
+        BlocProvider(create: (_) => CalendarViewCubit()),
+        BlocProvider(create: (_) => TaskCubit(repository: _EmptyTaskRepo())),
+        BlocProvider(create: (_) => GoogleCalendarCubit(repository: _EmptyGoogleCalendarRepo())),
       ],
       child: MaterialApp.router(
         theme: AppTheme.darkTheme,
