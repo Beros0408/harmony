@@ -6,7 +6,11 @@ import '../../features/call_filter/presentation/screens/blacklist_screen.dart';
 import '../../features/call_filter/presentation/screens/call_filter_screen.dart';
 import '../../features/dashboard/presentation/screens/dashboard_screen.dart';
 import '../../features/fitness/presentation/screens/fitness_screen.dart';
+import '../../features/parental/presentation/screens/child_detail_screen.dart';
 import '../../features/parental/presentation/screens/parental_screen.dart';
+import '../../features/parental/presentation/screens/safe_zone_editor_screen.dart';
+import '../../features/parental/presentation/screens/sos_active_screen.dart';
+import '../../features/parental/presentation/screens/trip_history_screen.dart';
 import '../../features/contacts/presentation/screens/contacts_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
 import '../../features/call_log/presentation/screens/call_log_screen.dart';
@@ -117,6 +121,42 @@ final GoRouter appRouter = GoRouter(
       pageBuilder: (context, state) => _slidePage(
         key: state.pageKey,
         child: const BlacklistScreen(),
+      ),
+    ),
+    // ── Sprint 3 — Parental ───────────────────────────────────────────────
+    GoRoute(
+      path: '${RouteNames.childDetail}/:id',
+      pageBuilder: (context, state) => _slidePage(
+        key: state.pageKey,
+        child: ChildDetailScreen(childId: state.pathParameters['id']!),
+      ),
+    ),
+    GoRoute(
+      path: '${RouteNames.childDetail}/:id/history',
+      pageBuilder: (context, state) => _slidePage(
+        key: state.pageKey,
+        child: TripHistoryScreen(childId: state.pathParameters['id']!),
+      ),
+    ),
+    GoRoute(
+      path: RouteNames.safeZoneEditor,
+      pageBuilder: (context, state) => _slidePage(
+        key: state.pageKey,
+        child: const SafeZoneEditorScreen(),
+      ),
+    ),
+    GoRoute(
+      path: '${RouteNames.safeZoneEditor}/:id',
+      pageBuilder: (context, state) => _slidePage(
+        key: state.pageKey,
+        child: SafeZoneEditorScreen(zoneId: state.pathParameters['id']),
+      ),
+    ),
+    GoRoute(
+      path: RouteNames.sosActive,
+      pageBuilder: (context, state) => _slidePage(
+        key: state.pageKey,
+        child: const SosActiveScreen(),
       ),
     ),
   ],

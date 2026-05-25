@@ -10,6 +10,15 @@ import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/auth/presentation/bloc/auth_event.dart';
 import 'features/call_filter/data/repositories/blacklist_repository.dart';
 import 'features/call_filter/logic/blacklist_cubit.dart';
+import 'features/parental/data/repositories/child_profile_repository.dart';
+import 'features/parental/data/repositories/location_repository.dart';
+import 'features/parental/data/repositories/safe_zone_repository.dart';
+import 'features/parental/data/repositories/sos_alert_repository.dart';
+import 'features/parental/data/services/location_service.dart';
+import 'features/parental/logic/child_profile_cubit.dart';
+import 'features/parental/logic/location_cubit.dart';
+import 'features/parental/logic/safe_zone_cubit.dart';
+import 'features/parental/logic/sos_cubit.dart';
 import 'shared/theme/harmony_theme.dart';
 import 'shared/widgets/harmony_responsive_wrapper.dart';
 
@@ -34,6 +43,26 @@ class HarmonyApp extends StatelessWidget {
         BlocProvider(
           create: (_) => BlacklistCubit(BlacklistRepository.instance)
             ..loadEntries(),
+        ),
+        // Sprint 3 — Parental
+        BlocProvider(
+          create: (_) => ChildProfileCubit(ChildProfileRepository.instance),
+        ),
+        BlocProvider(
+          create: (_) => SafeZoneCubit(SafeZoneRepository.instance),
+        ),
+        BlocProvider(
+          create: (_) => LocationCubit(
+            LocationService.instance,
+            LocationRepository.instance,
+          ),
+        ),
+        BlocProvider(
+          create: (_) => SosCubit(
+            SosAlertRepository.instance,
+            LocationRepository.instance,
+            LocationService.instance,
+          ),
         ),
       ],
       child: BlocBuilder<LanguageCubit, Locale>(

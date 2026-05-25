@@ -1345,6 +1345,162 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Autre'**
   String get blacklistReasonOther;
+
+  /// No description provided for @familyChildrenSection.
+  ///
+  /// In fr, this message translates to:
+  /// **'MES ENFANTS'**
+  String get familyChildrenSection;
+
+  /// No description provided for @familyMapSection.
+  ///
+  /// In fr, this message translates to:
+  /// **'LOCALISATION EN TEMPS RÉEL'**
+  String get familyMapSection;
+
+  /// No description provided for @familyZonesSection.
+  ///
+  /// In fr, this message translates to:
+  /// **'ZONES AUTORISÉES'**
+  String get familyZonesSection;
+
+  /// No description provided for @familyAddZoneFAB.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter une zone'**
+  String get familyAddZoneFAB;
+
+  /// No description provided for @childDetailTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Détail de l\'enfant'**
+  String get childDetailTitle;
+
+  /// No description provided for @childAtZone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dans : {name}'**
+  String childAtZone(String name);
+
+  /// No description provided for @childInTransit.
+  ///
+  /// In fr, this message translates to:
+  /// **'En déplacement'**
+  String get childInTransit;
+
+  /// No description provided for @childSecurityScore.
+  ///
+  /// In fr, this message translates to:
+  /// **'Score {value}'**
+  String childSecurityScore(int value);
+
+  /// No description provided for @zoneEditorAddTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouvelle zone'**
+  String get zoneEditorAddTitle;
+
+  /// No description provided for @zoneEditorEditTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier la zone'**
+  String get zoneEditorEditTitle;
+
+  /// No description provided for @zoneFieldName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom de la zone'**
+  String get zoneFieldName;
+
+  /// No description provided for @zoneFieldRadius.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rayon'**
+  String get zoneFieldRadius;
+
+  /// No description provided for @zoneFieldIcon.
+  ///
+  /// In fr, this message translates to:
+  /// **'Icône'**
+  String get zoneFieldIcon;
+
+  /// No description provided for @zoneIconHome.
+  ///
+  /// In fr, this message translates to:
+  /// **'Maison'**
+  String get zoneIconHome;
+
+  /// No description provided for @zoneIconSchool.
+  ///
+  /// In fr, this message translates to:
+  /// **'École'**
+  String get zoneIconSchool;
+
+  /// No description provided for @zoneIconSport.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sport'**
+  String get zoneIconSport;
+
+  /// No description provided for @zoneIconOther.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autre'**
+  String get zoneIconOther;
+
+  /// No description provided for @sosButtonLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'SOS'**
+  String get sosButtonLabel;
+
+  /// No description provided for @sosHoldHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Maintenez 3 secondes pour déclencher'**
+  String get sosHoldHint;
+
+  /// No description provided for @sosActiveTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'SOS ACTIF'**
+  String get sosActiveTitle;
+
+  /// No description provided for @sosActiveCountdown.
+  ///
+  /// In fr, this message translates to:
+  /// **'Appel dans'**
+  String get sosActiveCountdown;
+
+  /// No description provided for @sosActiveCancel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler le SOS'**
+  String get sosActiveCancel;
+
+  /// No description provided for @sosCancelConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Êtes-vous en sécurité ?'**
+  String get sosCancelConfirm;
+
+  /// No description provided for @permissionLocationTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Localisation requise'**
+  String get permissionLocationTitle;
+
+  /// No description provided for @permissionLocationBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Harmony a besoin de votre position pour surveiller les zones'**
+  String get permissionLocationBody;
+
+  /// No description provided for @permissionLocationGrant.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autoriser'**
+  String get permissionLocationGrant;
 }
 
 class _AppLocalizationsDelegate

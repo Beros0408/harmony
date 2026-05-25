@@ -2,11 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'app.dart';
 import 'features/call_filter/data/repositories/blacklist_repository.dart';
+import 'features/parental/data/repositories/child_profile_repository.dart';
+import 'features/parental/data/repositories/safe_zone_repository.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('fr_FR');
+
+  // Repositories existants
   await BlacklistRepository.instance.init();
+
+  // Sprint 3 — Repositories parental (seed des enfants + zones par défaut)
+  await ChildProfileRepository.instance.init();
+  await SafeZoneRepository.instance.init();
 
   // Push blacklist snapshot to Kotlin CallDecisionEngine at startup.
   // Runs after the first frame so the MethodChannel is bound and ready.

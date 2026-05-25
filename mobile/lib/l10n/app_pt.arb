@@ -242,5 +242,38 @@
   "blacklistReasonSpam": "Spam",
   "blacklistReasonTelemarketing": "Telemarketing",
   "blacklistReasonHarassment": "Assédio",
-  "blacklistReasonOther": "Outro"
+  "blacklistReasonOther": "Outro",
+
+  "familyChildrenSection": "MEUS FILHOS",
+  "familyMapSection": "LOCALIZAÇÃO EM TEMPO REAL",
+  "familyZonesSection": "ZONAS SEGURAS",
+  "familyAddZoneFAB": "Adicionar zona",
+  "childDetailTitle": "Detalhe da criança",
+  "childAtZone": "Em: {name}",
+  "@childAtZone": {
+    "placeholders": {"name": {"type": "String"}}
+  },
+  "childInTransit": "Em trânsito",
+  "childSecurityScore": "Pontuação {value}",
+  "@childSecurityScore": {
+    "placeholders": {"value": {"type": "int"}}
+  },
+  "zoneEditorAddTitle": "Nova zona",
+  "zoneEditorEditTitle": "Editar zona",
+  "zoneFieldName": "Nome da zona",
+  "zoneFieldRadius": "Raio",
+  "zoneFieldIcon": "Ícone",
+  "zoneIconHome": "Casa",
+  "zoneIconSchool": "Escola",
+  "zoneIconSport": "Esporte",
+  "zoneIconOther": "Outro",
+  "sosButtonLabel": "SOS",
+  "sosHoldHint": "Segure 3 segundos para acionar",
+  "sosActiveTitle": "SOS ATIVO",
+  "sosActiveCountdown": "Ligando em",
+  "sosActiveCancel": "Cancelar SOS",
+  "sosCancelConfirm": "Você está seguro?",
+  "permissionLocationTitle": "Localização necessária",
+  "permissionLocationBody": "Harmony precisa da sua localização para monitorar as zonas",
+  "permissionLocationGrant": "Permitir"
 }
