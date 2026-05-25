@@ -242,5 +242,38 @@
   "blacklistReasonSpam": "Spam",
   "blacklistReasonTelemarketing": "Telemarketing",
   "blacklistReasonHarassment": "Harassment",
-  "blacklistReasonOther": "Other"
+  "blacklistReasonOther": "Other",
+
+  "familyChildrenSection": "MY CHILDREN",
+  "familyMapSection": "REAL-TIME LOCATION",
+  "familyZonesSection": "SAFE ZONES",
+  "familyAddZoneFAB": "Add zone",
+  "childDetailTitle": "Child detail",
+  "childAtZone": "At: {name}",
+  "@childAtZone": {
+    "placeholders": {"name": {"type": "String"}}
+  },
+  "childInTransit": "In transit",
+  "childSecurityScore": "Score {value}",
+  "@childSecurityScore": {
+    "placeholders": {"value": {"type": "int"}}
+  },
+  "zoneEditorAddTitle": "New zone",
+  "zoneEditorEditTitle": "Edit zone",
+  "zoneFieldName": "Zone name",
+  "zoneFieldRadius": "Radius",
+  "zoneFieldIcon": "Icon",
+  "zoneIconHome": "Home",
+  "zoneIconSchool": "School",
+  "zoneIconSport": "Sport",
+  "zoneIconOther": "Other",
+  "sosButtonLabel": "SOS",
+  "sosHoldHint": "Hold 3 seconds to trigger",
+  "sosActiveTitle": "SOS ACTIVE",
+  "sosActiveCountdown": "Calling in",
+  "sosActiveCancel": "Cancel SOS",
+  "sosCancelConfirm": "Are you safe?",
+  "permissionLocationTitle": "Location required",
+  "permissionLocationBody": "Harmony needs your location to monitor safe zones",
+  "permissionLocationGrant": "Allow"
 }

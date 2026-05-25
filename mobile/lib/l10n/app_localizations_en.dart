@@ -685,4 +685,87 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get blacklistReasonOther => 'Other';
+
+  @override
+  String get familyChildrenSection => 'MY CHILDREN';
+
+  @override
+  String get familyMapSection => 'REAL-TIME LOCATION';
+
+  @override
+  String get familyZonesSection => 'SAFE ZONES';
+
+  @override
+  String get familyAddZoneFAB => 'Add zone';
+
+  @override
+  String get childDetailTitle => 'Child detail';
+
+  @override
+  String childAtZone(String name) {
+    return 'At: $name';
+  }
+
+  @override
+  String get childInTransit => 'In transit';
+
+  @override
+  String childSecurityScore(int value) {
+    return 'Score $value';
+  }
+
+  @override
+  String get zoneEditorAddTitle => 'New zone';
+
+  @override
+  String get zoneEditorEditTitle => 'Edit zone';
+
+  @override
+  String get zoneFieldName => 'Zone name';
+
+  @override
+  String get zoneFieldRadius => 'Radius';
+
+  @override
+  String get zoneFieldIcon => 'Icon';
+
+  @override
+  String get zoneIconHome => 'Home';
+
+  @override
+  String get zoneIconSchool => 'School';
+
+  @override
+  String get zoneIconSport => 'Sport';
+
+  @override
+  String get zoneIconOther => 'Other';
+
+  @override
+  String get sosButtonLabel => 'SOS';
+
+  @override
+  String get sosHoldHint => 'Hold 3 seconds to trigger';
+
+  @override
+  String get sosActiveTitle => 'SOS ACTIVE';
+
+  @override
+  String get sosActiveCountdown => 'Calling in';
+
+  @override
+  String get sosActiveCancel => 'Cancel SOS';
+
+  @override
+  String get sosCancelConfirm => 'Are you safe?';
+
+  @override
+  String get permissionLocationTitle => 'Location required';
+
+  @override
+  String get permissionLocationBody =>
+      'Harmony needs your location to monitor safe zones';
+
+  @override
+  String get permissionLocationGrant => 'Allow';
 }
