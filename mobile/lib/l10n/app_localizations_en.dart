@@ -643,4 +643,46 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get filterModeCurrentActive => 'Active mode';
+
+  @override
+  String get blacklistScreenTitle => 'Blocklist';
+
+  @override
+  String get blacklistSearchHint => 'Search a number or label...';
+
+  @override
+  String get blacklistEmptyTitle => 'No blocked numbers';
+
+  @override
+  String get blacklistAddTitle => 'Add a number';
+
+  @override
+  String get blacklistEditTitle => 'Edit entry';
+
+  @override
+  String get blacklistPhoneLabel => 'Phone number';
+
+  @override
+  String get blacklistPhoneHint => '+33 6 12 34 56 78';
+
+  @override
+  String get blacklistLabelHint => 'Label (optional)';
+
+  @override
+  String get blacklistReasonLabel => 'Block reason';
+
+  @override
+  String get blacklistSaveButton => 'Save';
+
+  @override
+  String get blacklistReasonSpam => 'Spam';
+
+  @override
+  String get blacklistReasonTelemarketing => 'Telemarketing';
+
+  @override
+  String get blacklistReasonHarassment => 'Harassment';
+
+  @override
+  String get blacklistReasonOther => 'Other';
 }

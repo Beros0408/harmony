@@ -271,3 +271,35 @@ f36a7cb feat(ui): Sprint B — rich mockup screens for all 4 modules
 ---
 
 *Ce fichier est la référence opérationnelle du projet. Mise à jour automatique par script PowerShell.*
+
+
+## Mini-Sprint 1.5 - Blacklist UI + Sync natif
+
+- Date : 2026-05-25 02:56
+- Branche : fix/sprint-1.5-blacklist-ui-sync
+- Tag : v1.1.1-blacklist-ui-sync
+
+### Objectif
+
+Boucler la chaine UI Flutter -> SQLCipher -> Kotlin natif pour blocage IRL.
+Sprint 1 avait livre le natif (0ms latence) mais snapshot etait vide.
+
+### Resultats
+
+- Tests Flutter : 117/117 verts
+- Tests Kotlin JUnit : 13/13 verts
+- flutter analyze : 0 issues
+- Lignes ajoutees : 1746
+- Fichiers modifies : 29
+
+### Validation E2E IRL
+
+Test reel sur emulateur Android Pixel 7 :
+- Ajout du numero +33123456789 via FAB BlacklistScreen
+- adb emu gsm call +33123456789
+- Logs Kotlin : Snapshot actif blacklist=4 + bloquer=true
+- Telecom : SCREENING_COMPLETED [Reject], mIsBlocked=true
+- Emulateur silencieux pendant toute la duree de l'appel
+
+KPI latence : 0ms (cahier des charges < 200ms) - marge 200x
+

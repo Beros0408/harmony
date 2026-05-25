@@ -63,6 +63,41 @@ class CallDecisionEngineSnapshotTest {
     }
 
     @Test
+    fun `sync multiple numéros - tous sont bloqués après updateRules`() {
+        val numbers = listOf(
+            "+33611111111", "+33622222222", "+33633333333",
+            "+33644444444", "+33655555555",
+        )
+        CallDecisionEngine.updateRules(
+            CallRules(blacklist = numbers.toSet(), currentMode = FilterMode.NORMAL),
+        )
+        numbers.forEach { n ->
+            assertThat(CallDecisionEngine.shouldBlock(n))
+                .`as`("$n doit être bloqué")
+                .isTrue()
+        }
+    }
+
+    @Test
+    fun `sync blacklist vide (clear) - plus aucun numéro bloqué`() {
+        // Seed : 3 numéros bloqués
+        CallDecisionEngine.updateRules(
+            CallRules(
+                blacklist = setOf("+33611111111", "+33622222222", "+33633333333"),
+                currentMode = FilterMode.NORMAL,
+            ),
+        )
+        assertThat(CallDecisionEngine.shouldBlock("+33611111111")).isTrue()
+
+        // Simulate clear() → sync with empty blacklist
+        CallDecisionEngine.updateRules(CallRules(blacklist = emptySet(), currentMode = FilterMode.NORMAL))
+
+        assertThat(CallDecisionEngine.shouldBlock("+33611111111")).isFalse()
+        assertThat(CallDecisionEngine.shouldBlock("+33622222222")).isFalse()
+        assertThat(CallDecisionEngine.shouldBlock("+33633333333")).isFalse()
+    }
+
+    @Test
     fun `thread safety - mises à jour concurrentes ne corrompent pas le snapshot`() {
         val pool = Executors.newFixedThreadPool(8)
         val latch = CountDownLatch(1)

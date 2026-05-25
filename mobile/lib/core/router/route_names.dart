@@ -13,4 +13,5 @@ class RouteNames {
   static const String voicemail = '/voicemail';
   static const String callLog = '/call-log';
   static const String settings = '/settings';
+  static const String blacklist = '/blacklist';
 }

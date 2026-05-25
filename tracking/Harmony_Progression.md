@@ -181,3 +181,36 @@ OAuth2 Google/Apple Calendar, lien filtrage ↔ événements, tests d'intégrati
 ---
 
 *Ce fichier est mis à jour à chaque fin de sprint via le script PowerShell de sauvegarde.*
+
+
+## Sprint 1.5 - UI Blacklist interactive + Sync Flutter/Kotlin (TERMINE)
+
+- Date : 2026-05-25 02:56
+- Tag : v1.1.1-blacklist-ui-sync
+- Branche : fix/sprint-1.5-blacklist-ui-sync
+- Tests Flutter : 117/117 verts
+- Tests Kotlin : 13/13 verts
+- flutter analyze : 0 issues
+- Lignes ajoutees : 1746
+
+### Livrables
+
+- DatabaseHelper SQLCipher singleton (harmony.db, AES-256)
+- BlacklistEntry model Equatable + BlockReason enum
+- BlacklistRepository CRUD complet + normalisation E.164
+- BlacklistCubit avec syncToNative automatique
+- BlacklistScreen route /blacklist + HarmonySearchBar + FAB
+- BlacklistFormSheet BottomSheet add/edit
+- CallFilterScreen tile tappable + compteur dynamique
+- 14 cles i18n x 5 langues (fr/en/es/pt/it)
+
+### Validation E2E en conditions reelles
+
+adb emu gsm call +33123456789
+  -> HarmonyCallScreening: Snapshot actif : blacklist=4
+  -> HarmonyCallScreening: Decision en 0ms : bloquer=true
+  -> Telecom: SCREENING_COMPLETED [Reject], mIsBlocked=true
+  -> Emulateur silencieux : aucune sonnerie, aucune notif
+
+KPI cahier des charges (latence < 200ms) : VALIDE a 0ms IRL (marge 200x)
+

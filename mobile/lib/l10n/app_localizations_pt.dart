@@ -644,4 +644,46 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get filterModeCurrentActive => 'Modo ativo';
+
+  @override
+  String get blacklistScreenTitle => 'Lista negra';
+
+  @override
+  String get blacklistSearchHint => 'Pesquisar número ou etiqueta...';
+
+  @override
+  String get blacklistEmptyTitle => 'Nenhum número bloqueado';
+
+  @override
+  String get blacklistAddTitle => 'Adicionar número';
+
+  @override
+  String get blacklistEditTitle => 'Editar entrada';
+
+  @override
+  String get blacklistPhoneLabel => 'Número de telefone';
+
+  @override
+  String get blacklistPhoneHint => '+33 6 12 34 56 78';
+
+  @override
+  String get blacklistLabelHint => 'Etiqueta (opcional)';
+
+  @override
+  String get blacklistReasonLabel => 'Motivo do bloqueio';
+
+  @override
+  String get blacklistSaveButton => 'Guardar';
+
+  @override
+  String get blacklistReasonSpam => 'Spam';
+
+  @override
+  String get blacklistReasonTelemarketing => 'Telemarketing';
+
+  @override
+  String get blacklistReasonHarassment => 'Assédio';
+
+  @override
+  String get blacklistReasonOther => 'Outro';
 }

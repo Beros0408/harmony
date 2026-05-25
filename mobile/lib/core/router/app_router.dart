@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/agenda/presentation/screens/agenda_screen.dart';
 import '../../features/auth/presentation/screens/auth_screen.dart';
+import '../../features/call_filter/presentation/screens/blacklist_screen.dart';
 import '../../features/call_filter/presentation/screens/call_filter_screen.dart';
 import '../../features/dashboard/presentation/screens/dashboard_screen.dart';
 import '../../features/fitness/presentation/screens/fitness_screen.dart';
@@ -109,6 +110,13 @@ final GoRouter appRouter = GoRouter(
       pageBuilder: (context, state) => _slidePage(
         key: state.pageKey,
         child: const SettingsScreen(),
+      ),
+    ),
+    GoRoute(
+      path: RouteNames.blacklist,
+      pageBuilder: (context, state) => _slidePage(
+        key: state.pageKey,
+        child: const BlacklistScreen(),
       ),
     ),
   ],

@@ -8,6 +8,8 @@ import 'core/theme/theme_cubit.dart';
 import 'features/auth/data/repositories/auth_repository.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/auth/presentation/bloc/auth_event.dart';
+import 'features/call_filter/data/repositories/blacklist_repository.dart';
+import 'features/call_filter/logic/blacklist_cubit.dart';
 import 'shared/theme/harmony_theme.dart';
 import 'shared/widgets/harmony_responsive_wrapper.dart';
 
@@ -28,6 +30,10 @@ class HarmonyApp extends StatelessWidget {
           create: (_) => AuthBloc(
             repository: AuthRepository(storage: SecureStorageService()),
           )..add(const AuthCheckRequested()),
+        ),
+        BlocProvider(
+          create: (_) => BlacklistCubit(BlacklistRepository.instance)
+            ..loadEntries(),
         ),
       ],
       child: BlocBuilder<LanguageCubit, Locale>(

@@ -6,8 +6,9 @@ import 'features/call_filter/data/repositories/blacklist_repository.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('fr_FR');
+  await BlacklistRepository.instance.init();
 
-  // Push blacklist/whitelist snapshot to Kotlin CallDecisionEngine at startup.
+  // Push blacklist snapshot to Kotlin CallDecisionEngine at startup.
   // Runs after the first frame so the MethodChannel is bound and ready.
   WidgetsBinding.instance.addPostFrameCallback((_) async {
     await BlacklistRepository.instance.syncToNative();
