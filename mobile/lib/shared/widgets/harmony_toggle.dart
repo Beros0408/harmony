@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_spacing.dart';
-import '../../core/constants/app_typography.dart';
 
 class HarmonyToggle extends StatelessWidget {
   const HarmonyToggle({
@@ -17,6 +16,8 @@ class HarmonyToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+
     return GestureDetector(
       onTap: () => onChanged(!value),
       behavior: HitTestBehavior.opaque,
@@ -26,8 +27,8 @@ class HarmonyToggle extends StatelessWidget {
           if (label != null) ...[
             Text(
               label!,
-              style: AppTypography.textTheme.bodyMedium?.copyWith(
-                color: value ? AppColors.textPrimary : AppColors.textSecondary,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: value ? cs.onSurface : cs.onSurfaceVariant,
               ),
             ),
             const SizedBox(width: AppSpacing.md),
@@ -52,6 +53,8 @@ class _ToggleTrack extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
       curve: Curves.easeInOut,
@@ -59,9 +62,9 @@ class _ToggleTrack extends StatelessWidget {
       height: _height,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(_height / 2),
-        color: value ? AppColors.accentGreen : AppColors.bgElevated,
+        color: value ? AppColors.accentGreen : cs.surfaceContainerHighest,
         border: Border.all(
-          color: value ? AppColors.accentGreen : AppColors.borderDefault,
+          color: value ? AppColors.accentGreen : cs.outline,
         ),
       ),
       child: Stack(
@@ -76,7 +79,7 @@ class _ToggleTrack extends StatelessWidget {
               height: _thumbSize,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: value ? AppColors.white : AppColors.textMuted,
+                color: value ? AppColors.white : cs.onSurfaceVariant,
                 boxShadow: const [
                   BoxShadow(
                     color: Color(0x33000000),

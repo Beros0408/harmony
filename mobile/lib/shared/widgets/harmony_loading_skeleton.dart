@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_radius.dart';
 
 class HarmonyLoadingSkeleton extends StatefulWidget {
@@ -43,6 +42,8 @@ class _HarmonyLoadingSkeletonState extends State<HarmonyLoadingSkeleton>
 
   @override
   Widget build(BuildContext context) {
+    final baseColor = Theme.of(context).colorScheme.surfaceContainerHighest;
+
     return AnimatedBuilder(
       animation: _animation,
       builder: (context, _) {
@@ -50,7 +51,7 @@ class _HarmonyLoadingSkeletonState extends State<HarmonyLoadingSkeleton>
           width: widget.width,
           height: widget.height,
           decoration: BoxDecoration(
-            color: AppColors.bgElevated.withValues(alpha: _animation.value + 0.3),
+            color: baseColor.withValues(alpha: _animation.value + 0.3),
             borderRadius: widget.borderRadius ?? AppRadius.smRadius,
           ),
         );

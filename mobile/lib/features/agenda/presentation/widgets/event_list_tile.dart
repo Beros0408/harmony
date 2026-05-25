@@ -4,7 +4,6 @@ import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_radius.dart';
 import '../../../../core/constants/app_spacing.dart';
-import '../../../../core/constants/app_typography.dart';
 import '../../data/models/agenda_event.dart';
 import 'category_chip.dart';
 
@@ -24,15 +23,16 @@ class EventListTile extends StatelessWidget {
     final startStr = timeFormat.format(event.startDate);
     final endStr = timeFormat.format(event.endDate);
     final color = event.color;
+    final cs = Theme.of(context).colorScheme;
 
     return GestureDetector(
       onTap: onTap,
       child: Container(
         margin: const EdgeInsets.only(bottom: AppSpacing.sm),
         decoration: BoxDecoration(
-          color: AppColors.bgSurface,
+          color: cs.surface,
           borderRadius: AppRadius.lgRadius,
-          border: Border.all(color: AppColors.borderSubtle),
+          border: Border.all(color: cs.outlineVariant),
         ),
         child: IntrinsicHeight(
           child: Row(
@@ -64,14 +64,14 @@ class EventListTile extends StatelessWidget {
                           children: [
                             Text(
                               startStr,
-                              style: AppTypography.textTheme.labelSmall?.copyWith(
-                                color: AppColors.textSecondary,
+                              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                color: cs.onSurfaceVariant,
                               ),
                             ),
                             Text(
                               endStr,
-                              style: AppTypography.textTheme.labelSmall?.copyWith(
-                                color: AppColors.textMuted,
+                              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                color: cs.onSurfaceVariant.withValues(alpha: 0.6),
                               ),
                             ),
                           ],
@@ -86,7 +86,7 @@ class EventListTile extends StatelessWidget {
                           children: [
                             Text(
                               event.title,
-                              style: AppTypography.textTheme.labelMedium,
+                              style: Theme.of(context).textTheme.labelMedium,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -95,18 +95,17 @@ class EventListTile extends StatelessWidget {
                               const SizedBox(height: 2),
                               Row(
                                 children: [
-                                  const Icon(
+                                  Icon(
                                     Icons.location_on_outlined,
                                     size: 11,
-                                    color: AppColors.textMuted,
+                                    color: cs.onSurfaceVariant,
                                   ),
                                   const SizedBox(width: 2),
                                   Expanded(
                                     child: Text(
                                       event.location!,
-                                      style:
-                                          AppTypography.textTheme.bodySmall?.copyWith(
-                                        color: AppColors.textMuted,
+                                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                        color: cs.onSurfaceVariant,
                                       ),
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,

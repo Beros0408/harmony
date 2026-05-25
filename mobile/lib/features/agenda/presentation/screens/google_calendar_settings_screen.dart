@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_radius.dart';
 import '../../../../core/constants/app_spacing.dart';
-import '../../../../core/constants/app_typography.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/harmony_app_bar.dart';
 import '../../../../shared/widgets/harmony_button.dart';
@@ -32,7 +31,6 @@ class _GoogleCalendarSettingsScreenState
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: AppColors.bgBase,
       appBar: HarmonyAppBar(title: l10n.agendaGoogleTitle),
       body: BlocBuilder<GoogleCalendarCubit, GoogleCalendarState>(
         builder: (context, state) {
@@ -73,7 +71,7 @@ class _GoogleCalendarSettingsScreenState
                       color: AppColors.accentRed,),
                   label: Text(
                     l10n.agendaGoogleDisconnect,
-                    style: AppTypography.textTheme.labelLarge
+                    style: Theme.of(context).textTheme.labelLarge
                         ?.copyWith(color: AppColors.accentRed),
                   ),
                   style: OutlinedButton.styleFrom(
@@ -99,7 +97,7 @@ class _GoogleCalendarSettingsScreenState
                   ),
                   child: Text(
                     state.error!,
-                    style: AppTypography.textTheme.bodySmall
+                    style: Theme.of(context).textTheme.bodySmall
                         ?.copyWith(color: AppColors.accentRed),
                   ),
                 ),
@@ -120,17 +118,18 @@ class _StatusCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final locale = Localizations.localeOf(context).languageCode;
+    final cs = Theme.of(context).colorScheme;
 
     final isConnected = state.isConnected;
     final statusColor =
-        isConnected ? AppColors.accentGreen : AppColors.textMuted;
+        isConnected ? AppColors.accentGreen : cs.onSurfaceVariant;
 
     return Container(
       padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
-        color: AppColors.bgSurface,
+        color: cs.surface,
         borderRadius: AppRadius.lgRadius,
-        border: Border.all(color: AppColors.borderSubtle),
+        border: Border.all(color: cs.outlineVariant),
       ),
       child: Row(
         children: [
@@ -157,30 +156,30 @@ class _StatusCard extends StatelessWidget {
                   isConnected
                       ? l10n.agendaGoogleConnectedAs
                       : l10n.agendaGoogleNotConnected,
-                  style: AppTypography.textTheme.labelMedium,
+                  style: Theme.of(context).textTheme.labelMedium,
                 ),
                 if (state.account != null) ...[
                   const SizedBox(height: 2),
                   Text(
                     state.account!.accountEmail,
-                    style: AppTypography.textTheme.bodySmall
-                        ?.copyWith(color: AppColors.textSecondary),
+                    style: Theme.of(context).textTheme.bodySmall
+                        ?.copyWith(color: cs.onSurfaceVariant),
                   ),
                   if (state.account!.lastSyncAt != null) ...[
                     const SizedBox(height: 2),
                     Text(
                       '${l10n.agendaGoogleLastSync} '
                       '${DateFormat.yMd(locale).add_Hm().format(state.account!.lastSyncAt!)}',
-                      style: AppTypography.textTheme.bodySmall
-                          ?.copyWith(color: AppColors.textMuted),
+                      style: Theme.of(context).textTheme.bodySmall
+                          ?.copyWith(color: cs.onSurfaceVariant),
                     ),
                   ],
                 ] else ...[
                   const SizedBox(height: 2),
                   Text(
                     '—',
-                    style: AppTypography.textTheme.bodySmall
-                        ?.copyWith(color: AppColors.textMuted),
+                    style: Theme.of(context).textTheme.bodySmall
+                        ?.copyWith(color: cs.onSurfaceVariant),
                   ),
                 ],
               ],

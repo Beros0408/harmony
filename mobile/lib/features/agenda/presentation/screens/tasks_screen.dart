@@ -5,7 +5,6 @@ import 'package:uuid/uuid.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_radius.dart';
 import '../../../../core/constants/app_spacing.dart';
-import '../../../../core/constants/app_typography.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/harmony_app_bar.dart';
 import '../../../../shared/widgets/harmony_empty_state.dart';
@@ -30,9 +29,9 @@ class _TasksScreenState extends State<TasksScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final cs = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: AppColors.bgBase,
       appBar: HarmonyAppBar(title: l10n.agendaTasksTitle),
       body: BlocBuilder<TaskCubit, TaskState>(
         builder: (context, state) {
@@ -96,7 +95,7 @@ class _TasksScreenState extends State<TasksScreen> {
                           _QuadrantCard(
                             title: l10n.agendaTasksQuadrantDelete,
                             quadrant: EisenhowerQuadrant.delete,
-                            color: AppColors.textMuted,
+                            color: cs.onSurfaceVariant,
                             tasks: quadrantMap[EisenhowerQuadrant.delete]!,
                           ),
                         ],
@@ -112,16 +111,18 @@ class _TasksScreenState extends State<TasksScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showAddTaskSheet(context),
         backgroundColor: AppColors.accentBlue,
-        foregroundColor: AppColors.textInverse,
+        foregroundColor: Colors.white,
         child: const Icon(Icons.add),
       ),
     );
   }
 
   Future<void> _showAddTaskSheet(BuildContext context) async {
+    final cs = Theme.of(context).colorScheme;
+
     await showModalBottomSheet<void>(
       context: context,
-      backgroundColor: AppColors.bgElevated,
+      backgroundColor: cs.surfaceContainerHighest,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
@@ -151,10 +152,12 @@ class _QuadrantCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+
     return Container(
       padding: const EdgeInsets.all(AppSpacing.sm),
       decoration: BoxDecoration(
-        color: AppColors.bgSurface,
+        color: cs.surface,
         borderRadius: AppRadius.mdRadius,
         border: Border(top: BorderSide(color: color, width: 3)),
       ),
@@ -163,7 +166,7 @@ class _QuadrantCard extends StatelessWidget {
         children: [
           Text(
             title,
-            style: AppTypography.textTheme.labelSmall?.copyWith(color: color),
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(color: color),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -173,8 +176,8 @@ class _QuadrantCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
               child: Text(
                 '—',
-                style: AppTypography.textTheme.bodySmall
-                    ?.copyWith(color: AppColors.textMuted),
+                style: Theme.of(context).textTheme.bodySmall
+                    ?.copyWith(color: cs.onSurfaceVariant),
               ),
             )
           else
@@ -196,6 +199,8 @@ class _TaskRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 3),
       child: Row(
@@ -207,19 +212,17 @@ class _TaskRow extends StatelessWidget {
                   ? Icons.check_circle_rounded
                   : Icons.radio_button_unchecked,
               size: 18,
-              color: task.completed ? AppColors.accentGreen : AppColors.textMuted,
+              color: task.completed ? AppColors.accentGreen : cs.onSurfaceVariant,
             ),
           ),
           const SizedBox(width: AppSpacing.xs),
           Expanded(
             child: Text(
               task.title,
-              style: AppTypography.textTheme.bodySmall?.copyWith(
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 decoration:
                     task.completed ? TextDecoration.lineThrough : null,
-                color: task.completed
-                    ? AppColors.textMuted
-                    : AppColors.textPrimary,
+                color: task.completed ? cs.onSurfaceVariant : cs.onSurface,
               ),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
@@ -227,10 +230,10 @@ class _TaskRow extends StatelessWidget {
           ),
           GestureDetector(
             onTap: () => context.read<TaskCubit>().deleteTask(task.id),
-            child: const Icon(
+            child: Icon(
               Icons.close,
               size: 14,
-              color: AppColors.textMuted,
+              color: cs.onSurfaceVariant,
             ),
           ),
         ],
@@ -275,7 +278,7 @@ class _AddTaskSheetState extends State<_AddTaskSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(l10n.agendaTasksAdd, style: AppTypography.textTheme.titleSmall),
+          Text(l10n.agendaTasksAdd, style: Theme.of(context).textTheme.titleSmall),
           const SizedBox(height: AppSpacing.md),
           HarmonyTextField(controller: _ctrl, label: l10n.agendaEditorFieldTitle),
           const SizedBox(height: AppSpacing.md),
@@ -311,7 +314,7 @@ class _AddTaskSheetState extends State<_AddTaskSheet> {
               onPressed: _add,
               style: FilledButton.styleFrom(
                 backgroundColor: AppColors.accentBlue,
-                foregroundColor: AppColors.textInverse,
+                foregroundColor: Colors.white,
               ),
               child: Text(l10n.agendaTasksAdd),
             ),
@@ -354,13 +357,15 @@ class _EnumSelector<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+
     return Row(
       children: [
         SizedBox(
           width: 80,
           child: Text(label,
-              style: AppTypography.textTheme.labelSmall
-                  ?.copyWith(color: AppColors.textSecondary),),
+              style: Theme.of(context).textTheme.labelSmall
+                  ?.copyWith(color: cs.onSurfaceVariant),),
         ),
         ...values.map((v) {
           final isSelected = v == selected;
@@ -375,20 +380,20 @@ class _EnumSelector<T> extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: isSelected
                       ? AppColors.accentBlue.withValues(alpha: 0.2)
-                      : AppColors.bgSurface,
+                      : cs.surface,
                   borderRadius: AppRadius.smRadius,
                   border: Border.all(
                     color: isSelected
                         ? AppColors.accentBlue
-                        : AppColors.borderDefault,
+                        : cs.outline,
                   ),
                 ),
                 child: Text(
                   labelOf(v),
-                  style: AppTypography.textTheme.labelSmall?.copyWith(
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
                     color: isSelected
                         ? AppColors.accentBlue
-                        : AppColors.textSecondary,
+                        : cs.onSurfaceVariant,
                   ),
                 ),
               ),

@@ -33,22 +33,22 @@ class _AgendaScreenState extends State<AgendaScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final cs = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: AppColors.bgBase,
       appBar: HarmonyAppBar(
         title: l10n.agendaScreenTitle,
         actions: [
           // Raccourci tâches
           IconButton(
             tooltip: l10n.agendaTasksShortcut,
-            icon: const Icon(Icons.checklist_rounded, color: AppColors.textSecondary),
+            icon: Icon(Icons.checklist_rounded, color: cs.onSurfaceVariant),
             onPressed: () => context.push(RouteNames.agendaTasks),
           ),
           // Raccourci Google Calendar
           IconButton(
             tooltip: l10n.agendaGoogleShortcut,
-            icon: const Icon(Icons.sync_rounded, color: AppColors.textSecondary),
+            icon: Icon(Icons.sync_rounded, color: cs.onSurfaceVariant),
             onPressed: () => context.push(RouteNames.agendaGoogle),
           ),
         ],
@@ -56,16 +56,16 @@ class _AgendaScreenState extends State<AgendaScreen> {
       body: Column(
         children: [
           _CalendarSection(),
-          const Divider(height: 1, color: AppColors.borderSubtle),
+          Divider(height: 1, color: cs.outlineVariant),
           Expanded(child: _EventsSection()),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push(RouteNames.agendaEventEdit),
         backgroundColor: AppColors.accentBlue,
-        foregroundColor: AppColors.textInverse,
+        foregroundColor: Colors.white,
         icon: const Icon(Icons.add),
-        label: Text(l10n.agendaCreateButton, style: AppTypography.textTheme.labelLarge),
+        label: Text(l10n.agendaCreateButton, style: AppTypography.textTheme.labelLarge?.copyWith(color: Colors.white)),
       ),
     );
   }
@@ -76,6 +76,9 @@ class _AgendaScreenState extends State<AgendaScreen> {
 class _CalendarSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
+
     return BlocBuilder<CalendarViewCubit, CalendarViewState>(
       builder: (context, viewState) {
         return BlocBuilder<AgendaEventCubit, AgendaEventState>(
@@ -100,12 +103,9 @@ class _CalendarSection extends StatelessWidget {
               eventLoader: (day) => eventState.eventsForDay(day),
               calendarStyle: CalendarStyle(
                 outsideDaysVisible: false,
-                defaultTextStyle: AppTypography.textTheme.bodyMedium!
-                    .copyWith(color: AppColors.textPrimary),
-                weekendTextStyle: AppTypography.textTheme.bodyMedium!
-                    .copyWith(color: AppColors.textSecondary),
-                outsideTextStyle: AppTypography.textTheme.bodyMedium!
-                    .copyWith(color: AppColors.textMuted),
+                defaultTextStyle: tt.bodyMedium!.copyWith(color: cs.onSurface),
+                weekendTextStyle: tt.bodyMedium!.copyWith(color: cs.onSurfaceVariant),
+                outsideTextStyle: tt.bodyMedium!.copyWith(color: cs.outlineVariant),
                 selectedDecoration: const BoxDecoration(
                   color: AppColors.accentBlue,
                   shape: BoxShape.circle,
@@ -115,8 +115,7 @@ class _CalendarSection extends StatelessWidget {
                   shape: BoxShape.circle,
                   border: Border.all(color: AppColors.accentBlue),
                 ),
-                todayTextStyle: AppTypography.textTheme.bodyMedium!
-                    .copyWith(color: AppColors.accentBlue),
+                todayTextStyle: tt.bodyMedium!.copyWith(color: AppColors.accentBlue),
                 markerDecoration: const BoxDecoration(
                   color: AppColors.accentAmber,
                   shape: BoxShape.circle,
@@ -129,14 +128,14 @@ class _CalendarSection extends StatelessWidget {
               headerStyle: HeaderStyle(
                 formatButtonVisible: false,
                 titleCentered: true,
-                titleTextStyle: AppTypography.textTheme.titleSmall!,
-                leftChevronIcon: const Icon(
+                titleTextStyle: tt.titleSmall!,
+                leftChevronIcon: Icon(
                   Icons.chevron_left,
-                  color: AppColors.textSecondary,
+                  color: cs.onSurfaceVariant,
                 ),
-                rightChevronIcon: const Icon(
+                rightChevronIcon: Icon(
                   Icons.chevron_right,
-                  color: AppColors.textSecondary,
+                  color: cs.onSurfaceVariant,
                 ),
                 headerPadding: const EdgeInsets.symmetric(
                   horizontal: AppSpacing.lg,
@@ -145,10 +144,8 @@ class _CalendarSection extends StatelessWidget {
                 decoration: const BoxDecoration(color: Colors.transparent),
               ),
               daysOfWeekStyle: DaysOfWeekStyle(
-                weekdayStyle: AppTypography.textTheme.labelSmall!
-                    .copyWith(color: AppColors.textMuted),
-                weekendStyle: AppTypography.textTheme.labelSmall!
-                    .copyWith(color: AppColors.textMuted),
+                weekdayStyle: tt.labelSmall!.copyWith(color: cs.onSurfaceVariant),
+                weekendStyle: tt.labelSmall!.copyWith(color: cs.onSurfaceVariant),
               ),
             );
           },

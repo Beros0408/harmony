@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_radius.dart';
 import '../../core/constants/app_spacing.dart';
-import '../../core/constants/app_typography.dart';
 
 enum HarmonySnackBarVariant { success, error, info }
 
@@ -26,6 +25,8 @@ class HarmonySnackBar {
       HarmonySnackBarVariant.info => Icons.info_outline,
     };
 
+    final cs = Theme.of(context).colorScheme;
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         duration: duration,
@@ -37,7 +38,7 @@ class HarmonySnackBar {
             vertical: AppSpacing.md,
           ),
           decoration: BoxDecoration(
-            color: AppColors.bgElevated,
+            color: cs.inverseSurface,
             borderRadius: AppRadius.lgRadius,
             border: Border.all(color: color.withValues(alpha: 0.3)),
           ),
@@ -48,8 +49,8 @@ class HarmonySnackBar {
               Expanded(
                 child: Text(
                   message,
-                  style: AppTypography.textTheme.bodyMedium?.copyWith(
-                    color: AppColors.textPrimary,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: cs.onInverseSurface,
                   ),
                 ),
               ),

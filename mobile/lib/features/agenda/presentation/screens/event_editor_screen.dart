@@ -7,7 +7,6 @@ import 'package:uuid/uuid.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_radius.dart';
 import '../../../../core/constants/app_spacing.dart';
-import '../../../../core/constants/app_typography.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/harmony_app_bar.dart';
 import '../../../../shared/widgets/harmony_button.dart';
@@ -92,9 +91,9 @@ class _EventEditorScreenState extends State<EventEditorScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final isNew = _original == null;
+    final cs = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: AppColors.bgBase,
       appBar: HarmonyAppBar(
         title: isNew ? l10n.agendaEditorNewTitle : l10n.agendaEditorEditTitle,
       ),
@@ -116,7 +115,7 @@ class _EventEditorScreenState extends State<EventEditorScreen> {
             TextFormField(
               controller: _descCtrl,
               maxLines: 3,
-              style: const TextStyle(color: AppColors.textPrimary),
+              style: TextStyle(color: cs.onSurface),
               decoration: InputDecoration(labelText: l10n.agendaEditorFieldDescription),
             ),
             const SizedBox(height: AppSpacing.md),
@@ -230,8 +229,7 @@ class _SectionLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Text(
         text,
-        style: AppTypography.textTheme.labelMedium
-            ?.copyWith(color: AppColors.textSecondary),
+        style: Theme.of(context).textTheme.labelMedium,
       );
 }
 
@@ -242,6 +240,8 @@ class _CategorySelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+
     return Wrap(
       spacing: AppSpacing.sm,
       runSpacing: AppSpacing.sm,
@@ -257,10 +257,10 @@ class _CategorySelector extends StatelessWidget {
               vertical: AppSpacing.xs,
             ),
             decoration: BoxDecoration(
-              color: isSelected ? color.withValues(alpha: 0.2) : AppColors.bgSurface,
+              color: isSelected ? color.withValues(alpha: 0.2) : cs.surface,
               borderRadius: AppRadius.lgRadius,
               border: Border.all(
-                color: isSelected ? color : AppColors.borderDefault,
+                color: isSelected ? color : cs.outline,
                 width: isSelected ? 1.5 : 1,
               ),
             ),
@@ -281,6 +281,7 @@ class _DateTimePicker extends StatelessWidget {
   Widget build(BuildContext context) {
     final locale = Localizations.localeOf(context).languageCode;
     final fmt = DateFormat('EEE d MMM yyyy · HH:mm', locale);
+    final cs = Theme.of(context).colorScheme;
 
     return GestureDetector(
       onTap: () => _pick(context),
@@ -290,18 +291,18 @@ class _DateTimePicker extends StatelessWidget {
           vertical: AppSpacing.sm,
         ),
         decoration: BoxDecoration(
-          color: AppColors.bgSurface,
+          color: cs.surface,
           borderRadius: AppRadius.mdRadius,
-          border: Border.all(color: AppColors.borderDefault),
+          border: Border.all(color: cs.outline),
         ),
         child: Row(
           children: [
-            const Icon(Icons.schedule_outlined,
-                size: 18, color: AppColors.textSecondary,),
+            Icon(Icons.schedule_outlined,
+                size: 18, color: cs.onSurfaceVariant,),
             const SizedBox(width: AppSpacing.sm),
             Text(
               fmt.format(value),
-              style: AppTypography.textTheme.bodyMedium,
+              style: Theme.of(context).textTheme.bodyMedium,
             ),
           ],
         ),
@@ -315,24 +316,12 @@ class _DateTimePicker extends StatelessWidget {
       initialDate: value,
       firstDate: DateTime(2020),
       lastDate: DateTime(2035),
-      builder: (context, child) => Theme(
-        data: Theme.of(context).copyWith(
-          colorScheme: const ColorScheme.dark(primary: AppColors.accentBlue),
-        ),
-        child: child!,
-      ),
     );
     if (date == null || !context.mounted) return;
 
     final time = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.fromDateTime(value),
-      builder: (context, child) => Theme(
-        data: Theme.of(context).copyWith(
-          colorScheme: const ColorScheme.dark(primary: AppColors.accentBlue),
-        ),
-        child: child!,
-      ),
     );
     if (time == null) return;
 
@@ -351,6 +340,8 @@ class _ReminderSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+
     return Wrap(
       spacing: AppSpacing.sm,
       children: _options.map((mins) {
@@ -358,15 +349,15 @@ class _ReminderSelector extends StatelessWidget {
         final label = mins < 60 ? '$mins min' : '${mins ~/ 60}h';
         return ChoiceChip(
           label: Text(label,
-              style: AppTypography.textTheme.labelSmall?.copyWith(
-                color: isSelected ? AppColors.bgBase : AppColors.textSecondary,
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                color: isSelected ? Colors.white : cs.onSurfaceVariant,
               ),),
           selected: isSelected,
           onSelected: (_) => onChanged(mins),
           selectedColor: AppColors.accentBlue,
-          backgroundColor: AppColors.bgSurface,
+          backgroundColor: cs.surface,
           side: BorderSide(
-            color: isSelected ? AppColors.accentBlue : AppColors.borderDefault,
+            color: isSelected ? AppColors.accentBlue : cs.outline,
           ),
           shape: const RoundedRectangleBorder(borderRadius: AppRadius.mdRadius),
         );
@@ -387,27 +378,29 @@ class _ImportantToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+
     return GestureDetector(
       onTap: () => onChanged(!value),
       child: Container(
         padding: const EdgeInsets.all(AppSpacing.md),
         decoration: BoxDecoration(
-          color: AppColors.bgSurface,
+          color: cs.surface,
           borderRadius: AppRadius.lgRadius,
           border: Border.all(
             color: value
                 ? AppColors.accentAmber.withValues(alpha: 0.4)
-                : AppColors.borderDefault,
+                : cs.outline,
           ),
         ),
         child: Row(
           children: [
             Icon(
               value ? Icons.star_rounded : Icons.star_outline_rounded,
-              color: value ? AppColors.accentAmber : AppColors.textMuted,
+              color: value ? AppColors.accentAmber : cs.onSurfaceVariant,
             ),
             const SizedBox(width: AppSpacing.sm),
-            Text(label, style: AppTypography.textTheme.labelMedium),
+            Text(label, style: Theme.of(context).textTheme.labelMedium),
             const Spacer(),
             Switch(
               value: value,
