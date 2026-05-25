@@ -31,7 +31,7 @@
 | **Sprint 2** | **Phase 1** | **Filtrage iOS CallKit + Sortants** | **✅** | **`50aff7e`** |
 | **Sprint 1.5** | **Phase 1** | **UI Blacklist SQLCipher + Sync** | **✅** | **`a665503`** |
 | **Sprint 3** | **Phase 1** | **Géolocalisation + SOS + Famille** ⭐ | **✅** | **`b808a8d`** |
-| Sprint 4 | Phase 1 | Agenda + Sync calendrier + Tests MVP | ⬜ | — |
+| **Sprint 4** | **Phase 1** | **Agenda + Planification Intelligente** ⭐ | **✅** | **`6e2505c`** |
 | Sprint 5 | Phase 2 | IA spam + STT + Score confiance | ⬜ | — |
 | Sprint 6 | Phase 2 | Filtrage WhatsApp Android | ⬜ | — |
 | Sprint 7 | Phase 2 | Filtrage WhatsApp iOS + NLP | ⬜ | — |
@@ -310,6 +310,58 @@ Downgrade vers AGP 8.9.2 + Gradle 8.13 + Kotlin 2.1.21 (cf. ADR-019). Les plugin
 
 ---
 
+### Sprint 4 — Agenda + Planification Intelligente ⭐ TERMINÉ
+
+**Date :** 25/05/2026 · **Commit :** `6e2505c` · **Tag :** `v1.3.0-sprint-4`
+
+#### Objectif
+Implémenter le module Agenda complet avec planification intelligente : calendrier interactif, gestion des tâches (matrice Eisenhower), synchronisation Google Calendar, notifications avec temps de trajet, et lien automatique filtrage ↔ événements importants.
+
+#### User stories réalisées
+
+| ID | Story | Statut |
+|---|---|---|
+| US-4-001 | AgendaEvent — modèle SQLCipher (catégories, rappels, récurrence) | ✅ |
+| US-4-002 | TaskItem — matrice Eisenhower (urgence × importance) | ✅ |
+| US-4-003 | GoogleCalendarSync — état connexion OAuth2 | ✅ |
+| US-4-004 | AgendaEventRepository — CRUD SQLCipher migration DB v3 | ✅ |
+| US-4-005 | TaskRepository — CRUD SQLCipher | ✅ |
+| US-4-006 | GoogleCalendarRepository — OAuth2 gracieux sans crash | ✅ |
+| US-4-007 | NotificationService — rappels zonedSchedule avec timezone | ✅ |
+| US-4-008 | TravelTimeService — Google Distance Matrix + Haversine fallback | ✅ |
+| US-4-009 | AgendaCallFilterBridge — polling 1min → FilterMode.focus auto | ✅ |
+| US-4-010 | AgendaEventCubit — CRUD + loadEventsForMonth | ✅ |
+| US-4-011 | TaskCubit — byQuadrant map + toggleComplete | ✅ |
+| US-4-012 | CalendarViewCubit — navigation mois/semaine/jour | ✅ |
+| US-4-013 | GoogleCalendarCubit — signIn/Out + syncFromGoogle | ✅ |
+| US-4-014 | AgendaScreen — table_calendar 3.x avec event markers | ✅ |
+| US-4-015 | EventDetailScreen — détail + édition + suppression | ✅ |
+| US-4-016 | EventEditorScreen — formulaire complet avec date/time picker | ✅ |
+| US-4-017 | TasksScreen — grille Eisenhower 2×2 | ✅ |
+| US-4-018 | GoogleCalendarSettingsScreen — connexion + sync + déconnexion | ✅ |
+| US-4-019 | CategoryChip + EventListTile — widgets réutilisables | ✅ |
+| US-4-020 | 47 clés i18n × 5 langues (agenda*, task*, google*) | ✅ |
+| US-4-021 | Routes : /agenda/event/:id, /agenda/event/edit, /agenda/tasks, /agenda/google | ✅ |
+| US-4-022 | 56 tests Flutter (models + cubits + services) | ✅ |
+
+#### Bilan
+
+| Métrique | Valeur |
+|---|---|
+| Points planifiés | 40 |
+| Points réalisés | 40 |
+| Vélocité | 100 % |
+| Tests Flutter | **218 verts** (was 162) |
+| Tests Kotlin JUnit | **13 verts** (inchangés) |
+| Issues flutter analyze | **0** |
+| Fichiers créés | 29 (Dart + tests) |
+| Fichiers modifiés | 21 (configs + i18n + screens) |
+| Lignes ajoutées | +5 200 |
+| Commit | **`6e2505c`** |
+| Tag | **`v1.3.0-sprint-4`** |
+
+---
+
 ## Vélocité de l'équipe
 
 | Sprint | Points planifiés | Points réalisés | Vélocité |
@@ -326,8 +378,9 @@ Downgrade vers AGP 8.9.2 + Gradle 8.13 + Kotlin 2.1.21 (cf. ADR-019). Les plugin
 | **Sprint 2** | **30** | **30** | **100 %** |
 | **Sprint 1.5** | **20** | **20** | **100 %** |
 | **Sprint 3** | **35** | **35** | **100 %** |
+| **Sprint 4** | **40** | **40** | **100 %** |
 
-**Vélocité moyenne 12 sprints : 13.4 pts/sprint** · **100% complétion**
+**Vélocité moyenne 13 sprints : 14.2 pts/sprint** · **100% complétion**
 
 ---
 
@@ -362,13 +415,13 @@ f36a7cb feat(ui): Sprint B — rich mockup screens for all 4 modules
 
 ---
 
-## Prochaine étape — Sprint 4
+## Prochaine étape — Sprint 5
 
-**Agenda + Sync calendrier + Tests MVP** — démarrer quand prêt.
+**IA spam + STT + Score confiance** — démarrer quand prêt.
 
-OAuth2 Google/Apple Calendar, lien filtrage ↔ événements, tests d'intégration Phase 1.
+TensorFlow Lite on-device pour classification spam, Speech-to-Text pour transcription voicemail, score de confiance pour les décisions de blocage.
 
-Cf. cahier des charges sections 3.2.x.
+Cf. cahier des charges sections 3.2.x (Phase 2).
 
 ---
 
