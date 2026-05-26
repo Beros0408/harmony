@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:harmony/l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../shared/widgets/harmony_app_bar.dart';
-import '../../../../shared/widgets/harmony_badge.dart';
-import '../../../../shared/widgets/harmony_button.dart';
 import '../../../../shared/widgets/harmony_card.dart';
+import '../../../../shared/widgets/harmony_empty_state.dart';
 import '../../../../shared/widgets/harmony_search_bar.dart';
-import '../../data/mock/contacts_mocks.dart';
+import '../../data/models/native_contact.dart';
+import '../../logic/contacts_cubit.dart';
 
 class ContactsScreen extends StatefulWidget {
   const ContactsScreen({super.key});
@@ -17,185 +18,189 @@ class ContactsScreen extends StatefulWidget {
 }
 
 class _ContactsScreenState extends State<ContactsScreen> {
-  String _query = '';
-
-  List<HarmonyContact> _filtered(ContactGroup group) {
-    final list = kContacts.where((c) => c.group == group).toList();
-    if (_query.isEmpty) return list;
-    final q = _query.toLowerCase();
-    return list.where(
-      (c) => c.name.toLowerCase().contains(q) || c.phone.contains(q),
-    ).toList();
+  @override
+  void initState() {
+    super.initState();
+    context.read<ContactsCubit>().load();
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final whitelist = _filtered(ContactGroup.whitelist);
-    final blacklist = _filtered(ContactGroup.blacklist);
 
     return Scaffold(
       appBar: HarmonyAppBar(title: l10n.contactsScreenTitle),
-      body: ListView(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        children: [
-          HarmonySearchBar(
-            hintText: 'Rechercher un contact...',
-            onChanged: (v) => setState(() => _query = v),
-          ),
-          const SizedBox(height: AppSpacing.xl),
-
-          _ContactSection(
-            title: l10n.contactsSectionWhitelist,
-            contacts: whitelist,
-            badge: l10n.contactsWhitelistBadge,
-            badgeVariant: HarmonyBadgeVariant.success,
-            emptyLabel: l10n.contactsEmpty,
-            removeLabel: l10n.contactsRemove,
-          ),
-          const SizedBox(height: AppSpacing.xl),
-
-          _ContactSection(
-            title: l10n.contactsSectionBlacklist,
-            contacts: blacklist,
-            badge: l10n.contactsBlacklistBadge,
-            badgeVariant: HarmonyBadgeVariant.danger,
-            emptyLabel: l10n.contactsEmpty,
-            removeLabel: l10n.contactsRemove,
-          ),
-          const SizedBox(height: AppSpacing.xxl),
-
-          HarmonyButton(
-            label: l10n.contactsAddContact,
-            onPressed: () {},
-            icon: Icons.add,
-          ),
-          const SizedBox(height: AppSpacing.xl),
-        ],
+      body: BlocBuilder<ContactsCubit, ContactsState>(
+        builder: (context, state) => switch (state) {
+          ContactsInitial() || ContactsLoading() => const Center(
+              child: CircularProgressIndicator(),
+            ),
+          ContactsPermissionDenied() => HarmonyEmptyState(
+              icon: Icons.contacts_outlined,
+              title: l10n.contactsPermissionTitle,
+              subtitle: l10n.contactsPermissionSubtitle,
+              cta: l10n.contactsPermissionCta,
+              onCtaTap: () =>
+                  context.read<ContactsCubit>().requestPermission(),
+            ),
+          ContactsError(:final message) => HarmonyEmptyState(
+              icon: Icons.error_outline,
+              title: 'Erreur',
+              subtitle: message,
+              cta: 'Réessayer',
+              onCtaTap: () => context.read<ContactsCubit>().load(),
+            ),
+          ContactsLoaded(:final contacts, :final query) => _ContactsListView(
+              contacts: contacts,
+              initialQuery: query,
+            ),
+        },
       ),
     );
   }
 }
 
-class _ContactSection extends StatelessWidget {
-  const _ContactSection({
-    required this.title,
+// ─── List + search view ───────────────────────────────────────────────────────
+
+class _ContactsListView extends StatefulWidget {
+  const _ContactsListView({
     required this.contacts,
-    required this.badge,
-    required this.badgeVariant,
-    required this.emptyLabel,
-    required this.removeLabel,
+    required this.initialQuery,
   });
 
-  final String title;
-  final List<HarmonyContact> contacts;
-  final String badge;
-  final HarmonyBadgeVariant badgeVariant;
-  final String emptyLabel;
-  final String removeLabel;
+  final List<NativeContact> contacts;
+  final String initialQuery;
+
+  @override
+  State<_ContactsListView> createState() => _ContactsListViewState();
+}
+
+class _ContactsListViewState extends State<_ContactsListView> {
+  late final TextEditingController _ctrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = TextEditingController(text: widget.initialQuery);
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final contacts = widget.contacts;
+
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: Theme.of(context).textTheme.titleSmall),
-        const SizedBox(height: AppSpacing.md),
-        if (contacts.isEmpty)
-          HarmonyCard(
-            child: Center(
-              child: Text(emptyLabel, style: Theme.of(context).textTheme.bodySmall),
-            ),
-          )
-        else
-          HarmonyCard(
-            padding: AppSpacing.sm,
-            child: Column(
-              children: contacts
-                  .map(
-                    (c) => _ContactTile(
-                      contact: c,
-                      badge: badge,
-                      badgeVariant: badgeVariant,
-                      removeLabel: removeLabel,
-                    ),
-                  )
-                  .toList(),
-            ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            AppSpacing.lg,
+            AppSpacing.lg,
+            AppSpacing.md,
           ),
+          child: HarmonySearchBar(
+            hintText: 'Rechercher un contact...',
+            controller: _ctrl,
+            onChanged: (v) => context.read<ContactsCubit>().search(v),
+          ),
+        ),
+        Expanded(
+          child: contacts.isEmpty
+              ? HarmonyEmptyState(
+                  icon: Icons.person_search_outlined,
+                  title: l10n.contactsEmpty,
+                )
+              : ListView.separated(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.lg,
+                    vertical: AppSpacing.sm,
+                  ),
+                  itemCount: contacts.length,
+                  separatorBuilder: (_, __) =>
+                      const SizedBox(height: AppSpacing.sm),
+                  itemBuilder: (context, i) =>
+                      _ContactTile(contact: contacts[i]),
+                ),
+        ),
       ],
     );
   }
 }
 
-class _ContactTile extends StatelessWidget {
-  const _ContactTile({
-    required this.contact,
-    required this.badge,
-    required this.badgeVariant,
-    required this.removeLabel,
-  });
+// ─── Individual contact tile ──────────────────────────────────────────────────
 
-  final HarmonyContact contact;
-  final String badge;
-  final HarmonyBadgeVariant badgeVariant;
-  final String removeLabel;
+class _ContactTile extends StatelessWidget {
+  const _ContactTile({required this.contact});
+  final NativeContact contact;
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.sm,
-        vertical: AppSpacing.sm,
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: AppColors.accentBlue.withValues(alpha: 0.12),
-              shape: BoxShape.circle,
-            ),
-            child: Center(
-              child: Text(
-                contact.initials,
-                style: const TextStyle(
-                  color: AppColors.accentBlue,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
+
+    return HarmonyCard(
+      padding: AppSpacing.sm,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.sm,
+          vertical: AppSpacing.xs,
+        ),
+        child: Row(
+          children: [
+            _Avatar(initials: contact.initials),
+            const SizedBox(width: AppSpacing.md),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    contact.displayName,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  if (contact.phone != null)
+                    Text(
+                      contact.phone!,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: cs.onSurfaceVariant,
+                          ),
+                    ),
+                ],
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _Avatar extends StatelessWidget {
+  const _Avatar({required this.initials});
+  final String initials;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 40,
+      height: 40,
+      decoration: BoxDecoration(
+        color: AppColors.accentBlue.withValues(alpha: 0.12),
+        shape: BoxShape.circle,
+      ),
+      child: Center(
+        child: Text(
+          initials,
+          style: const TextStyle(
+            color: AppColors.accentBlue,
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
           ),
-          const SizedBox(width: AppSpacing.md),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(contact.name, style: Theme.of(context).textTheme.bodyMedium),
-                Text(
-                  contact.phone,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: cs.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: AppSpacing.sm),
-          HarmonyBadge(label: badge, variant: badgeVariant),
-          const SizedBox(width: AppSpacing.sm),
-          GestureDetector(
-            onTap: () {},
-            child: Icon(
-              Icons.remove_circle_outline,
-              size: 18,
-              color: cs.onSurfaceVariant,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

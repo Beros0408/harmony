@@ -4,6 +4,7 @@ import 'package:harmony/l10n/app_localizations.dart';
 import 'core/language/language_cubit.dart';
 import 'core/router/app_router.dart';
 import 'core/security/secure_storage.dart';
+import 'core/services/harmony_services.dart';
 import 'core/theme/system_ui_adapter.dart';
 import 'core/theme/theme_cubit.dart';
 import 'features/auth/data/repositories/auth_repository.dart';
@@ -28,6 +29,9 @@ import 'features/agenda/logic/agenda_event_cubit.dart';
 import 'features/agenda/logic/calendar_view_cubit.dart';
 import 'features/agenda/logic/google_calendar_cubit.dart';
 import 'features/agenda/logic/task_cubit.dart';
+// Sprint 5 — Contacts natifs
+import 'features/contacts/data/repositories/native_contacts_repository.dart';
+import 'features/contacts/logic/contacts_cubit.dart';
 import 'shared/theme/harmony_theme.dart';
 import 'shared/widgets/harmony_responsive_wrapper.dart';
 
@@ -47,6 +51,7 @@ class HarmonyApp extends StatelessWidget {
         BlocProvider(
           create: (_) => AuthBloc(
             repository: AuthRepository(storage: SecureStorageService()),
+            tokenStorage: HarmonyServices.tokenStorage,
           )..add(const AuthCheckRequested()),
         ),
         BlocProvider(
@@ -86,6 +91,12 @@ class HarmonyApp extends StatelessWidget {
         BlocProvider(
           create: (_) =>
               GoogleCalendarCubit(repository: GoogleCalendarRepository.instance),
+        ),
+        // Sprint 5 — Contacts natifs
+        BlocProvider(
+          create: (_) => ContactsCubit(
+            repository: NativeContactsRepository.instance,
+          ),
         ),
       ],
       child: BlocBuilder<LanguageCubit, Locale>(

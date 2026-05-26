@@ -167,6 +167,10 @@
   "contactsBlacklistBadge": "bloqueado",
   "contactsEmpty": "Sem contactos",
   "contactsRemove": "Remover",
+  "contactsPermissionTitle": "Acesso aos contactos necessário",
+  "contactsPermissionSubtitle": "A Harmony precisa da sua permissão para mostrar a sua agenda.",
+  "contactsPermissionCta": "Permitir acesso aos contactos",
+  "blacklistPickFromContacts": "Escolher dos meus contactos",
 
   "voicemailScreenTitle": "Correio de voz",
   "voicemailNewCount": "{count, plural, =0{Nenhuma nova mensagem} =1{1 nova mensagem} other{{count} novas mensagens}}",

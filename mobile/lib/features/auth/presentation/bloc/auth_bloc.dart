@@ -1,4 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:uuid/uuid.dart';
+import '../../../../core/security/token_storage.dart';
 import '../../domain/repositories/i_auth_repository.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
@@ -6,9 +8,14 @@ import 'auth_state.dart';
 // Nombre maximal de tentatives PIN avant verrouillage temporaire
 const int _maxAttempts = 5;
 
+const _uuid = Uuid();
+
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  AuthBloc({required IAuthRepository repository})
-      : _repository = repository,
+  AuthBloc({
+    required IAuthRepository repository,
+    ITokenStorage? tokenStorage,
+  })  : _repository = repository,
+        _tokenStorage = tokenStorage ?? SecureTokenStorage(),
         super(const AuthInitial()) {
     on<AuthCheckRequested>(_onCheckRequested);
     on<AuthPinSetupRequested>(_onPinSetup);
@@ -19,6 +26,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   final IAuthRepository _repository;
+  final ITokenStorage _tokenStorage;
   int _failedAttempts = 0;
 
   Future<void> _onCheckRequested(
@@ -34,13 +42,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
       final biometricAvailable = await _repository.isBiometricAvailable();
       final biometricEnabled = await _repository.isBiometricEnabled();
+
+      // Vérifier si une session active existe déjà
+      final existingToken = await _tokenStorage.getAccessToken();
+      if (existingToken != null) {
+        emit(const AuthAuthenticated());
+        return;
+      }
+
       emit(
         AuthPinEntry(
           biometricAvailable: biometricAvailable,
           biometricEnabled: biometricEnabled,
         ),
       );
-      // Déclenchement automatique de la biométrie si activée
       if (biometricAvailable && biometricEnabled) {
         add(const AuthBiometricRequested());
       }
@@ -60,6 +75,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if (biometricAvailable) {
         emit(const AuthBiometricSetup());
       } else {
+        await _saveSessionToken();
         emit(const AuthAuthenticated());
       }
     } catch (e) {
@@ -75,6 +91,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final valid = await _repository.verifyPin(event.pin);
       if (valid) {
         _failedAttempts = 0;
+        await _saveSessionToken();
         emit(const AuthAuthenticated());
       } else {
         _failedAttempts++;
@@ -93,6 +110,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final success = await _repository.authenticateWithBiometric();
       if (success) {
         _failedAttempts = 0;
+        await _saveSessionToken();
         emit(const AuthAuthenticated());
       }
       // Silence si l'utilisateur annule — reste sur l'écran PIN
@@ -118,6 +136,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     _failedAttempts = 0;
+    // Effacer le token de session à la déconnexion
+    await _tokenStorage.clearAll();
     final biometricAvailable = await _repository.isBiometricAvailable();
     final biometricEnabled = await _repository.isBiometricEnabled();
     emit(
@@ -126,5 +146,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         biometricEnabled: biometricEnabled,
       ),
     );
+  }
+
+  /// Génère et sauvegarde un token de session local (UUID v4).
+  /// Remplacé par un vrai JWT backend dès que FastAPI est déployé.
+  Future<void> _saveSessionToken() async {
+    final sessionToken = _uuid.v4();
+    await _tokenStorage.saveAccessToken(sessionToken);
   }
 }

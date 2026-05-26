@@ -167,6 +167,10 @@
   "contactsBlacklistBadge": "bloccato",
   "contactsEmpty": "Nessun contatto",
   "contactsRemove": "Rimuovi",
+  "contactsPermissionTitle": "Accesso ai contatti richiesto",
+  "contactsPermissionSubtitle": "Harmony ha bisogno del tuo permesso per visualizzare la tua rubrica.",
+  "contactsPermissionCta": "Consenti l'accesso ai contatti",
+  "blacklistPickFromContacts": "Scegli dai miei contatti",
 
   "voicemailScreenTitle": "Segreteria telefonica",
   "voicemailNewCount": "{count, plural, =0{Nessun nuovo messaggio} =1{1 nuovo messaggio} other{{count} nuovi messaggi}}",
