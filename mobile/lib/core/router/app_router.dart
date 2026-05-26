@@ -16,6 +16,7 @@ import '../../features/parental/presentation/screens/safe_zone_editor_screen.dar
 import '../../features/parental/presentation/screens/sos_active_screen.dart';
 import '../../features/parental/presentation/screens/trip_history_screen.dart';
 import '../../features/contacts/presentation/screens/contacts_screen.dart';
+import '../../features/messages/presentation/screens/messages_filter_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
 import '../../features/call_log/presentation/screens/call_log_screen.dart';
 import '../../features/voicemail/presentation/screens/voicemail_screen.dart';
@@ -125,6 +126,14 @@ final GoRouter appRouter = GoRouter(
       pageBuilder: (context, state) => _slidePage(
         key: state.pageKey,
         child: const BlacklistScreen(),
+      ),
+    ),
+    // ── Sprint 6 — Messages ───────────────────────────────────────────────
+    GoRoute(
+      path: RouteNames.messages,
+      pageBuilder: (context, state) => _slidePage(
+        key: state.pageKey,
+        child: const MessagesFilterScreen(),
       ),
     ),
     // ── Sprint 4 — Agenda ─────────────────────────────────────────────────

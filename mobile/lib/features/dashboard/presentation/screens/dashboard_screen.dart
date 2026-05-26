@@ -127,6 +127,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 badgeVariant: HarmonyBadgeVariant.purple,
                 onTap: () => context.push(RouteNames.voicemail),
               ),
+              _ModuleCard(
+                title: l10n.messagesModuleTitle,
+                subtitle: l10n.messagesModuleSubtitle,
+                icon: Icons.message_outlined,
+                iconColor: const Color(0xFF25D366),
+                badge: l10n.messagesModuleBadge,
+                badgeVariant: HarmonyBadgeVariant.success,
+                onTap: () => context.push(RouteNames.messages),
+              ),
             ],
           ),
 

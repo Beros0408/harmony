@@ -21,6 +21,9 @@ class RouteNames {
   static const String agendaTasks = '/agenda/tasks';
   static const String agendaGoogle = '/agenda/google';
 
+  // Sprint 6 — Messages
+  static const String messages = '/messages';
+
   // Sprint 3 — Parental
   static const String childDetail = '/parental/child';
   static const String safeZones = '/parental/zones';
