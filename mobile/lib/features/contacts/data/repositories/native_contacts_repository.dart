@@ -19,39 +19,53 @@ class NativeContactsRepository implements IContactsRepository {
   @override
   Future<List<NativeContact>> fetchAll({String query = ''}) async {
     // ignore: avoid_print
-    print('[CONTACTS-DEBUG] NativeContactsRepository.fetchAll(query="$query") start');
-    final raw = await _service.fetchAll();
-    // ignore: avoid_print
-    print('[CONTACTS-DEBUG] NativeContactsRepository: received ${raw.length} raw contacts from service');
+    print('[CONTACTS-DEBUG] NativeContactsRepository.fetchAll(query="$query") — essai MethodChannel natif');
 
-    // Phone filter relaxed (was `c.phones.isNotEmpty`) — include contacts
-    // without phones so we can diagnose whether flutter_contacts is returning
-    // contacts at all but without phone data attached.
-    final contacts = raw.map((c) {
-      final phone = c.phones.isNotEmpty ? c.phones.first.number : null;
+    // Stratégie 1 — MethodChannel Kotlin : lit TOUS les contacts (y compris account_type=NULL)
+    try {
+      final contacts = await _service.fetchAllRaw(query: query);
       // ignore: avoid_print
-      print('[CONTACTS-DEBUG]   mapping: "${c.displayName}" phones=${c.phones.length} firstPhone=$phone');
-      return NativeContact(
-        id: c.id,
-        displayName: c.displayName.isEmpty ? '(sans nom)' : c.displayName,
-        phone: phone,
-      );
-    }).toList();
+      print('[CONTACTS-DEBUG] NativeContactsRepository: MethodChannel OK → ${contacts.length} contacts');
+      return contacts;
+    } catch (e) {
+      // ignore: avoid_print
+      print('[CONTACTS-DEBUG] NativeContactsRepository: MethodChannel FAILED ($e) → fallback flutter_contacts');
+    }
 
-    // ignore: avoid_print
-    print('[CONTACTS-DEBUG] NativeContactsRepository: mapped ${contacts.length} NativeContacts (${contacts.where((c) => c.phone != null).length} with phone)');
+    // Stratégie 2 (fallback) — flutter_contacts
+    // Ignore les contacts avec account_type=NULL mais reste fonctionnel sur
+    // les téléphones avec un compte Google configuré.
+    try {
+      // ignore: avoid_print
+      print('[CONTACTS-DEBUG] NativeContactsRepository: démarrage fallback flutter_contacts...');
+      final raw = await _service.fetchAll();
+      // ignore: avoid_print
+      print('[CONTACTS-DEBUG] NativeContactsRepository: flutter_contacts returned ${raw.length} raw contacts');
 
-    if (query.isEmpty) return contacts;
-    final q = query.toLowerCase();
-    final filtered = contacts
-        .where(
-          (c) =>
-              c.displayName.toLowerCase().contains(q) ||
-              (c.phone?.contains(q) ?? false),
-        )
-        .toList();
-    // ignore: avoid_print
-    print('[CONTACTS-DEBUG] NativeContactsRepository: after query filter → ${filtered.length} contacts');
-    return filtered;
+      final contacts = raw.map((c) {
+        final phone = c.phones.isNotEmpty ? c.phones.first.number : null;
+        // ignore: avoid_print
+        print('[CONTACTS-DEBUG]   mapping: "${c.displayName}" phones=${c.phones.length} firstPhone=$phone');
+        return NativeContact(
+          id: c.id,
+          displayName: c.displayName.isEmpty ? '(sans nom)' : c.displayName,
+          phone: phone,
+        );
+      }).toList();
+
+      if (query.isEmpty) return contacts;
+      final q = query.toLowerCase();
+      return contacts
+          .where(
+            (c) =>
+                c.displayName.toLowerCase().contains(q) ||
+                (c.phone?.contains(q) ?? false),
+          )
+          .toList();
+    } catch (e) {
+      // ignore: avoid_print
+      print('[CONTACTS-DEBUG] NativeContactsRepository: flutter_contacts FAILED ($e) → liste vide');
+      return [];
+    }
   }
 }
