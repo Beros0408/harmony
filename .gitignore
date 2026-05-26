@@ -165,3 +165,14 @@ backup_*/
 
 # Tracking source folder (used by PowerShell save scripts)
 tracking/
+
+# Scripts PowerShell locaux (sauvegarde, helpers)
+Save-*.ps1
+*.ps1.bak
+
+# Backups automatiques générés par les scripts de sauvegarde
+*.md.bak
+
+# Fichiers Flutter auto-générés à partir des .arb (régénérés à chaque flutter pub get)
+mobile/lib/l10n/app_localizations.dart
+mobile/lib/l10n/app_localizations_*.dart
