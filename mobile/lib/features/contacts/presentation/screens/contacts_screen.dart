@@ -29,7 +29,27 @@ class _ContactsScreenState extends State<ContactsScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: HarmonyAppBar(title: l10n.contactsScreenTitle),
+      appBar: HarmonyAppBar(
+        title: l10n.contactsScreenTitle,
+        // Phase 4 — refresh button so the user can force-reload at any time
+        actions: [
+          BlocBuilder<ContactsCubit, ContactsState>(
+            builder: (context, state) => IconButton(
+              icon: state is ContactsLoading
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.refresh_outlined),
+              tooltip: 'Rafraîchir les contacts',
+              onPressed: state is ContactsLoading
+                  ? null
+                  : () => context.read<ContactsCubit>().load(),
+            ),
+          ),
+        ],
+      ),
       body: BlocBuilder<ContactsCubit, ContactsState>(
         builder: (context, state) => switch (state) {
           ContactsInitial() || ContactsLoading() => const Center(
@@ -50,9 +70,11 @@ class _ContactsScreenState extends State<ContactsScreen> {
               cta: 'Réessayer',
               onCtaTap: () => context.read<ContactsCubit>().load(),
             ),
-          ContactsLoaded(:final contacts, :final query) => _ContactsListView(
+          ContactsLoaded(:final contacts, :final query, :final rawCount) =>
+            _ContactsListView(
               contacts: contacts,
               initialQuery: query,
+              rawCount: rawCount,
             ),
         },
       ),
@@ -66,10 +88,14 @@ class _ContactsListView extends StatefulWidget {
   const _ContactsListView({
     required this.contacts,
     required this.initialQuery,
+    required this.rawCount,
   });
 
   final List<NativeContact> contacts;
   final String initialQuery;
+
+  /// Raw contact count returned by flutter_contacts (for debug empty state).
+  final int rawCount;
 
   @override
   State<_ContactsListView> createState() => _ContactsListViewState();
@@ -92,7 +118,6 @@ class _ContactsListViewState extends State<_ContactsListView> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     final contacts = widget.contacts;
 
     return Column(
@@ -112,10 +137,7 @@ class _ContactsListViewState extends State<_ContactsListView> {
         ),
         Expanded(
           child: contacts.isEmpty
-              ? HarmonyEmptyState(
-                  icon: Icons.person_search_outlined,
-                  title: l10n.contactsEmpty,
-                )
+              ? _EmptyContactsDebug(rawCount: widget.rawCount)
               : ListView.separated(
                   padding: const EdgeInsets.symmetric(
                     horizontal: AppSpacing.lg,
@@ -129,6 +151,64 @@ class _ContactsListViewState extends State<_ContactsListView> {
                 ),
         ),
       ],
+    );
+  }
+}
+
+// ─── Phase 5 — Debug empty state with raw contact count ──────────────────────
+
+class _EmptyContactsDebug extends StatelessWidget {
+  const _EmptyContactsDebug({required this.rawCount});
+  final int rawCount;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.xxxl),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 72,
+              height: 72,
+              decoration: BoxDecoration(
+                color: cs.surfaceContainerHighest,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.person_search_outlined,
+                color: cs.onSurfaceVariant,
+                size: 32,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            Text(
+              'Aucun contact trouvé',
+              style: Theme.of(context).textTheme.titleMedium,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              // Phase 5 — diagnostic card: show raw flutter_contacts count
+              '$rawCount contact(s) retourné(s) par flutter_contacts\n'
+              'Vérifie que tu as des contacts dans Google Contacts ou\n'
+              'dans le carnet d\'adresses de l\'émulateur.',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: cs.onSurfaceVariant,
+                  ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: AppSpacing.xl),
+            OutlinedButton.icon(
+              onPressed: () => context.read<ContactsCubit>().load(),
+              icon: const Icon(Icons.refresh, size: 16),
+              label: const Text('Rafraîchir'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -167,6 +247,14 @@ class _ContactTile extends StatelessWidget {
                       contact.phone!,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: cs.onSurfaceVariant,
+                          ),
+                    )
+                  else
+                    Text(
+                      'Aucun numéro',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: cs.onSurfaceVariant.withValues(alpha: 0.5),
+                            fontStyle: FontStyle.italic,
                           ),
                     ),
                 ],
