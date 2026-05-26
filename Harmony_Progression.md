@@ -7,9 +7,9 @@
 
 | Champ | Valeur |
 |---|---|
-| **Version actuelle** | **1.4.2 — Sprint 5.2 livré (Contacts natifs Kotlin)** ⭐ |
-| **Phase en cours** | Phase 1 finalisée — JWT, Google Calendar, Contacts natifs (MethodChannel) |
-| **Avancement global** | ~86 % |
+| **Version actuelle** | **1.5.0 — Sprint 6 livré (Module Messages WhatsApp/SMS)** ⭐ |
+| **Phase en cours** | Phase 1 finalisée — 6/7 modules CDC complets |
+| **Avancement global** | ~92 % |
 | **Date de début** | 23 mai 2026 |
 | **Date cible MVP** | J+16 semaines |
 | **Dernière mise à jour** | 26 mai 2026 |
@@ -359,7 +359,7 @@
 | Surconsommation batterie | < 8 % par jour | Sprint 4 | — | ⬜ Non démarré |
 | Taux de blocage appels indésirables | > 98 % | Sprint 5 | — | ⬜ Non démarré |
 | Taux de détection contournement | > 95 % | Phase 2 | — | ⬜ Non démarré |
-| Couverture tests unitaires | > 70 % | Phase 1 | ~80 % (218 tests Flutter) | 🟢 OK |
+| Couverture tests unitaires | > 70 % | Phase 1 | ~80 % (~258 tests Flutter) | 🟢 OK |
 | Couverture tests intégration | > 60 % | Phase 2 | — | ⬜ Non démarré |
 | Issues `flutter analyze` | 0 | Continu | **0** | 🟢 OK |
 | Tests CI/CD GitHub Actions | Vert | Continu | **Vert** | 🟢 OK |
@@ -407,6 +407,62 @@
 | **ADR-023** | 26/05/2026 | ContactsService wrapper flutter_contacts + permission_handler | Séparation OS/business : NativeContactsRepository testable avec MockContactsRepository | Sprint 5 |
 | **ADR-024** | 26/05/2026 | ContactsReaderPlugin Kotlin (MethodChannel) en priorité sur flutter_contacts | flutter_contacts 1.1.9 ignore account_type=NULL — plugin natif contourne le bug silencieux | Sprint 5.2 |
 | **ADR-025** | 26/05/2026 | Pas de test JUnit pour ContactsReaderPlugin | ContactsReaderPlugin hérite de MethodChannel.MethodCallHandler (Flutter) — non disponible dans le classpath JUnit | Sprint 5.2 |
+| **ADR-026** | 26/05/2026 | NotificationListenerService + MethodChannel pour WhatsApp/Signal/Telegram | Seule API Android permettant de capturer les notifications cross-app sans root | Sprint 6 |
+| **ADR-027** | 26/05/2026 | Stockage en mémoire (CopyOnWriteArrayList) pour les notifications captées au Sprint 6 | Simplicité + thread-safety ; persistance SQLCipher reportée au Sprint 7 | Sprint 6 |
+| **ADR-028** | 26/05/2026 | WhatsApp iOS explicitement déclaré comme non-filtrable | Sandboxing Apple interdit l'accès aux notifications cross-app ; Screen Time suggéré à la place | Sprint 6 |
+
+---
+
+## Sprint 6 — Module Messages WhatsApp/SMS (Android) ✅ TERMINÉ
+
+**Date :** 26/05/2026 · **Commit :** `5fbb9c3` · **Tag :** `v1.5.0-messages`
+
+### Cause du Sprint
+
+Module 3 du cahier des charges (M3 — Filtrage WhatsApp/SMS) était à 0% depuis le début.
+Android prioritaire ; iOS limité par design Apple.
+
+### Livraisons techniques
+
+**Couche native Android (Kotlin) :**
+- ✅ `HarmonyNotificationListener.kt` — `NotificationListenerService` qui capte les notifications de `com.whatsapp`, `org.thoughtcrime.securesms` (Signal), `org.telegram.messenger` (Telegram) ; file FIFO 200 entrées thread-safe (`CopyOnWriteArrayList`)
+- ✅ `MessagesFilterPlugin.kt` — MethodChannel `com.harmony.app/messages_filter` :
+  * `isNotificationListenerEnabled()` → check `enabled_notification_listeners`
+  * `requestNotificationListenerAccess()` → `Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS`
+  * `readRecentSms(limit)` → query `content://sms/inbox` via `ContentProvider`
+  * `getInterceptedNotifications()` → expose la queue de `HarmonyNotificationListener`
+- ✅ Service enregistré dans `AndroidManifest.xml` avec permission `BIND_NOTIFICATION_LISTENER_SERVICE`
+- ✅ Plugin enregistré dans `MainActivity.kt`
+- ✅ Permissions ajoutées : `RECEIVE_SMS`, `READ_SMS`, `BIND_NOTIFICATION_LISTENER_SERVICE`
+
+**iOS (limité) :**
+- ✅ UI informe l'utilisateur que WhatsApp/Signal sont non-interceptables (sandboxing Apple)
+- ✅ Screen Time suggéré comme alternative iOS
+- ✅ `docs/SETUP_NOTIFICATION_LISTENER.md` — guide utilisateur
+
+**Couche Flutter (Dart) :**
+- ✅ `CapturedMessage` — modèle (id, sender, content, timestamp, source, isBlocked, blockReason)
+- ✅ `MessageSource` — enum (sms/whatsApp/signal/telegram/unknown) + `fromPackage()`
+- ✅ `MessageRule` — règle de filtrage (contact/keyword/schedule, block/allow, sources)
+- ✅ `TimeRange` — plage horaire avec support traverse-minuit
+- ✅ `IMessagesRepository` — interface 8 méthodes
+- ✅ `MessagesService` — wrapper MethodChannel avec logs `[MESSAGES-DEBUG]`
+- ✅ `NativeMessagesRepository` — prod : SMS + notifs + matching règles
+- ✅ `MockMessagesRepository` — 5 messages hardcodés pour tests
+- ✅ `MessagesCubit` — sealed states (Initial/Loading/Loaded/ListenerDisabled/Error), CRUD règles
+- ✅ `MessagesFilterScreen` — statut listener, stats (total/bloqués/règles), liste règles, messages récents
+- ✅ `MessageRuleFormSheet` — ajout/édition règle (keyword/contact/schedule, sources, action)
+- ✅ `CapturedMessageTile` — affichage message avec avatar source et badge "Bloqué"
+- ✅ Dashboard — carte "Messages" ajoutée (7e module)
+- ✅ Route `/messages` + BlocProvider dans `app.dart`
+- ✅ 17 nouvelles clés i18n × 5 langues (messages*)
+
+### Tests
+- ✅ 13 tests Kotlin JUnit (inchangés)
+- ✅ **~258 tests Flutter total** (~228 existants + 30 nouveaux messages)
+- ✅ `message_rule_test.dart` — 14 tests : MessageSource, TimeRange, MessageRule.matches, CapturedMessage
+- ✅ `messages_cubit_test.dart` — 10 tests : load, addRule, deleteRule, requestListenerAccess, stats
+- ✅ `messages_filter_screen_test.dart` — 10 tests : widget + repository integration
 
 ---
 
@@ -420,6 +476,7 @@
 
 | Version | Date | Phase | Description |
 |---|---|---|---|
+| **1.5.0** | 26/05/2026 | **Sprint 6** ⭐ | Module Messages WhatsApp/SMS Android · NotificationListener + MethodChannel · 6/7 modules CDC · ~258 tests |
 | **1.4.2** | 26/05/2026 | **Sprint 5.2** ⭐ | Plugin Kotlin ContactsReaderPlugin — fix contacts account_type=NULL · 228 tests Flutter + 13 Kotlin |
 | **1.4.1** | 26/05/2026 | **Hotfix** | Contacts debug logs + filtre relâché + rawCount + refresh button |
 | **1.4.0** | 26/05/2026 | **Sprint 5** ⭐ | JWT + Google Calendar réel + Contacts natifs · ~228 tests Flutter + 13 Kotlin |
