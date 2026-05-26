@@ -29,7 +29,16 @@ class ChildDetailScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.bgBase,
-      appBar: HarmonyAppBar(title: l10n.childDetailTitle),
+      appBar: HarmonyAppBar(
+        title: l10n.childDetailTitle,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings_outlined),
+            tooltip: l10n.childSettingsTitle,
+            onPressed: () => context.push('${RouteNames.childDetail}/$childId/settings'),
+          ),
+        ],
+      ),
       body: BlocBuilder<ChildProfileCubit, ChildProfileState>(
         builder: (context, state) {
           if (state is! ChildProfileLoaded) {

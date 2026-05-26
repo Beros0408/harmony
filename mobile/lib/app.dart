@@ -35,6 +35,9 @@ import 'features/contacts/logic/contacts_cubit.dart';
 // Sprint 6 — Messages
 import 'features/messages/data/repositories/native_messages_repository.dart';
 import 'features/messages/logic/messages_cubit.dart';
+// Sprint 7 — Fitness
+import 'features/fitness/data/repositories/native_fitness_repository.dart';
+import 'features/fitness/logic/fitness_cubit.dart';
 import 'shared/theme/harmony_theme.dart';
 import 'shared/widgets/harmony_responsive_wrapper.dart';
 
@@ -105,6 +108,12 @@ class HarmonyApp extends StatelessWidget {
         BlocProvider(
           create: (_) => MessagesCubit(
             repository: NativeMessagesRepository.instance,
+          ),
+        ),
+        // Sprint 7 — Fitness
+        BlocProvider(
+          create: (_) => FitnessCubit(
+            repository: NativeFitnessRepository.instance,
           ),
         ),
       ],

@@ -11,9 +11,11 @@ import '../../features/call_filter/presentation/screens/call_filter_screen.dart'
 import '../../features/dashboard/presentation/screens/dashboard_screen.dart';
 import '../../features/fitness/presentation/screens/fitness_screen.dart';
 import '../../features/parental/presentation/screens/child_detail_screen.dart';
+import '../../features/parental/presentation/screens/child_settings_screen.dart';
 import '../../features/parental/presentation/screens/parental_screen.dart';
 import '../../features/parental/presentation/screens/safe_zone_editor_screen.dart';
 import '../../features/parental/presentation/screens/sos_active_screen.dart';
+import '../../features/parental/presentation/screens/sos_contacts_screen.dart';
 import '../../features/parental/presentation/screens/trip_history_screen.dart';
 import '../../features/contacts/presentation/screens/contacts_screen.dart';
 import '../../features/messages/presentation/screens/messages_filter_screen.dart';
@@ -185,6 +187,20 @@ final GoRouter appRouter = GoRouter(
       pageBuilder: (context, state) => _slidePage(
         key: state.pageKey,
         child: TripHistoryScreen(childId: state.pathParameters['id']!),
+      ),
+    ),
+    GoRoute(
+      path: '${RouteNames.childDetail}/:id/settings',
+      pageBuilder: (context, state) => _slidePage(
+        key: state.pageKey,
+        child: ChildSettingsScreen(childId: state.pathParameters['id']!),
+      ),
+    ),
+    GoRoute(
+      path: '${RouteNames.childDetail}/:id/sos-contacts',
+      pageBuilder: (context, state) => _slidePage(
+        key: state.pageKey,
+        child: SosContactsScreen(childId: state.pathParameters['id']!),
       ),
     ),
     GoRoute(
