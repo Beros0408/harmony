@@ -7,7 +7,7 @@
 
 | Champ | Valeur |
 |---|---|
-| **Version actuelle** | **1.5.0 — Sprint 6 livré (Module Messages WhatsApp/SMS)** ⭐ |
+| **Version actuelle** | **1.5.1 — Hotfix i18n ARB clés messages* (Sprint 6)** ⭐ |
 | **Phase en cours** | Phase 1 finalisée — 6/7 modules CDC complets |
 | **Avancement global** | ~92 % |
 | **Date de début** | 23 mai 2026 |
@@ -466,6 +466,32 @@ Android prioritaire ; iOS limité par design Apple.
 
 ---
 
+### Hotfix v1.5.1 — i18n ARB clés messages* ✅ TERMINÉ
+
+**Date :** 26/05/2026 · **Branch :** `fix/sprint-6-i18n-arb-keys` · **Tag :** `v1.5.1-messages-i18n-fix`
+
+#### Cause du hotfix
+
+Les 17 clés `messages*` avaient été écrites directement dans les fichiers `app_localizations*.dart` (auto-générés, gitignorés). Ces fichiers sont écrasés à chaque `flutter gen-l10n` (déclenché par `flutter pub get` / `flutter run`), ce qui causait 20 erreurs de compilation :
+
+> `The getter messagesXXX isn't defined for the type AppLocalizations`
+
+#### Livraisons
+
+- ✅ `mobile/lib/l10n/app_fr.arb` — 17 clés `messages*` ajoutées (fait en session précédente)
+- ✅ `mobile/lib/l10n/app_en.arb` — 17 clés `messages*` ajoutées
+- ✅ `mobile/lib/l10n/app_es.arb` — 17 clés `messages*` ajoutées
+- ✅ `mobile/lib/l10n/app_it.arb` — 17 clés `messages*` ajoutées
+- ✅ `mobile/lib/l10n/app_pt.arb` — 17 clés `messages*` ajoutées
+
+#### Régénération requise (manuelle)
+
+```bash
+cd mobile && flutter pub get  # déclenche flutter gen-l10n automatiquement
+```
+
+---
+
 ## Blocages actifs
 
 > *Aucun blocage actif.*
@@ -476,6 +502,7 @@ Android prioritaire ; iOS limité par design Apple.
 
 | Version | Date | Phase | Description |
 |---|---|---|---|
+| **1.5.1** | 26/05/2026 | **Hotfix** | i18n ARB clés messages* manquantes — fix 20 erreurs "getter messagesXXX isn't defined" dans les 5 locales |
 | **1.5.0** | 26/05/2026 | **Sprint 6** ⭐ | Module Messages WhatsApp/SMS Android · NotificationListener + MethodChannel · 6/7 modules CDC · ~258 tests |
 | **1.4.2** | 26/05/2026 | **Sprint 5.2** ⭐ | Plugin Kotlin ContactsReaderPlugin — fix contacts account_type=NULL · 228 tests Flutter + 13 Kotlin |
 | **1.4.1** | 26/05/2026 | **Hotfix** | Contacts debug logs + filtre relâché + rawCount + refresh button |
