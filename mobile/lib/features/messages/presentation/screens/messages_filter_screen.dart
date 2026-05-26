@@ -62,6 +62,7 @@ class _MessagesFilterScreenState extends State<MessagesFilterScreen> {
               cta: 'Réessayer',
               onCtaTap: () => context.read<MessagesCubit>().load(),
             ),
+          MessagesPermissionDenied() => _SmsPermissionCard(l10n: l10n),
           MessagesListenerDisabled() => HarmonyEmptyState(
               icon: Icons.notifications_off_outlined,
               title: l10n.messagesListenerDisabledTitle,
@@ -414,6 +415,68 @@ class _RuleCard extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+// ─── Bloc demande de permission SMS ──────────────────────────────────────────
+
+class _SmsPermissionCard extends StatelessWidget {
+  const _SmsPermissionCard({required this.l10n});
+
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.xl),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                color: AppColors.accentRed.withValues(alpha: 0.12),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.sms_failed_outlined,
+                color: AppColors.accentRed,
+                size: 32,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            Text(
+              l10n.messagesPermissionRequiredTitle,
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium
+                  ?.copyWith(fontWeight: FontWeight.w600),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              l10n.messagesPermissionRequiredSubtitle,
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(color: cs.onSurfaceVariant),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: AppSpacing.xl),
+            FilledButton.icon(
+              onPressed: () =>
+                  context.read<MessagesCubit>().requestSmsAccess(),
+              icon: const Icon(Icons.sms_outlined),
+              label: Text(l10n.messagesPermissionAllowCta),
+            ),
+          ],
+        ),
       ),
     );
   }

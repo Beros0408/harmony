@@ -65,6 +65,13 @@ class MockMessagesRepository implements IMessagesRepository {
     _listenerEnabled = true;
   }
 
+  // Permission SMS toujours accordée en mock (tests unitaires).
+  @override
+  Future<bool> hasSmsPermission() async => true;
+
+  @override
+  Future<bool> requestSmsPermission() async => true;
+
   @override
   Future<List<CapturedMessage>> readRecentSms({int limit = 50}) async =>
       _messages.where((m) => m.source == MessageSource.sms).take(limit).toList();

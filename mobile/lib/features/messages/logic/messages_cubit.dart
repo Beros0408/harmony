@@ -32,6 +32,8 @@ class MessagesLoaded extends MessagesState {
 
 class MessagesListenerDisabled extends MessagesState {}
 
+class MessagesPermissionDenied extends MessagesState {}
+
 class MessagesError extends MessagesState {
   MessagesError(this.message);
   final String message;
@@ -52,6 +54,23 @@ class MessagesCubit extends Cubit<MessagesState> {
     print('[MESSAGES-DEBUG] MessagesCubit.load() start — state: ${state.runtimeType}');
     emit(MessagesLoading());
     try {
+      // Vérification permission READ_SMS avant toute lecture (Android API 23+).
+      final hasPermission = await _repository.hasSmsPermission();
+      // ignore: avoid_print
+      print('[MESSAGES-DEBUG] MessagesCubit.load() hasSmsPermission=$hasPermission');
+
+      if (!hasPermission) {
+        // ignore: avoid_print
+        print('[MESSAGES-DEBUG] MessagesCubit.load() → demande permission SMS…');
+        final granted = await _repository.requestSmsPermission();
+        // ignore: avoid_print
+        print('[MESSAGES-DEBUG] MessagesCubit.load() requestSmsPermission → granted=$granted');
+        if (!granted) {
+          emit(MessagesPermissionDenied());
+          return;
+        }
+      }
+
       final listenerEnabled = await _repository.isListenerEnabled();
       // ignore: avoid_print
       print('[MESSAGES-DEBUG] MessagesCubit.load() listenerEnabled=$listenerEnabled');
@@ -70,6 +89,26 @@ class MessagesCubit extends Cubit<MessagesState> {
     } catch (e, st) {
       // ignore: avoid_print
       print('[MESSAGES-DEBUG] MessagesCubit.load() EXCEPTION: $e\n$st');
+      emit(MessagesError(e.toString()));
+    }
+  }
+
+  /// Affiche la popup système Android pour READ_SMS, puis recharge si accordée.
+  Future<void> requestSmsAccess() async {
+    // ignore: avoid_print
+    print('[MESSAGES-DEBUG] MessagesCubit.requestSmsAccess()');
+    try {
+      final granted = await _repository.requestSmsPermission();
+      // ignore: avoid_print
+      print('[MESSAGES-DEBUG] requestSmsAccess → granted=$granted');
+      if (granted) {
+        await load();
+      } else {
+        emit(MessagesPermissionDenied());
+      }
+    } catch (e) {
+      // ignore: avoid_print
+      print('[MESSAGES-DEBUG] requestSmsAccess EXCEPTION: $e');
       emit(MessagesError(e.toString()));
     }
   }

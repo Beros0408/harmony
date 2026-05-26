@@ -8,6 +8,12 @@ abstract interface class IMessagesRepository {
   /// Ouvre l'écran système d'accès aux notifications pour que l'utilisateur puisse activer Harmony.
   Future<void> requestListenerAccess();
 
+  /// Vérifie si la permission READ_SMS est accordée (Android runtime, API 23+).
+  Future<bool> hasSmsPermission();
+
+  /// Demande la permission READ_SMS au runtime. Retourne true si accordée.
+  Future<bool> requestSmsPermission();
+
   /// Lit les SMS récents depuis le ContentProvider Android (content://sms/inbox).
   Future<List<CapturedMessage>> readRecentSms({int limit = 50});
 

@@ -33,6 +33,12 @@ class NativeMessagesRepository implements IMessagesRepository {
     return _service.requestAccess();
   }
 
+  @override
+  Future<bool> hasSmsPermission() => _service.hasSmsPermission();
+
+  @override
+  Future<bool> requestSmsPermission() => _service.requestSmsPermission();
+
   // ─── Messages ──────────────────────────────────────────────────────────────
 
   @override
