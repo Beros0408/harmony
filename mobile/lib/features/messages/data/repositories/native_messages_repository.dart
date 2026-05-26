@@ -101,7 +101,7 @@ class NativeMessagesRepository implements IMessagesRepository {
     if (_rulesLoaded) return;
     // ignore: avoid_print
     print('[MESSAGES-DEBUG] NativeMessagesRepository._ensureRulesLoaded() — chargement SQLCipher');
-    final db = await DatabaseHelper.instance.db;
+    final db = await DatabaseHelper.db;
     final rows = await db.query('message_rules', orderBy: 'created_at ASC');
     _rules = rows.map(_ruleFromMap).toList();
     _rulesLoaded = true;
@@ -120,7 +120,7 @@ class NativeMessagesRepository implements IMessagesRepository {
     // ignore: avoid_print
     print('[MESSAGES-DEBUG] NativeMessagesRepository.addRule(${rule.ruleType.name} "${rule.value}")');
     await _ensureRulesLoaded();
-    final db = await DatabaseHelper.instance.db;
+    final db = await DatabaseHelper.db;
     await db.insert('message_rules', _ruleToMap(rule));
     _rules.add(rule);
   }
@@ -130,7 +130,7 @@ class NativeMessagesRepository implements IMessagesRepository {
     // ignore: avoid_print
     print('[MESSAGES-DEBUG] NativeMessagesRepository.updateRule(${rule.id})');
     await _ensureRulesLoaded();
-    final db = await DatabaseHelper.instance.db;
+    final db = await DatabaseHelper.db;
     await db.update(
       'message_rules',
       _ruleToMap(rule),
@@ -146,7 +146,7 @@ class NativeMessagesRepository implements IMessagesRepository {
     // ignore: avoid_print
     print('[MESSAGES-DEBUG] NativeMessagesRepository.deleteRule($id)');
     await _ensureRulesLoaded();
-    final db = await DatabaseHelper.instance.db;
+    final db = await DatabaseHelper.db;
     await db.delete('message_rules', where: 'id = ?', whereArgs: [id]);
     _rules.removeWhere((r) => r.id == id);
   }
