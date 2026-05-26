@@ -7,9 +7,9 @@
 
 | Champ | Valeur |
 |---|---|
-| **Version actuelle** | **1.4.0 — Sprint 5 livré (APIs Réelles)** ⭐ |
-| **Phase en cours** | Phase 1 finalisée — JWT, Google Calendar, Contacts natifs |
-| **Avancement global** | ~84 % |
+| **Version actuelle** | **1.4.2 — Sprint 5.2 livré (Contacts natifs Kotlin)** ⭐ |
+| **Phase en cours** | Phase 1 finalisée — JWT, Google Calendar, Contacts natifs (MethodChannel) |
+| **Avancement global** | ~86 % |
 | **Date de début** | 23 mai 2026 |
 | **Date cible MVP** | J+16 semaines |
 | **Dernière mise à jour** | 26 mai 2026 |
@@ -300,6 +300,55 @@
 
 ---
 
+### Hotfix v1.4.1 — Contacts debug (logs + filtre relâché) ✅ TERMINÉ
+
+**Date :** 26/05/2026 · **Commit :** `8e085fe` · **Tag :** `v1.4.1-contacts-debug`
+
+- ✅ Logs `[CONTACTS-DEBUG]` ajoutés dans `ContactsService`, `NativeContactsRepository`, `ContactsCubit`
+- ✅ Filtre `phones.isNotEmpty` relâché — contacts sans téléphone maintenant inclus
+- ✅ Champ `rawCount` dans `ContactsLoaded` — count brut visible dans l'état debug
+- ✅ Bouton refresh 🔄 dans l'AppBar de `ContactsScreen`
+- ✅ Empty state enrichi : affiche `rawCount` + bouton "Rafraîchir"
+
+**Diagnostic confirmé :** 15 raw_contacts dans la base Android avec `account_type=null` → `flutter_contacts 1.1.9` les ignore silencieusement → liste vide.
+
+---
+
+### Sprint 5.2 — Plugin Kotlin ContactsReader (fix final contacts) ✅ TERMINÉ
+
+**Date :** 26/05/2026 · **Commit :** `f8e8f97` · **Tag :** `v1.4.2-contacts-native`
+
+#### Cause racine
+
+`flutter_contacts 1.1.9` filtre les contacts avec `account_type=NULL` (comportement silencieux). Or c'est le cas par défaut sur les émulateurs Android et sur les téléphones sans compte Google connecté.
+
+#### Livraisons techniques
+
+**Couche native Android (Kotlin) :**
+- ✅ `ContactsReaderPlugin.kt` — query directe `ContactsContract.RawContacts.CONTENT_URI` (aucun filtre account_type)
+- ✅ Étape 1 : lecture de TOUS les `raw_contacts` groupés par `CONTACT_ID`
+- ✅ Étape 2 : lecture des données (`Data.CONTENT_URI`) pour téléphones + noms structurés
+- ✅ Étape 3 : tri alphabétique + filtrage des contacts totalement vides
+- ✅ Extensions `Cursor.safeGetString()` / `safeGetLong()` — protection contre les index négatifs Android
+- ✅ Gestion `SecurityException` (PERMISSION_DENIED) + exception générique (READ_CONTACTS_ERROR)
+- ✅ `ContactsReaderPlugin` enregistré dans `MainActivity.kt` — MethodChannel `com.harmony.app/contacts_reader`
+
+**Couche Flutter (Dart) :**
+- ✅ `ContactsService.fetchAllRaw()` — bridge MethodChannel → `List<NativeContact>` directement
+- ✅ `NativeContactsRepository.fetchAll()` — stratégie 2 niveaux : fetchAllRaw() en priorité, flutter_contacts en fallback
+- ✅ Tous les logs `[CONTACTS-DEBUG]` conservés pour cette version
+
+**Architecture décision :**
+- MethodChannel primaire garantit 100% des contacts (y compris account_type=NULL)
+- Fallback flutter_contacts maintenu pour compatibilité téléphones avec Google account
+
+#### Tests
+- ✅ 13 tests Kotlin JUnit (inchangés — ContactsReaderPlugin non testable JUnit car hérite de MethodChannel.MethodCallHandler)
+- ✅ **~228 tests Flutter total** (inchangés — MockContactsRepository découplé de ContactsService)
+- ✅ 0 issues `flutter analyze`
+
+---
+
 ## Suivi des KPIs techniques
 
 | Métrique | Cible | Mesuré à | Valeur actuelle | Statut |
@@ -356,6 +405,8 @@
 | **ADR-021** | 26/05/2026 | _PendingRequest queue pour refresh 401 concurrent | Évite N refreshes simultanés sur N requêtes expirées en parallèle | Sprint 5 |
 | **ADR-022** | 26/05/2026 | syncToGoogle() persiste googleEventId via AgendaEventRepository | Pas de changement d'interface IGoogleCalendarRepository — couplage minimal | Sprint 5 |
 | **ADR-023** | 26/05/2026 | ContactsService wrapper flutter_contacts + permission_handler | Séparation OS/business : NativeContactsRepository testable avec MockContactsRepository | Sprint 5 |
+| **ADR-024** | 26/05/2026 | ContactsReaderPlugin Kotlin (MethodChannel) en priorité sur flutter_contacts | flutter_contacts 1.1.9 ignore account_type=NULL — plugin natif contourne le bug silencieux | Sprint 5.2 |
+| **ADR-025** | 26/05/2026 | Pas de test JUnit pour ContactsReaderPlugin | ContactsReaderPlugin hérite de MethodChannel.MethodCallHandler (Flutter) — non disponible dans le classpath JUnit | Sprint 5.2 |
 
 ---
 
@@ -369,6 +420,8 @@
 
 | Version | Date | Phase | Description |
 |---|---|---|---|
+| **1.4.2** | 26/05/2026 | **Sprint 5.2** ⭐ | Plugin Kotlin ContactsReaderPlugin — fix contacts account_type=NULL · 228 tests Flutter + 13 Kotlin |
+| **1.4.1** | 26/05/2026 | **Hotfix** | Contacts debug logs + filtre relâché + rawCount + refresh button |
 | **1.4.0** | 26/05/2026 | **Sprint 5** ⭐ | JWT + Google Calendar réel + Contacts natifs · ~228 tests Flutter + 13 Kotlin |
 | **1.3.2** | 26/05/2026 | **Sprint 3.3** | Hotfix dark mode — BUGs 6/7/8 + audit 5 écrans · 218 tests |
 | **1.3.0** | 25/05/2026 | **Sprint 4** ⭐ | Agenda + Planification Intelligente · 218 tests Flutter + 13 Kotlin · APK debug OK |
