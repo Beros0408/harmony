@@ -346,5 +346,10 @@
   "messagesStatBlocked": "Blocked",
   "messagesStatRules": "Rules",
   "messagesEmptyState": "No messages captured.\nEnable notification access\nthen send an SMS or WhatsApp message.",
-  "messagesIosLimitation": "iOS: WhatsApp and Signal cannot be intercepted by Harmony due to Apple sandboxing. Only SMS can be filtered via SMS Filter Extension. Use Screen Time to restrict WhatsApp on iOS."
+  "messagesIosLimitation": "iOS: WhatsApp and Signal cannot be intercepted by Harmony due to Apple sandboxing. Only SMS can be filtered via SMS Filter Extension. Use Screen Time to restrict WhatsApp on iOS.",
+
+  "messagesPermissionRequiredTitle": "SMS permission required",
+  "messagesPermissionRequiredSubtitle": "Enable SMS access to view messages in Harmony",
+  "messagesPermissionAllowCta": "Allow",
+  "messagesPermissionDeniedSnack": "SMS permission denied. You can enable it in the app settings."
 }

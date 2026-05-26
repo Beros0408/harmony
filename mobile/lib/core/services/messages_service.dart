@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../features/messages/data/models/captured_message.dart';
 
@@ -40,6 +42,38 @@ class MessagesService {
       print('[MESSAGES-DEBUG] requestAccess PlatformException: ${e.code} ${e.message}');
       rethrow;
     }
+  }
+
+  // ─── SMS permission (Android runtime) ─────────────────────────────────────
+
+  /// Vérifie si READ_SMS est accordée sans afficher de popup système.
+  Future<bool> hasSmsPermission() async {
+    if (defaultTargetPlatform != TargetPlatform.android) {
+      // Sur iOS, READ_SMS n'existe pas — on considère que la permission est OK.
+      // ignore: avoid_print
+      print('[MESSAGES-DEBUG] hasSmsPermission: non-Android → true (no-op)');
+      return true;
+    }
+    final status = await Permission.sms.status;
+    // ignore: avoid_print
+    print('[MESSAGES-DEBUG] hasSmsPermission: ${status.name}');
+    return status.isGranted;
+  }
+
+  /// Demande READ_SMS au runtime (Android 6+).
+  /// Retourne true si accordée, false si refusée ou bannie définitivement.
+  Future<bool> requestSmsPermission() async {
+    if (defaultTargetPlatform != TargetPlatform.android) {
+      // ignore: avoid_print
+      print('[MESSAGES-DEBUG] requestSmsPermission: non-Android → granted (no-op)');
+      return true;
+    }
+    // ignore: avoid_print
+    print('[MESSAGES-DEBUG] requestSmsPermission: affichage popup système Android…');
+    final status = await Permission.sms.request();
+    // ignore: avoid_print
+    print('[MESSAGES-DEBUG] requestSmsPermission: ${status.name}');
+    return status.isGranted;
   }
 
   // ─── SMS ───────────────────────────────────────────────────────────────────
