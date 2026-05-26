@@ -3,6 +3,7 @@ package com.harmony.harmony
 // local_auth nécessite FlutterFragmentActivity pour la biométrie
 import com.harmony.harmony.channel.CallFilterMethodChannel
 import com.harmony.harmony.contacts.ContactsReaderPlugin
+import com.harmony.harmony.messages.MessagesFilterPlugin
 import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -24,5 +25,12 @@ class MainActivity : FlutterFragmentActivity() {
             flutterEngine.dartExecutor.binaryMessenger,
             ContactsReaderPlugin.CHANNEL_NAME,
         ).setMethodCallHandler(ContactsReaderPlugin(this))
+
+        // Canal filtrage des messages (Sprint 6)
+        // SMS via ContentProvider + notifications WhatsApp/Signal/Telegram via HarmonyNotificationListener
+        MethodChannel(
+            flutterEngine.dartExecutor.binaryMessenger,
+            MessagesFilterPlugin.CHANNEL_NAME,
+        ).setMethodCallHandler(MessagesFilterPlugin(this))
     }
 }
