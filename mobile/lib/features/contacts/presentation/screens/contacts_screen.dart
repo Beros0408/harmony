@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:harmony/l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
-import '../../../../core/constants/app_typography.dart';
 import '../../../../shared/widgets/harmony_app_bar.dart';
 import '../../../../shared/widgets/harmony_badge.dart';
 import '../../../../shared/widgets/harmony_button.dart';
@@ -100,12 +99,12 @@ class _ContactSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: AppTypography.textTheme.titleSmall),
+        Text(title, style: Theme.of(context).textTheme.titleSmall),
         const SizedBox(height: AppSpacing.md),
         if (contacts.isEmpty)
           HarmonyCard(
             child: Center(
-              child: Text(emptyLabel, style: AppTypography.textTheme.bodySmall),
+              child: Text(emptyLabel, style: Theme.of(context).textTheme.bodySmall),
             ),
           )
         else
@@ -175,10 +174,10 @@ class _ContactTile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(contact.name, style: AppTypography.textTheme.bodyMedium),
+                Text(contact.name, style: Theme.of(context).textTheme.bodyMedium),
                 Text(
                   contact.phone,
-                  style: AppTypography.textTheme.bodySmall?.copyWith(
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: cs.onSurfaceVariant,
                   ),
                 ),

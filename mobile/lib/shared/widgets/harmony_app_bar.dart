@@ -51,14 +51,19 @@ class HarmonyAppBar extends StatelessWidget implements PreferredSizeWidget {
           : null,
       automaticallyImplyLeading: false,
       leading: effectiveLeading,
-      title: Text(title, style: Theme.of(context).textTheme.titleLarge),
+      title: Text(
+        title,
+        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+          color: cs.onSurface,
+        ),
+      ),
       actions: [
         if (actions != null) ...actions!,
         const SizedBox(width: AppSpacing.sm),
       ],
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(1),
-        child: Container(height: 1, color: cs.outlineVariant),
+        child: Container(height: 1, color: cs.outline),
       ),
     );
   }

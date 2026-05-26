@@ -28,7 +28,6 @@ class FitnessScreen extends StatelessWidget {
     ];
 
     return Scaffold(
-      backgroundColor: AppColors.bgBase,
       appBar: HarmonyAppBar(title: l10n.fitnessScreenTitle),
       body: ListView(
         padding: const EdgeInsets.all(AppSpacing.lg),
@@ -160,12 +159,14 @@ class _StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: AppColors.bgSurface,
+        color: cs.surface,
         borderRadius: AppRadius.lgRadius,
-        border: Border.all(color: AppColors.borderDefault),
+        border: Border.all(color: cs.outline),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -183,7 +184,7 @@ class _StatCard extends StatelessWidget {
                 ),
                 child: Icon(stat.icon, color: stat.color, size: 15),
               ),
-              Text(label, style: AppTypography.textTheme.labelSmall),
+              Text(label, style: Theme.of(context).textTheme.labelSmall),
             ],
           ),
           Row(
@@ -194,7 +195,7 @@ class _StatCard extends StatelessWidget {
                 const SizedBox(width: 3),
                 Padding(
                   padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(unit!, style: AppTypography.textTheme.bodySmall),
+                  child: Text(unit!, style: Theme.of(context).textTheme.bodySmall),
                 ),
               ],
             ],
@@ -245,8 +246,8 @@ class _WeeklyBarChart extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 6),
                   child: Text(
                     dayLabels[i],
-                    style: AppTypography.textTheme.labelSmall?.copyWith(
-                      color: AppColors.textSecondary.withValues(alpha: 0.6),
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
                     ),
                   ),
                 );
@@ -273,6 +274,6 @@ class _SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(title, style: AppTypography.textTheme.titleSmall);
+    return Text(title, style: Theme.of(context).textTheme.titleSmall);
   }
 }
