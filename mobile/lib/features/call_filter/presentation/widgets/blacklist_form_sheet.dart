@@ -5,8 +5,11 @@ import 'package:harmony/core/constants/app_spacing.dart';
 import 'package:harmony/features/call_filter/data/models/blacklist_entry.dart';
 import 'package:harmony/features/call_filter/data/repositories/blacklist_repository.dart';
 import 'package:harmony/features/call_filter/logic/blacklist_cubit.dart';
+import 'package:harmony/features/contacts/data/models/native_contact.dart';
+import 'package:harmony/features/contacts/data/repositories/native_contacts_repository.dart';
 import 'package:harmony/l10n/app_localizations.dart';
 import 'package:harmony/shared/widgets/harmony_button.dart';
+import 'package:harmony/shared/widgets/harmony_search_bar.dart';
 import 'package:harmony/shared/widgets/harmony_text_field.dart';
 import 'package:uuid/uuid.dart';
 
@@ -62,6 +65,21 @@ class _BlacklistFormSheetState extends State<_BlacklistFormSheet> {
     _phoneCtrl.dispose();
     _labelCtrl.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickFromContacts() async {
+    final contact = await showModalBottomSheet<NativeContact>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => const _ContactPickerSheet(),
+    );
+    if (contact != null && contact.phone != null && mounted) {
+      _phoneCtrl.text = contact.phone!;
+      if (_labelCtrl.text.isEmpty) {
+        _labelCtrl.text = contact.displayName;
+      }
+    }
   }
 
   Future<void> _save() async {
@@ -159,6 +177,20 @@ class _BlacklistFormSheetState extends State<_BlacklistFormSheet> {
               keyboardType: TextInputType.phone,
               validator: _isEditing ? null : _validatePhone,
             ),
+            if (!_isEditing) ...[
+              const SizedBox(height: AppSpacing.sm),
+              TextButton.icon(
+                onPressed: _pickFromContacts,
+                icon: const Icon(Icons.contacts_outlined, size: 16),
+                label: Text(l10n.blacklistPickFromContacts),
+                style: TextButton.styleFrom(
+                  foregroundColor: AppColors.accentBlue,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.sm,
+                  ),
+                ),
+              ),
+            ],
             const SizedBox(height: AppSpacing.md),
 
             // Optional label
@@ -252,6 +284,154 @@ class _ReasonSelector extends StatelessWidget {
           showCheckmark: false,
         );
       }).toList(),
+    );
+  }
+}
+
+// ─── Contact picker bottom sheet ──────────────────────────────────────────────
+
+class _ContactPickerSheet extends StatefulWidget {
+  const _ContactPickerSheet();
+
+  @override
+  State<_ContactPickerSheet> createState() => _ContactPickerSheetState();
+}
+
+class _ContactPickerSheetState extends State<_ContactPickerSheet> {
+  List<NativeContact> _contacts = [];
+  List<NativeContact> _filtered = [];
+  bool _loading = true;
+  String _query = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    try {
+      final repo = NativeContactsRepository.instance;
+      final granted = await repo.hasPermission() || await repo.requestPermission();
+      if (!granted) {
+        if (mounted) setState(() => _loading = false);
+        return;
+      }
+      final contacts = await repo.fetchAll();
+      if (mounted) {
+        setState(() {
+          _contacts = contacts;
+          _filtered = contacts;
+          _loading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  void _onSearch(String query) {
+    setState(() {
+      _query = query;
+      if (query.isEmpty) {
+        _filtered = _contacts;
+      } else {
+        final q = query.toLowerCase();
+        _filtered = _contacts
+            .where(
+              (c) =>
+                  c.displayName.toLowerCase().contains(q) ||
+                  (c.phone?.contains(q) ?? false),
+            )
+            .toList();
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final maxHeight = MediaQuery.sizeOf(context).height * 0.75;
+
+    return Container(
+      constraints: BoxConstraints(maxHeight: maxHeight),
+      margin: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+      decoration: BoxDecoration(
+        color: cs.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Handle
+          Padding(
+            padding: const EdgeInsets.only(top: AppSpacing.md),
+            child: Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: cs.outline,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.lg,
+              AppSpacing.md,
+              AppSpacing.lg,
+              AppSpacing.sm,
+            ),
+            child: HarmonySearchBar(
+              hintText: 'Rechercher un contact...',
+              autofocus: true,
+              onChanged: _onSearch,
+            ),
+          ),
+          Flexible(
+            child: _loading
+                ? const Padding(
+                    padding: EdgeInsets.all(AppSpacing.xxxl),
+                    child: Center(child: CircularProgressIndicator()),
+                  )
+                : _filtered.isEmpty
+                    ? Padding(
+                        padding: const EdgeInsets.all(AppSpacing.xxxl),
+                        child: Text(
+                          'Aucun contact',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                      )
+                    : ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: _filtered.length,
+                        itemBuilder: (context, i) {
+                          final c = _filtered[i];
+                          return ListTile(
+                            leading: CircleAvatar(
+                              backgroundColor:
+                                  AppColors.accentBlue.withValues(alpha: 0.12),
+                              child: Text(
+                                c.initials,
+                                style: const TextStyle(
+                                  color: AppColors.accentBlue,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                            title: Text(c.displayName),
+                            subtitle: c.phone != null ? Text(c.phone!) : null,
+                            onTap: () => Navigator.of(context).pop(c),
+                          );
+                        },
+                      ),
+          ),
+          SizedBox(height: MediaQuery.viewInsetsOf(context).bottom),
+        ],
+      ),
     );
   }
 }

@@ -167,6 +167,10 @@
   "contactsBlacklistBadge": "blocked",
   "contactsEmpty": "No contacts",
   "contactsRemove": "Remove",
+  "contactsPermissionTitle": "Contacts access required",
+  "contactsPermissionSubtitle": "Harmony needs your permission to display your address book.",
+  "contactsPermissionCta": "Grant contacts access",
+  "blacklistPickFromContacts": "Pick from contacts",
 
   "voicemailScreenTitle": "Voicemail",
   "voicemailNewCount": "{count, plural, =0{No new messages} =1{1 new message} other{{count} new messages}}",

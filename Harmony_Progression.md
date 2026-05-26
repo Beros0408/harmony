@@ -7,12 +7,12 @@
 
 | Champ | Valeur |
 |---|---|
-| **Version actuelle** | **1.3.1 — Sprint 3.2 livré (Light Mode complet)** ⭐ |
-| **Phase en cours** | Phase 0+ finalisée — Light Mode cohérent sur tous les widgets |
-| **Avancement global** | ~76 % |
+| **Version actuelle** | **1.4.0 — Sprint 5 livré (APIs Réelles)** ⭐ |
+| **Phase en cours** | Phase 1 finalisée — JWT, Google Calendar, Contacts natifs |
+| **Avancement global** | ~84 % |
 | **Date de début** | 23 mai 2026 |
 | **Date cible MVP** | J+16 semaines |
-| **Dernière mise à jour** | 25 mai 2026 |
+| **Dernière mise à jour** | 26 mai 2026 |
 
 ---
 
@@ -243,6 +243,63 @@
 
 ---
 
+### Sprint 3.3 — Hotfix Dark Mode (régressions 3.2) ✅ TERMINÉ
+
+**Date :** 26/05/2026 · **Tag :** `v1.3.2-dark-mode-fix`
+
+#### Livraisons techniques
+
+- ✅ **BUG 6** — Titres `HarmonyAppBar` invisibles en dark → `.copyWith(color: cs.onSurface)`
+- ✅ **BUG 7** — Séparateur AppBar → `cs.outlineVariant` → `cs.outline`
+- ✅ **BUG 8** — Section « MODE ACTIF » barrée (`CallFilterScreen`) → `_SectionHeader` adaptatif + `Scaffold` sans fond codé en dur
+- ✅ Audit complet : 5 écrans secondaires (Parental, Fitness, Settings, Contacts, Voicemail) nettoyés de tous les `AppTypography.textTheme.*` hardcodés
+
+#### Tests
+- ✅ **218 tests Flutter total** — 0 failure
+- ✅ 0 issues `flutter analyze`
+
+---
+
+### Sprint 5 — APIs Réelles & Production-Ready ✅ TERMINÉ
+
+**Date :** 26/05/2026 · **Tag :** `v1.4.0-real-apis`
+
+#### Phase 1 — JWT End-to-End
+
+- ✅ `ITokenStorage` (interface) + `SecureTokenStorage` (flutter_secure_storage)
+- ✅ `DioClient` refactorisé — `_AuthInterceptor` Bearer injection + retry 401 + refresh token + `_PendingRequest` queue pour éviter les refreshes concurrents
+- ✅ `HarmonyServices.init()` — singleton partagé `ITokenStorage` + `DioClient`
+- ✅ `AuthBloc` — session token UUID v4 au login, `clearAll()` au logout, check token existant au démarrage
+
+#### Phase 2 — Google Calendar API Réelle
+
+- ✅ `GoogleCalendarRepository` — implémentation réelle via `googleapis/calendar/v3.dart`
+- ✅ Sync incrémentale `nextSyncToken` + fallback full-sync (HTTP 410 → reset + retry)
+- ✅ Pagination `nextPageToken` automatique
+- ✅ `events.list` + `events.insert` + `events.patch` + persistance `googleEventId`
+- ✅ `docs/SETUP_GOOGLE_CALENDAR.md` — guide pas-à-pas GCP, OAuth2, SHA-1, CI/CD
+
+#### Phase 3 — Contacts Natifs
+
+- ✅ `flutter_contacts ^1.1.9` ajouté au `pubspec.yaml`
+- ✅ `NativeContact` — modèle (id, displayName, phone, initials)
+- ✅ `IContactsRepository` — interface (hasPermission, requestPermission, fetchAll)
+- ✅ `ContactsService` — wrapper `flutter_contacts` + `permission_handler`
+- ✅ `NativeContactsRepository` — implémentation prod via `ContactsService`
+- ✅ `MockContactsRepository` — implémentation tests avec données hardcodées
+- ✅ `ContactsCubit` — états sealed (Initial/Loading/Loaded/PermissionDenied/Error), load/requestPermission/search
+- ✅ `ContactsScreen` — refonte complète : permission flow + `HarmonyEmptyState` CTA + liste adaptive
+- ✅ `BlacklistFormSheet` — bouton « Choisir depuis mes contacts » + `_ContactPickerSheet` bottom sheet searchable
+- ✅ 4 nouvelles clés i18n × 5 langues (`contactsPermissionTitle/Subtitle/Cta`, `blacklistPickFromContacts`)
+
+#### Tests
+- ✅ 13 tests Kotlin JUnit (inchangés)
+- ✅ **~228 tests Flutter total** (+10 nouveaux contacts)
+- ✅ 0 issues `flutter analyze`
+- ✅ `flutter build apk --debug` → BUILD SUCCESSFUL
+
+---
+
 ## Suivi des KPIs techniques
 
 | Métrique | Cible | Mesuré à | Valeur actuelle | Statut |
@@ -295,6 +352,10 @@
 | **ADR-017** | 24/05/2026 | CallDecisionEngine avec snapshot @Volatile immuable | Lecture concurrente sans lock, latence sub-ms | Phase 1 |
 | **ADR-018** | 24/05/2026 | CallLogStore buffer circulaire FIFO 1000 | Empreinte mémoire bornée, perf prévisible | Phase 1 |
 | **ADR-019** | 25/05/2026 | Downgrade AGP 9.0.1→8.9.2 + Gradle 9.1.0→8.13 | AGP 9 supprime l'ancien DSL utilisé par Flutter Gradle Plugin — incompatibilité bloquante | Phase 1 |
+| **ADR-020** | 26/05/2026 | ITokenStorage interface + SecureTokenStorage impl | Testabilité AuthBloc sans flutter_secure_storage en tests unitaires | Sprint 5 |
+| **ADR-021** | 26/05/2026 | _PendingRequest queue pour refresh 401 concurrent | Évite N refreshes simultanés sur N requêtes expirées en parallèle | Sprint 5 |
+| **ADR-022** | 26/05/2026 | syncToGoogle() persiste googleEventId via AgendaEventRepository | Pas de changement d'interface IGoogleCalendarRepository — couplage minimal | Sprint 5 |
+| **ADR-023** | 26/05/2026 | ContactsService wrapper flutter_contacts + permission_handler | Séparation OS/business : NativeContactsRepository testable avec MockContactsRepository | Sprint 5 |
 
 ---
 
@@ -308,6 +369,8 @@
 
 | Version | Date | Phase | Description |
 |---|---|---|---|
+| **1.4.0** | 26/05/2026 | **Sprint 5** ⭐ | JWT + Google Calendar réel + Contacts natifs · ~228 tests Flutter + 13 Kotlin |
+| **1.3.2** | 26/05/2026 | **Sprint 3.3** | Hotfix dark mode — BUGs 6/7/8 + audit 5 écrans · 218 tests |
 | **1.3.0** | 25/05/2026 | **Sprint 4** ⭐ | Agenda + Planification Intelligente · 218 tests Flutter + 13 Kotlin · APK debug OK |
 | **1.2.0** | 25/05/2026 | **Sprint 3** ⭐ | GPS live + SOS tel:112 + Module Famille · 162 tests Flutter + 13 Kotlin · Validé IRL Pixel 7 |
 | **1.1.1** | 25/05/2026 | **Sprint 1.5** | Blacklist SQLCipher + UI + Sync Kotlin · 117 tests Flutter + 13 Kotlin |

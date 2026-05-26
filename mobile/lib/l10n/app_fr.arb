@@ -210,6 +210,10 @@
   "contactsBlacklistBadge": "bloqué",
   "contactsEmpty": "Aucun contact",
   "contactsRemove": "Retirer",
+  "contactsPermissionTitle": "Accès aux contacts requis",
+  "contactsPermissionSubtitle": "Harmony a besoin de votre permission pour afficher votre carnet d'adresses.",
+  "contactsPermissionCta": "Autoriser l'accès aux contacts",
+  "blacklistPickFromContacts": "Choisir depuis mes contacts",
 
   "voicemailScreenTitle": "Messagerie vocale",
   "voicemailNewCount": "{count, plural, =0{Aucun nouveau message} =1{1 nouveau message} other{{count} nouveaux messages}}",

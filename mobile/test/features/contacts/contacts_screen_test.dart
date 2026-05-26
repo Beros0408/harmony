@@ -1,28 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:go_router/go_router.dart';
-import 'package:harmony/core/router/route_names.dart';
+import 'package:harmony/features/contacts/data/models/native_contact.dart';
+import 'package:harmony/features/contacts/data/repositories/mock_contacts_repository.dart';
+import 'package:harmony/features/contacts/logic/contacts_cubit.dart';
 import 'package:harmony/features/contacts/presentation/screens/contacts_screen.dart';
 import 'package:harmony/l10n/app_localizations.dart';
-import 'package:harmony/shared/theme/app_theme.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
-GoRouter _testRouter() => GoRouter(
-      initialLocation: RouteNames.contacts,
-      routes: [
-        GoRoute(
-          path: RouteNames.contacts,
-          builder: (_, __) => const ContactsScreen(),
-        ),
-      ],
-    );
-
-Widget _buildTestApp() => MaterialApp.router(
-      theme: AppTheme.darkTheme,
-      routerConfig: _testRouter(),
-      locale: const Locale('fr'),
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: const [Locale('fr')],
+Widget _buildApp({required ContactsCubit cubit}) => BlocProvider.value(
+      value: cubit,
+      child: MaterialApp(
+        locale: const Locale('fr'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: const [Locale('fr')],
+        home: const ContactsScreen(),
+      ),
     );
 
 void main() {
@@ -30,48 +23,60 @@ void main() {
     await initializeDateFormatting('fr_FR');
   });
 
-  group('ContactsScreen', () {
+  ContactsCubit _cubit({bool permissionGranted = true}) => ContactsCubit(
+        repository: MockContactsRepository(permissionGranted: permissionGranted),
+      );
+
+  group('ContactsScreen — permission accordée', () {
     testWidgets('affiche le titre "Contacts"', (tester) async {
-      await tester.pumpWidget(_buildTestApp());
-      await tester.pump();
+      final cubit = _cubit();
+      await tester.pumpWidget(_buildApp(cubit: cubit));
+      await tester.pump(); // trigger initState → cubit.load()
+      await tester.pump(); // settle async load
+
       expect(find.text('Contacts'), findsWidgets);
     });
 
-    testWidgets('affiche la section LISTE BLANCHE', (tester) async {
-      await tester.pumpWidget(_buildTestApp());
+    testWidgets('affiche les contacts natifs après chargement', (tester) async {
+      final cubit = _cubit();
+      await tester.pumpWidget(_buildApp(cubit: cubit));
       await tester.pump();
-      expect(find.text('LISTE BLANCHE'), findsOneWidget);
-    });
+      await tester.pump();
 
-    testWidgets('affiche la section LISTE NOIRE', (tester) async {
-      await tester.pumpWidget(_buildTestApp());
-      await tester.pump();
-      expect(find.text('LISTE NOIRE'), findsOneWidget);
-    });
-
-    testWidgets('affiche les contacts de la liste blanche', (tester) async {
-      await tester.pumpWidget(_buildTestApp());
-      await tester.pump();
       expect(find.text('Alice Dupont'), findsOneWidget);
       expect(find.text('Bob Martin'), findsOneWidget);
-    });
-
-    testWidgets('affiche les contacts de la liste noire', (tester) async {
-      await tester.pumpWidget(_buildTestApp());
-      await tester.pump();
-      expect(find.text('Spam Téléphonie'), findsOneWidget);
-    });
-
-    testWidgets('barre de recherche est présente', (tester) async {
-      await tester.pumpWidget(_buildTestApp());
-      await tester.pump();
       expect(find.byIcon(Icons.search), findsOneWidget);
     });
+  });
 
-    testWidgets('bouton "Ajouter un contact" est présent', (tester) async {
-      await tester.pumpWidget(_buildTestApp());
+  group('ContactsScreen — permission refusée', () {
+    testWidgets('affiche le HarmonyEmptyState avec CTA permission', (
+      tester,
+    ) async {
+      final cubit = _cubit(permissionGranted: false);
+      await tester.pumpWidget(_buildApp(cubit: cubit));
       await tester.pump();
-      expect(find.text('Ajouter un contact'), findsOneWidget);
+      await tester.pump();
+
+      expect(find.text('Accès aux contacts requis'), findsOneWidget);
+      expect(find.text('Autoriser l\'accès aux contacts'), findsOneWidget);
+    });
+
+    testWidgets('CTA permission demande la permission et charge les contacts', (
+      tester,
+    ) async {
+      final cubit = _cubit(permissionGranted: false);
+      await tester.pumpWidget(_buildApp(cubit: cubit));
+      await tester.pump();
+      await tester.pump();
+
+      // Tap the CTA button
+      await tester.tap(find.text('Autoriser l\'accès aux contacts'));
+      await tester.pump();
+      await tester.pump();
+
+      // After granting, contacts should load
+      expect(find.text('Alice Dupont'), findsOneWidget);
     });
   });
 }
