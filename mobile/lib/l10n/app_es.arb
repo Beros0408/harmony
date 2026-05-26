@@ -328,5 +328,23 @@
   "agendaCategoryProfessional": "Profesional",
   "agendaCategorySchool": "Escuela",
   "agendaCategoryLeisure": "Ocio",
-  "agendaCategoryOther": "Otro"
+  "agendaCategoryOther": "Otro",
+
+  "messagesModuleTitle": "Mensajes",
+  "messagesModuleSubtitle": "WhatsApp · Signal · SMS",
+  "messagesModuleBadge": "activo",
+  "messagesScreenTitle": "Mensajes & SMS",
+  "messagesRefreshTooltip": "Actualizar mensajes",
+  "messagesListenerEnabledTitle": "Acceso a notificaciones activo",
+  "messagesListenerEnabledSubtitle": "WhatsApp, Signal y Telegram están siendo monitoreados",
+  "messagesListenerDisabledTitle": "Acceso a notificaciones requerido",
+  "messagesListenerDisabledSubtitle": "Activa el acceso para capturar WhatsApp, Signal y Telegram",
+  "messagesListenerEnableCta": "Activar acceso",
+  "messagesSectionRules": "REGLAS DE FILTRADO",
+  "messagesSectionRecent": "MENSAJES RECIENTES",
+  "messagesStatTotal": "Recibidos",
+  "messagesStatBlocked": "Bloqueados",
+  "messagesStatRules": "Reglas",
+  "messagesEmptyState": "No se capturaron mensajes.\nActiva el acceso a notificaciones\ny luego envía un SMS o mensaje de WhatsApp.",
+  "messagesIosLimitation": "iOS: WhatsApp y Signal no pueden ser interceptados por Harmony debido al sandboxing de Apple. Solo los SMS se pueden filtrar. Usa Screen Time para limitar WhatsApp en iOS."
 }
