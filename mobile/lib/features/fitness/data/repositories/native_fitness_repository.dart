@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:sqflite_sqlcipher/sqflite.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/database/database_helper.dart';
@@ -115,7 +116,7 @@ class NativeFitnessRepository implements IFitnessRepository {
     await db.insert(
       'daily_steps',
       {...steps.toMap(), 'date': dateKey},
-      conflictAlgorithm: 5, // REPLACE
+      conflictAlgorithm: ConflictAlgorithm.replace,
     );
     // ignore: avoid_print
     print('[FITNESS-DEBUG] saveTodaySteps: $dateKey → ${steps.stepCount} pas');
