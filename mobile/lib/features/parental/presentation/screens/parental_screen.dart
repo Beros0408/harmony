@@ -51,7 +51,6 @@ class _ParentalScreenState extends State<ParentalScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: AppColors.bgBase,
       appBar: HarmonyAppBar(title: l10n.familyScreenTitle),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push(RouteNames.safeZoneEditor),
@@ -499,6 +498,6 @@ class _SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(title, style: AppTypography.textTheme.titleSmall);
+    return Text(title, style: Theme.of(context).textTheme.titleSmall);
   }
 }

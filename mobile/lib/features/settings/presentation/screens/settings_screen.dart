@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:harmony/l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
-import '../../../../core/constants/app_typography.dart';
 import '../../../../core/language/language_cubit.dart';
 import '../../../../core/theme/theme_cubit.dart';
 import '../../../../shared/widgets/harmony_app_bar.dart';
@@ -34,7 +33,6 @@ class SettingsScreen extends StatelessWidget {
     ];
 
     return Scaffold(
-      backgroundColor: AppColors.bgBase,
       appBar: HarmonyAppBar(title: l10n.settingsTitle),
       body: ListView(
         padding: const EdgeInsets.all(AppSpacing.lg),
@@ -42,7 +40,7 @@ class SettingsScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(l10n.settingsTheme, style: AppTypography.textTheme.titleSmall),
+              Text(l10n.settingsTheme, style: Theme.of(context).textTheme.titleSmall),
               HarmonyThemeToggle(
                 mode: currentTheme,
                 onChanged: (m) => context.read<ThemeCubit>().change(m),
@@ -69,7 +67,7 @@ class SettingsScreen extends StatelessWidget {
                         Icon(icon, size: 20, color: AppColors.accentBlue),
                         const SizedBox(width: AppSpacing.md),
                         Expanded(
-                          child: Text(label, style: AppTypography.textTheme.bodyMedium),
+                          child: Text(label, style: Theme.of(context).textTheme.bodyMedium),
                         ),
                         if (isSelected)
                           const Icon(Icons.check, color: AppColors.accentBlue, size: 20),
@@ -83,7 +81,7 @@ class SettingsScreen extends StatelessWidget {
 
           const SizedBox(height: AppSpacing.xl),
 
-          Text(l10n.settingsLanguage, style: AppTypography.textTheme.titleSmall),
+          Text(l10n.settingsLanguage, style: Theme.of(context).textTheme.titleSmall),
           const SizedBox(height: AppSpacing.md),
           HarmonyCard(
             padding: AppSpacing.md,
@@ -104,7 +102,7 @@ class SettingsScreen extends StatelessWidget {
                         Text(flag, style: const TextStyle(fontSize: 22)),
                         const SizedBox(width: AppSpacing.md),
                         Expanded(
-                          child: Text(name, style: AppTypography.textTheme.bodyMedium),
+                          child: Text(name, style: Theme.of(context).textTheme.bodyMedium),
                         ),
                         if (isSelected)
                           const Icon(Icons.check, color: AppColors.accentBlue, size: 20),

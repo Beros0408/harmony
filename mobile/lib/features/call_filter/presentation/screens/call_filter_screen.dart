@@ -78,7 +78,6 @@ class _CallFilterScreenState extends State<CallFilterScreen>
     ];
 
     return Scaffold(
-      backgroundColor: AppColors.bgBase,
       appBar: HarmonyAppBar(title: l10n.securityScreenTitle),
       body: ListView(
         padding: const EdgeInsets.all(AppSpacing.lg),
@@ -165,7 +164,7 @@ class _CallFilterScreenState extends State<CallFilterScreen>
               _SectionHeader(title: l10n.securitySectionRecentBlocked),
               GestureDetector(
                 onTap: () => context.push(RouteNames.callLog),
-                child: Text(l10n.securitySeeAll, style: AppTypography.textTheme.labelMedium),
+                child: Text(l10n.securitySeeAll, style: Theme.of(context).textTheme.labelMedium),
               ),
             ],
           ),
@@ -270,7 +269,7 @@ class _KpiItem extends StatelessWidget {
         children: [
           Text(value, style: AppTypography.monoMetric.copyWith(color: color, fontSize: 28)),
           const SizedBox(height: 2),
-          Text(label, style: AppTypography.textTheme.labelSmall),
+          Text(label, style: Theme.of(context).textTheme.labelSmall),
         ],
       ),
     );
@@ -300,6 +299,8 @@ class _ModeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
@@ -307,10 +308,10 @@ class _ModeCard extends StatelessWidget {
         width: 120,
         padding: const EdgeInsets.all(AppSpacing.md),
         decoration: BoxDecoration(
-          color: AppColors.bgSurface,
+          color: cs.surface,
           borderRadius: AppRadius.lgRadius,
           border: Border.all(
-            color: isActive ? mode.color : AppColors.borderDefault,
+            color: isActive ? mode.color : cs.outline,
             width: isActive ? 2 : 1,
           ),
         ),
@@ -330,8 +331,8 @@ class _ModeCard extends StatelessWidget {
             const SizedBox(height: AppSpacing.sm),
             Text(
               title,
-              style: AppTypography.textTheme.labelMedium?.copyWith(
-                color: isActive ? AppColors.textPrimary : AppColors.textSecondary,
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                color: isActive ? cs.onSurface : cs.onSurfaceVariant,
               ),
               maxLines: 2,
             ),
@@ -350,7 +351,7 @@ class _SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(title, style: AppTypography.textTheme.titleSmall);
+    return Text(title, style: Theme.of(context).textTheme.titleSmall);
   }
 }
 
@@ -421,10 +422,7 @@ class _ScreeningStatusBanner extends StatelessWidget {
           const SizedBox(height: AppSpacing.sm),
           Text(
             l10n.callScreeningEnableDescription,
-            style: const TextStyle(
-              fontSize: 12,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodySmall,
           ),
           const SizedBox(height: AppSpacing.md),
           SizedBox(
