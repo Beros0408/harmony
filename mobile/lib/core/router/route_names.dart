@@ -30,4 +30,5 @@ class RouteNames {
   static const String safeZoneEditor = '/parental/zones/edit';
   static const String sosActive = '/parental/sos/active';
   static const String sosHistory = '/parental/sos/history';
+
 }

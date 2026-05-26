@@ -8,7 +8,7 @@ class DatabaseHelper {
   DatabaseHelper._();
 
   static const _dbName = 'harmony.db';
-  static const _dbVersion = 3;
+  static const _dbVersion = 4;
   // ignore: constant_identifier_names
   static const _passphrase = 'harmony_mvp_2026';
 
@@ -31,6 +31,8 @@ class DatabaseHelper {
     await _createBlacklistTable(db);
     await _createParentalTables(db);
     await _createAgendaTables(db);
+    await _createFitnessTables(db);
+    await _createMessageRulesTables(db);
   }
 
   static Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
@@ -39,6 +41,10 @@ class DatabaseHelper {
     }
     if (oldVersion < 3) {
       await _createAgendaTables(db);
+    }
+    if (oldVersion < 4) {
+      await _createFitnessTables(db);
+      await _createMessageRulesTables(db);
     }
   }
 
@@ -193,6 +199,51 @@ class DatabaseHelper {
         account_email   TEXT NOT NULL,
         last_sync_at    INTEGER,
         next_sync_token TEXT
+      )
+    ''');
+  }
+
+  static Future<void> _createFitnessTables(Database db) async {
+    // Pas quotidiens (1 ligne par jour)
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS daily_steps (
+        date         TEXT PRIMARY KEY,
+        step_count   INTEGER NOT NULL DEFAULT 0,
+        goal_steps   INTEGER NOT NULL DEFAULT 8000,
+        created_at   INTEGER NOT NULL
+      )
+    ''');
+
+    // Séances d'entraînement
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS workout_sessions (
+        id              TEXT PRIMARY KEY,
+        type            TEXT NOT NULL,
+        start_time      INTEGER NOT NULL,
+        end_time        INTEGER,
+        steps_total     INTEGER NOT NULL DEFAULT 0,
+        distance_meters REAL NOT NULL DEFAULT 0,
+        avg_heart_rate  INTEGER
+      )
+    ''');
+    await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_workout_start ON workout_sessions(start_time)',
+    );
+  }
+
+  static Future<void> _createMessageRulesTables(Database db) async {
+    // Règles de filtrage messages (persistance SQLCipher)
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS message_rules (
+        id                  TEXT PRIMARY KEY,
+        type                TEXT NOT NULL,
+        value               TEXT NOT NULL DEFAULT '',
+        action              TEXT NOT NULL,
+        sources             TEXT NOT NULL DEFAULT '[]',
+        schedule_start_hour INTEGER,
+        schedule_end_hour   INTEGER,
+        is_active           INTEGER NOT NULL DEFAULT 1,
+        created_at          INTEGER NOT NULL
       )
     ''');
   }

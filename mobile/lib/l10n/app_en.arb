@@ -351,5 +351,26 @@
   "messagesPermissionRequiredTitle": "SMS permission required",
   "messagesPermissionRequiredSubtitle": "Enable SMS access to view messages in Harmony",
   "messagesPermissionAllowCta": "Allow",
-  "messagesPermissionDeniedSnack": "SMS permission denied. You can enable it in the app settings."
+  "messagesPermissionDeniedSnack": "SMS permission denied. You can enable it in the app settings.",
+
+  "fitnessPermissionTitle": "Activity access required",
+  "fitnessPermissionSubtitle": "Harmony needs permission to count your steps and track your activity",
+  "fitnessPermissionAllowCta": "Allow access",
+  "fitnessGoalTitle": "DAILY GOAL",
+  "fitnessGoalSteps": "{count} steps / day",
+  "@fitnessGoalSteps": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "fitnessStartWorkout": "Start workout",
+  "fitnessStopWorkout": "Stop",
+  "fitnessWorkoutRunning": "Workout in progress",
+  "fitnessActiveMinutes": "Active min.",
+  "fitnessWorkoutTypeWalk": "Walk",
+  "fitnessWorkoutTypeRun": "Run",
+  "fitnessWorkoutTypeCycle": "Cycling",
+
+  "childSettingsTitle": "Child settings",
+  "sosContactsTitle": "SOS contacts",
+  "sosContactsEmpty": "No SOS contacts",
+  "sosContactsAdd": "Add a contact"
 }

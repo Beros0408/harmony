@@ -25,6 +25,9 @@
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
+    <!-- Fitness / Podomètre (Sprint 7 — Android 10+) -->
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
+
     <!-- SMS (Sprint 6 — Module Messages) -->
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <uses-permission android:name="android.permission.READ_SMS" />

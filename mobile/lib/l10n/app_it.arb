@@ -351,5 +351,26 @@
   "messagesPermissionRequiredTitle": "Autorizzazione SMS richiesta",
   "messagesPermissionRequiredSubtitle": "Attiva l'accesso agli SMS per visualizzare i messaggi in Harmony",
   "messagesPermissionAllowCta": "Consenti",
-  "messagesPermissionDeniedSnack": "Autorizzazione SMS negata. Puoi attivarla nelle impostazioni dell'app."
+  "messagesPermissionDeniedSnack": "Autorizzazione SMS negata. Puoi attivarla nelle impostazioni dell'app.",
+
+  "fitnessPermissionTitle": "Accesso all'attività richiesto",
+  "fitnessPermissionSubtitle": "Harmony ha bisogno del permesso per contare i tuoi passi e monitorare l'attività",
+  "fitnessPermissionAllowCta": "Consenti accesso",
+  "fitnessGoalTitle": "OBIETTIVO GIORNALIERO",
+  "fitnessGoalSteps": "{count} passi / giorno",
+  "@fitnessGoalSteps": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "fitnessStartWorkout": "Inizia sessione",
+  "fitnessStopWorkout": "Ferma",
+  "fitnessWorkoutRunning": "Sessione in corso",
+  "fitnessActiveMinutes": "Min. attivi",
+  "fitnessWorkoutTypeWalk": "Camminata",
+  "fitnessWorkoutTypeRun": "Corsa",
+  "fitnessWorkoutTypeCycle": "Ciclismo",
+
+  "childSettingsTitle": "Impostazioni del bambino",
+  "sosContactsTitle": "Contatti SOS",
+  "sosContactsEmpty": "Nessun contatto SOS",
+  "sosContactsAdd": "Aggiungi un contatto"
 }
