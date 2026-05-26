@@ -7,7 +7,7 @@
 
 | Champ | Valeur |
 |---|---|
-| **Version actuelle** | **1.5.1 — Hotfix i18n ARB clés messages* (Sprint 6)** ⭐ |
+| **Version actuelle** | **1.5.2 — Hotfix READ_SMS runtime permission (Sprint 6)** ⭐ |
 | **Phase en cours** | Phase 1 finalisée — 6/7 modules CDC complets |
 | **Avancement global** | ~92 % |
 | **Date de début** | 23 mai 2026 |
@@ -466,6 +466,47 @@ Android prioritaire ; iOS limité par design Apple.
 
 ---
 
+### Hotfix v1.5.2 — Permission READ_SMS au runtime ✅ TERMINÉ
+
+**Date :** 26/05/2026 · **Branch :** `fix/sprint-6-sms-permission` · **Tag :** `v1.5.2-sms-permission`
+
+#### Cause du hotfix
+
+Depuis Android 6.0 (API 23), les permissions "dangerous" (dont `READ_SMS`) doivent être demandées au runtime via `permission_handler`. `READ_SMS` était déclarée dans `AndroidManifest.xml` mais jamais demandée à l'utilisateur, ce qui causait une `SecurityException` à chaque appel de `readRecentSms()` :
+
+> `Permission Denial: reading com.android.providers.telephony.SmsProvider uri content://sms requires android.permission.READ_SMS`
+
+#### Livraisons
+
+**Services & repositories :**
+- ✅ `MessagesService.hasSmsPermission()` — vérifie `Permission.sms.status` sans popup (no-op sur iOS)
+- ✅ `MessagesService.requestSmsPermission()` — affiche la popup système Android (no-op sur iOS)
+- ✅ `IMessagesRepository` — 2 nouvelles méthodes dans l'interface
+- ✅ `NativeMessagesRepository` — délègue à `MessagesService`
+- ✅ `MockMessagesRepository` — always returns `true` (tests unitaires non impactés)
+
+**Cubit :**
+- ✅ `MessagesPermissionDenied` — nouvel état sealed (6 états au total)
+- ✅ `MessagesCubit.load()` — vérifie + demande permission avant `getAllMessages()` ; émet `MessagesPermissionDenied` si refusé
+- ✅ `MessagesCubit.requestSmsAccess()` — redemande la permission (CTA utilisateur)
+
+**UI :**
+- ✅ `messages_filter_screen.dart` — gère `MessagesPermissionDenied` dans le switch
+- ✅ `_SmsPermissionCard` — bloc centré : icône SMS barrée rouge + titre + sous-titre + bouton "Autoriser" (FilledButton)
+
+**i18n :**
+- ✅ 4 nouvelles clés (`messagesPermission*`) × 5 locales ARB (fr/en/es/it/pt)
+
+#### Flux après hotfix
+
+```
+load() → hasSmsPermission=false → popup Android → accepte → getAllMessages → MessagesLoaded
+load() → hasSmsPermission=false → popup Android → refuse → MessagesPermissionDenied → _SmsPermissionCard
+CTA "Autoriser" → requestSmsAccess() → nouvelle popup → accepte → load() → MessagesLoaded
+```
+
+---
+
 ### Hotfix v1.5.1 — i18n ARB clés messages* ✅ TERMINÉ
 
 **Date :** 26/05/2026 · **Branch :** `fix/sprint-6-i18n-arb-keys` · **Tag :** `v1.5.1-messages-i18n-fix`
@@ -502,6 +543,7 @@ cd mobile && flutter pub get  # déclenche flutter gen-l10n automatiquement
 
 | Version | Date | Phase | Description |
 |---|---|---|---|
+| **1.5.2** | 26/05/2026 | **Hotfix** | READ_SMS runtime permission (Android 6+) — SecurityException + état MessagesPermissionDenied + UI CTA |
 | **1.5.1** | 26/05/2026 | **Hotfix** | i18n ARB clés messages* manquantes — fix 20 erreurs "getter messagesXXX isn't defined" dans les 5 locales |
 | **1.5.0** | 26/05/2026 | **Sprint 6** ⭐ | Module Messages WhatsApp/SMS Android · NotificationListener + MethodChannel · 6/7 modules CDC · ~258 tests |
 | **1.4.2** | 26/05/2026 | **Sprint 5.2** ⭐ | Plugin Kotlin ContactsReaderPlugin — fix contacts account_type=NULL · 228 tests Flutter + 13 Kotlin |
