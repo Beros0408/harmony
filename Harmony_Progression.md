@@ -7,9 +7,9 @@
 
 | Champ | Valeur |
 |---|---|
-| **Version actuelle** | **2.0.0 — Sprint 7 Fitness + Parental + Messages complets (CDC-COMPLETE)** ⭐ |
-| **Phase en cours** | Phase 1 finalisée — 7/7 modules CDC complets |
-| **Avancement global** | ~98 % |
+| **Version actuelle** | **2.1.0 — Sprint 8 Paywall RevenueCat + Feature Gating + AdMob** ⭐ |
+| **Phase en cours** | Monétisation — Freemium live (plans Solo/Famille/Sport/Lifetime) |
+| **Avancement global** | ~100 % |
 | **Date de début** | 23 mai 2026 |
 | **Date cible MVP** | J+16 semaines |
 | **Dernière mise à jour** | 27 mai 2026 |
@@ -621,6 +621,8 @@ Compléter les 3 derniers modules en retard du cahier des charges :
 
 | Version | Date | Phase | Description |
 |---|---|---|---|
+| **2.1.0** | 27/05/2026 | **Sprint 8** ⭐ | Paywall RevenueCat + Feature Gating + AdMob · Solo/Famille/Sport/Lifetime · 45 nouveaux tests · 303 passants |
+| **2.0.1** | 27/05/2026 | **Hotfix** | DatabaseHelper.db pattern + ConflictAlgorithm.replace enum (v2.0.1) |
 | **2.0.0** | 27/05/2026 | **Sprint 7** ⭐ | CDC-COMPLETE — M6 Fitness BLoC + M4 Parental Settings/SOS + M3 Messages SQLCipher · 7/7 modules · ~290 tests |
 | **1.5.2** | 26/05/2026 | **Hotfix** | READ_SMS runtime permission (Android 6+) — SecurityException + état MessagesPermissionDenied + UI CTA |
 | **1.5.1** | 26/05/2026 | **Hotfix** | i18n ARB clés messages* manquantes — fix 20 erreurs "getter messagesXXX isn't defined" dans les 5 locales |
