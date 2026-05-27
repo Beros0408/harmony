@@ -34,4 +34,7 @@ class RouteNames {
   // Sprint 8 — Paywall
   static const String paywall = '/paywall';
   static const String subscriptionStatus = '/subscription';
+
+  // Mini-Sprint Visuels — Méditation
+  static const String meditation = '/meditation';
 }

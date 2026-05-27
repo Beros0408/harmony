@@ -440,5 +440,11 @@
   "subscriptionManageSubtitle": "Modifier ou annuler via l'App Store / Google Play",
   "subscriptionWillNotRenew": "Votre abonnement ne sera pas renouvelé.",
   "subscriptionUpgradeTitle": "Passer à Premium",
-  "subscriptionUpgradeSubtitle": "Débloquez la blacklist illimitée, les profils enfants et le suivi fitness avancé."
+  "subscriptionUpgradeSubtitle": "Débloquez la blacklist illimitée, les profils enfants et le suivi fitness avancé.",
+
+  "moduleMeditationTitle": "Méditation",
+  "moduleMeditationSubtitle": "Sessions guidées",
+  "moduleMeditationBadge": "Nouveau",
+
+  "splashTagline": "Votre sanctuaire numérique"
 }

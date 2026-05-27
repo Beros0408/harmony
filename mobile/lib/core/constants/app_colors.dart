@@ -25,6 +25,7 @@ class AppColors {
   static const Color accentRed = Color(0xFFEF4444);
   static const Color accentPurple = Color(0xFF8B5CF6);
   static const Color accentCyan = Color(0xFF06B6D4);
+  static const Color accentRose = Color(0xFFEC4899);
 
   // --- OLED (noir pur) ---
   static const Color bgBaseOled = Color(0xFF000000);
@@ -60,4 +61,6 @@ class AppColors {
   static const Color badgePurpleTextLight = Color(0xFF5B21B6);
   static const Color badgeMutedBgLight = Color(0xFFF3F4F6);
   static const Color badgeMutedTextLight = Color(0xFF374151);
+  static const Color badgeRoseBgLight = Color(0xFFFCE7F3);
+  static const Color badgeRoseTextLight = Color(0xFF9D174D);
 }

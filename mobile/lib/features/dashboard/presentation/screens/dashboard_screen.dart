@@ -15,6 +15,15 @@ import '../../../../shared/widgets/harmony_search_bar.dart';
 import '../../../../shared/widgets/harmony_status_dot.dart';
 import '../../../../shared/widgets/harmony_toggle.dart';
 
+// Chemins des images Unsplash placées dans assets/images/
+class _Images {
+  static const securite = 'assets/images/forêt brumeuse, cocon protecteur.png';
+  static const famille  = 'assets/images/famille au coucher du soleil, chaleureux.png';
+  static const fitness  = 'assets/images/joguese -dans-la foret.png';
+  static const agenda   = 'assets/images/bureau zen, carnet et café.png';
+  static const meditation = 'assets/images/océan calme, lever du soleil.png';
+}
+
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
 
@@ -80,6 +89,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 iconColor: AppColors.accentBlue,
                 badge: l10n.moduleSecurityBadge,
                 badgeVariant: HarmonyBadgeVariant.success,
+                backgroundImage: _Images.securite,
                 onTap: () => context.push(RouteNames.security),
               ),
               _ModuleCard(
@@ -89,6 +99,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 iconColor: AppColors.accentPurple,
                 badge: l10n.moduleFamilyBadgeProfiles(2),
                 badgeVariant: HarmonyBadgeVariant.purple,
+                backgroundImage: _Images.famille,
                 onTap: () => context.push(RouteNames.family),
               ),
               _ModuleCard(
@@ -98,7 +109,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 iconColor: AppColors.accentGreen,
                 badge: l10n.moduleFitnessBadge,
                 badgeVariant: HarmonyBadgeVariant.info,
+                backgroundImage: _Images.fitness,
                 onTap: () => context.push(RouteNames.fitness),
+              ),
+              _ModuleCard(
+                title: l10n.moduleMeditationTitle,
+                subtitle: l10n.moduleMeditationSubtitle,
+                icon: Icons.self_improvement,
+                iconColor: AppColors.accentRose,
+                badge: l10n.moduleMeditationBadge,
+                badgeVariant: HarmonyBadgeVariant.rose,
+                backgroundImage: _Images.meditation,
+                onTap: () => context.push(RouteNames.meditation),
               ),
               _ModuleCard(
                 title: l10n.moduleAgendaTitle,
@@ -107,6 +129,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 iconColor: AppColors.accentAmber,
                 badge: l10n.moduleAgendaBadge,
                 badgeVariant: HarmonyBadgeVariant.warning,
+                backgroundImage: _Images.agenda,
                 onTap: () => context.push(RouteNames.agenda),
               ),
               _ModuleCard(
@@ -174,6 +197,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 HarmonyBadge(label: 'Danger', variant: HarmonyBadgeVariant.danger),
                 HarmonyBadge(label: 'Info', variant: HarmonyBadgeVariant.info),
                 HarmonyBadge(label: 'Purple', variant: HarmonyBadgeVariant.purple),
+                HarmonyBadge(label: 'Rose', variant: HarmonyBadgeVariant.rose),
                 HarmonyBadge(label: 'Muet', variant: HarmonyBadgeVariant.muted),
               ],
             ),
@@ -351,6 +375,7 @@ class _ModuleCard extends StatefulWidget {
     required this.iconColor,
     required this.badge,
     required this.badgeVariant,
+    this.backgroundImage,
     this.onTap,
   });
 
@@ -360,6 +385,7 @@ class _ModuleCard extends StatefulWidget {
   final Color iconColor;
   final String badge;
   final HarmonyBadgeVariant badgeVariant;
+  final String? backgroundImage;
   final VoidCallback? onTap;
 
   @override
@@ -384,8 +410,47 @@ class _ModuleCardState extends State<_ModuleCard> {
         child: AnimatedScale(
           duration: const Duration(milliseconds: 100),
           scale: _pressed ? 0.97 : 1.0,
-          child: HarmonyCard(
-            padding: AppSpacing.md,
+          child: widget.backgroundImage != null
+              ? _buildImageCard(context)
+              : _buildColorCard(context),
+        ),
+      ),
+    );
+  }
+
+  // Card avec image Unsplash en fond + overlay sombre pour lisibilité WCAG AA
+  Widget _buildImageCard(BuildContext context) {
+    return Container(
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.45),
+            blurRadius: 14,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.asset(widget.backgroundImage!, fit: BoxFit.cover),
+          // gradient sombre : lisibilité texte blanc (WCAG AA)
+          const DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color(0x73000000), // 45% opacité en haut
+                  Color(0xBF000000), // 75% opacité en bas
+                ],
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(AppSpacing.md),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -397,23 +462,72 @@ class _ModuleCardState extends State<_ModuleCard> {
                       width: 36,
                       height: 36,
                       decoration: BoxDecoration(
-                        color: widget.iconColor.withValues(alpha: 0.12),
+                        color: Colors.white.withValues(alpha: 0.20),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Icon(widget.icon, color: widget.iconColor, size: 18),
+                      child: Icon(widget.icon, color: Colors.white, size: 18),
                     ),
                     Flexible(
                       child: HarmonyBadge(label: widget.badge, variant: widget.badgeVariant),
                     ),
                   ],
                 ),
-                const SizedBox(height: AppSpacing.sm),
-                Text(widget.title, style: Theme.of(context).textTheme.titleMedium),
-                Text(widget.subtitle, style: Theme.of(context).textTheme.bodySmall),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      widget.title,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                          ),
+                    ),
+                    Text(
+                      widget.subtitle,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Colors.white70,
+                          ),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
-        ),
+        ],
+      ),
+    );
+  }
+
+  // Card colorée sémantique (sans image) — style original
+  Widget _buildColorCard(BuildContext context) {
+    return HarmonyCard(
+      padding: AppSpacing.md,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: widget.iconColor.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(widget.icon, color: widget.iconColor, size: 18),
+              ),
+              Flexible(
+                child: HarmonyBadge(label: widget.badge, variant: widget.badgeVariant),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Text(widget.title, style: Theme.of(context).textTheme.titleMedium),
+          Text(widget.subtitle, style: Theme.of(context).textTheme.bodySmall),
+        ],
       ),
     );
   }
