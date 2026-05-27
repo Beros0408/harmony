@@ -404,5 +404,12 @@
   "moduleMeditationBadge": "Nuovo",
 
   "splashTagline": "Il tuo santuario digitale",
-  "splashCtaButton": "Entra in Harmony"
+  "splashCtaButton": "Entra in Harmony",
+
+  "messageDetailTypeSms": "SMS",
+  "messageDetailTypeWhatsapp": "WhatsApp",
+  "messageDetailTypeSignal": "Signal",
+  "messageDetailTypeTelegram": "Telegram",
+  "messageDetailMarkRead": "Segna come letto",
+  "messageDetailBlockContact": "Blocca questo contatto"
 }

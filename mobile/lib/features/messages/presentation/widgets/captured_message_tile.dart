@@ -8,9 +8,14 @@ import '../../data/models/captured_message.dart';
 
 /// Affiche un message capturé (SMS ou notification d'app).
 class CapturedMessageTile extends StatelessWidget {
-  const CapturedMessageTile({super.key, required this.message});
+  const CapturedMessageTile({
+    super.key,
+    required this.message,
+    this.onTap,
+  });
 
   final CapturedMessage message;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -18,6 +23,7 @@ class CapturedMessageTile extends StatelessWidget {
 
     return HarmonyCard(
       padding: AppSpacing.sm,
+      onTap: onTap,
       child: Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.sm,

@@ -23,6 +23,8 @@ import '../../features/settings/presentation/screens/settings_screen.dart';
 import '../../features/call_log/presentation/screens/call_log_screen.dart';
 import '../../features/dev/presentation/screens/components_demo_screen.dart';
 import '../../features/meditation/presentation/screens/meditation_screen.dart';
+import '../../features/messages/data/models/captured_message.dart';
+import '../../features/messages/presentation/screens/message_detail_screen.dart';
 import '../../features/splash/presentation/screens/splash_screen.dart';
 import '../../features/subscription/presentation/screens/paywall_screen.dart';
 import '../../features/subscription/presentation/screens/subscription_status_screen.dart';
@@ -249,6 +251,16 @@ final GoRouter appRouter = GoRouter(
       pageBuilder: (context, state) => _slidePage(
         key: state.pageKey,
         child: const SubscriptionStatusScreen(),
+      ),
+    ),
+    // ── Hotfix v2.2.4 — Détail d'un message (reçoit CapturedMessage via extra) ──
+    GoRoute(
+      path: RouteNames.messageDetail,
+      pageBuilder: (context, state) => _slidePage(
+        key: state.pageKey,
+        child: MessageDetailScreen(
+          message: state.extra! as CapturedMessage,
+        ),
       ),
     ),
     // ── Dev — Design System Showcase (route privée, non exposée en production) ─

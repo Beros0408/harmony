@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:harmony/l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
+import '../../../../core/router/route_names.dart';
 import '../../../../shared/widgets/harmony_app_bar.dart';
 import '../../../../shared/widgets/harmony_badge.dart';
 import '../../../../shared/widgets/harmony_card.dart';
@@ -175,7 +177,10 @@ class _MessagesBody extends StatelessWidget {
           ...state.messages.map(
             (msg) => Padding(
               padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-              child: CapturedMessageTile(message: msg),
+              child: CapturedMessageTile(
+                message: msg,
+                onTap: () => context.push(RouteNames.messageDetail, extra: msg),
+              ),
             ),
           ),
 
@@ -370,9 +375,12 @@ class _RuleCard extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    HarmonyBadge(
-                      label: rule.ruleType.displayName,
-                      variant: HarmonyBadgeVariant.info,
+                    // Flexible : évite overflow si le type est long (ex. "Plage horaire")
+                    Flexible(
+                      child: HarmonyBadge(
+                        label: rule.ruleType.displayName,
+                        variant: HarmonyBadgeVariant.info,
+                      ),
                     ),
                     const SizedBox(width: AppSpacing.sm),
                     HarmonyBadge(
@@ -387,6 +395,8 @@ class _RuleCard extends StatelessWidget {
                 Text(
                   rule.value.isEmpty ? '(plage horaire)' : rule.value,
                   style: Theme.of(context).textTheme.bodySmall,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),

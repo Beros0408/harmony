@@ -38,6 +38,9 @@ class RouteNames {
   // Mini-Sprint Visuels — Méditation
   static const String meditation = '/meditation';
 
+  // Hotfix v2.2.4 — Détail d'un message
+  static const String messageDetail = '/message-detail';
+
   // Dev only — design system showcase (non indexée en production)
   static const String devComponents = '/dev/components';
 }
