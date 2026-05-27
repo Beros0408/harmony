@@ -122,8 +122,10 @@ class UpgradePrompt extends StatelessWidget {
                   ),
                 ),
                 onPressed: () {
-                  context.pop();
-                  context.push(RouteNames.paywall);
+                  // Capture router before pop — context is deactivated after BottomSheet dismissal
+                  final router = GoRouter.of(context);
+                  Navigator.of(context).pop();
+                  router.push(RouteNames.paywall);
                 },
               ),
             ),

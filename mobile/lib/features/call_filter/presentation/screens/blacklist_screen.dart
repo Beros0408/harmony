@@ -4,6 +4,7 @@ import 'package:harmony/core/constants/app_colors.dart';
 import 'package:harmony/core/constants/app_spacing.dart';
 import 'package:harmony/core/services/feature_gating_service.dart';
 import 'package:harmony/features/call_filter/data/models/blacklist_entry.dart';
+import 'package:harmony/features/call_filter/data/repositories/blacklist_repository.dart';
 import 'package:harmony/features/call_filter/logic/blacklist_cubit.dart';
 import 'package:harmony/features/call_filter/presentation/widgets/blacklist_form_sheet.dart';
 import 'package:harmony/features/subscription/presentation/widgets/upgrade_prompt.dart';
@@ -28,9 +29,12 @@ class _BlacklistScreenState extends State<BlacklistScreen> {
   }
 
   Future<void> _openAddSheet() async {
-    final state = context.read<BlacklistCubit>().state;
-    final count = state.entries.length;
-    if (!FeatureGatingService.instance.canAddBlacklistEntry(count)) {
+    // Query total DB count — state.entries may be search-filtered (< real total)
+    final allEntries = await BlacklistRepository.instance.getAll();
+    final count = allEntries.length;
+    final canAdd = FeatureGatingService.instance.canAddBlacklistEntry(count);
+    debugPrint('[FEATURE-GATING-DEBUG] _openAddSheet tentative ajout, count=$count, canAdd=$canAdd');
+    if (!canAdd) {
       await UpgradePrompt.show(
         context,
         title: 'Blacklist complète',
