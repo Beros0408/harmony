@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 import '../../features/subscription/data/models/user_subscription.dart';
 
 /// Limites gratuites du plan Free.
@@ -41,8 +43,12 @@ class FeatureGatingService {
   /// Retourne true si l'utilisateur peut ajouter une entrée blacklist.
   /// Free : limité à [_kFreeBlacklistLimit] entrées.
   bool canAddBlacklistEntry(int currentCount) {
-    if (hasPremium()) return true;
-    return currentCount < _kFreeBlacklistLimit;
+    final premium = hasPremium();
+    debugPrint('[FEATURE-GATING-DEBUG] canAddBlacklistEntry(currentCount=$currentCount) hasPremium=$premium');
+    if (premium) return true;
+    final result = currentCount < _kFreeBlacklistLimit;
+    debugPrint('[FEATURE-GATING-DEBUG] canAddBlacklistEntry → $result (limit=$_kFreeBlacklistLimit)');
+    return result;
   }
 
   /// Retourne true si l'utilisateur peut ajouter un profil enfant.
