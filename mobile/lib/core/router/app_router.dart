@@ -21,6 +21,8 @@ import '../../features/contacts/presentation/screens/contacts_screen.dart';
 import '../../features/messages/presentation/screens/messages_filter_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
 import '../../features/call_log/presentation/screens/call_log_screen.dart';
+import '../../features/meditation/presentation/screens/meditation_screen.dart';
+import '../../features/splash/presentation/screens/splash_screen.dart';
 import '../../features/subscription/presentation/screens/paywall_screen.dart';
 import '../../features/subscription/presentation/screens/subscription_status_screen.dart';
 import '../../features/voicemail/presentation/screens/voicemail_screen.dart';
@@ -53,13 +55,13 @@ CustomTransitionPage<void> _slidePage({
 }
 
 final GoRouter appRouter = GoRouter(
-  initialLocation: RouteNames.auth,
+  initialLocation: RouteNames.splash,
   debugLogDiagnostics: false,
   errorBuilder: (context, state) => _ErrorScreen(error: state.error),
   routes: [
     GoRoute(
       path: RouteNames.splash,
-      redirect: (_, __) => RouteNames.auth,
+      builder: (context, state) => const SplashScreen(),
     ),
     GoRoute(
       path: RouteNames.auth,
@@ -224,6 +226,14 @@ final GoRouter appRouter = GoRouter(
       pageBuilder: (context, state) => _slidePage(
         key: state.pageKey,
         child: const SosActiveScreen(),
+      ),
+    ),
+    // ── Mini-Sprint Visuels — Méditation ─────────────────────────────────────
+    GoRoute(
+      path: RouteNames.meditation,
+      pageBuilder: (context, state) => _slidePage(
+        key: state.pageKey,
+        child: const MeditationScreen(),
       ),
     ),
     GoRoute(

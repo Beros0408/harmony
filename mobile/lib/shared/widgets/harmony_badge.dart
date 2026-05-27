@@ -4,7 +4,7 @@ import '../../core/constants/app_radius.dart';
 import '../../core/constants/app_spacing.dart';
 import '../../core/constants/app_typography.dart';
 
-enum HarmonyBadgeVariant { success, warning, danger, info, purple, muted }
+enum HarmonyBadgeVariant { success, warning, danger, info, purple, muted, rose }
 
 class HarmonyBadge extends StatelessWidget {
   const HarmonyBadge({
@@ -25,6 +25,7 @@ class HarmonyBadge extends StatelessWidget {
         HarmonyBadgeVariant.info => AppColors.accentBlue,
         HarmonyBadgeVariant.purple => AppColors.accentPurple,
         HarmonyBadgeVariant.muted => AppColors.textMuted,
+        HarmonyBadgeVariant.rose => AppColors.accentRose,
       };
 
   Color _bgColor(bool isDark) {
@@ -36,6 +37,7 @@ class HarmonyBadge extends StatelessWidget {
       HarmonyBadgeVariant.info => AppColors.badgeInfoBgLight,
       HarmonyBadgeVariant.purple => AppColors.badgePurpleBgLight,
       HarmonyBadgeVariant.muted => AppColors.badgeMutedBgLight,
+      HarmonyBadgeVariant.rose => AppColors.badgeRoseBgLight,
     };
   }
 
@@ -48,6 +50,7 @@ class HarmonyBadge extends StatelessWidget {
       HarmonyBadgeVariant.info => AppColors.badgeInfoTextLight,
       HarmonyBadgeVariant.purple => AppColors.badgePurpleTextLight,
       HarmonyBadgeVariant.muted => AppColors.badgeMutedTextLight,
+      HarmonyBadgeVariant.rose => AppColors.badgeRoseTextLight,
     };
   }
 

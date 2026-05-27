@@ -397,5 +397,11 @@
   "subscriptionManageSubtitle": "Edit or cancel via App Store / Google Play",
   "subscriptionWillNotRenew": "Your subscription will not be renewed.",
   "subscriptionUpgradeTitle": "Go Premium",
-  "subscriptionUpgradeSubtitle": "Unlock unlimited blacklist, child profiles and advanced fitness tracking."
+  "subscriptionUpgradeSubtitle": "Unlock unlimited blacklist, child profiles and advanced fitness tracking.",
+
+  "moduleMeditationTitle": "Meditation",
+  "moduleMeditationSubtitle": "Guided sessions",
+  "moduleMeditationBadge": "New",
+
+  "splashTagline": "Your digital sanctuary"
 }

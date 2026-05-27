@@ -397,5 +397,11 @@
   "subscriptionManageSubtitle": "Modificar ou cancelar via App Store / Google Play",
   "subscriptionWillNotRenew": "Sua assinatura não será renovada.",
   "subscriptionUpgradeTitle": "Mudar para Premium",
-  "subscriptionUpgradeSubtitle": "Desbloqueie lista negra ilimitada, perfis infantis e rastreamento fitness avançado."
+  "subscriptionUpgradeSubtitle": "Desbloqueie lista negra ilimitada, perfis infantis e rastreamento fitness avançado.",
+
+  "moduleMeditationTitle": "Meditação",
+  "moduleMeditationSubtitle": "Sessões guiadas",
+  "moduleMeditationBadge": "Novo",
+
+  "splashTagline": "Seu santuário digital"
 }
