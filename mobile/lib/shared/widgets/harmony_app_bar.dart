@@ -27,9 +27,8 @@ class HarmonyAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     Widget? effectiveLeading = leading;
-    if (effectiveLeading == null &&
-        automaticallyImplyLeading &&
-        context.canPop()) {
+    final canPop = GoRouter.maybeOf(context)?.canPop() ?? false;
+    if (effectiveLeading == null && automaticallyImplyLeading && canPop) {
       final label = AppLocalizations.of(context)?.navBack ?? 'Retour';
       effectiveLeading = _BackButton(tooltip: label);
     }

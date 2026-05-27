@@ -8,7 +8,8 @@ import '../../../../core/router/route_names.dart';
 import '../../../../shared/widgets/harmony_app_bar.dart';
 import '../../../../shared/widgets/harmony_badge.dart';
 import '../../../../shared/widgets/harmony_card.dart';
-import '../../../../shared/widgets/harmony_status_dot.dart';
+import '../../../../shared/widgets/pulsing_dot.dart';
+import '../../../../shared/widgets/wiggling_emoji.dart';
 
 // Chemins des images Unsplash placées dans assets/images/
 class _Images {
@@ -169,6 +170,15 @@ class _WelcomeBanner extends StatelessWidget {
   const _WelcomeBanner({required this.date});
   final String date;
 
+  // Salutation contextuelle selon l'heure de la journée
+  String _greeting(AppLocalizations l10n) {
+    final hour = DateTime.now().hour;
+    if (hour >= 5 && hour < 12) return l10n.greetingMorning;
+    if (hour >= 12 && hour < 18) return l10n.greetingAfternoon;
+    if (hour >= 18 && hour < 22) return l10n.greetingEvening;
+    return l10n.greetingNight;
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -178,6 +188,29 @@ class _WelcomeBanner extends StatelessWidget {
     final gradientColors = isDark
         ? const [Color(0xFF1E2D45), Color(0xFF0F1729)]
         : [cs.primaryContainer, cs.surface];
+
+    // Mini-stat locale : helper interne pour éviter la répétition
+    Widget statRow(IconData icon, Color iconColor, String text) {
+      return Padding(
+        padding: const EdgeInsets.only(top: AppSpacing.xs),
+        child: Row(
+          children: [
+            Icon(icon, size: 14, color: iconColor),
+            const SizedBox(width: AppSpacing.sm),
+            Flexible(
+              child: Text(
+                text,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: cs.onSurfaceVariant,
+                    ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
 
     return Container(
       padding: const EdgeInsets.all(AppSpacing.xl),
@@ -193,13 +226,27 @@ class _WelcomeBanner extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(l10n.dashboardWelcomeWave, style: Theme.of(context).textTheme.headlineSmall),
+          // Ligne salutation : emoji animé + texte contextuel
+          Row(
+            children: [
+              const WigglingEmoji(emoji: '👋', fontSize: 24),
+              const SizedBox(width: AppSpacing.sm),
+              Flexible(
+                child: Text(
+                  _greeting(l10n),
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+              ),
+            ],
+          ),
           const SizedBox(height: AppSpacing.xs),
           Text(date, style: Theme.of(context).textTheme.bodyMedium),
           const SizedBox(height: AppSpacing.lg),
+
+          // Pastille pulsante + statut global
           Row(
             children: [
-              const HarmonyStatusDot(status: HarmonyStatus.online, pulse: true),
+              const PulsingDot(),
               const SizedBox(width: AppSpacing.sm),
               Text(
                 l10n.dashboardAllServicesActive,
@@ -210,6 +257,23 @@ class _WelcomeBanner extends StatelessWidget {
                 ),
               ),
             ],
+          ),
+
+          // 3 mini-stats (données mockées — seront connectées aux cubits en v2.3)
+          statRow(
+            Icons.shield_outlined,
+            AppColors.accentBlue,
+            l10n.welcomeStatsFiltered(12),
+          ),
+          statRow(
+            Icons.directions_walk,
+            AppColors.accentGreen,
+            l10n.welcomeStatsSteps(6240, 8000),
+          ),
+          statRow(
+            Icons.calendar_today_outlined,
+            AppColors.accentRose,
+            l10n.welcomeStatsEvents(3),
           ),
         ],
       ),

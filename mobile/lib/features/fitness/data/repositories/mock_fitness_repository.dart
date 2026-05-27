@@ -16,7 +16,7 @@ class MockFitnessRepository implements IFitnessRepository {
         _weeklySteps = weeklySteps ?? _defaultWeek(goal);
 
   int _goal;
-  bool _permissionGranted;
+  final bool _permissionGranted;
   final List<DailySteps> _weeklySteps;
   final List<WorkoutSession> _sessions = [];
   static const _uuid = Uuid();
@@ -35,10 +35,7 @@ class MockFitnessRepository implements IFitnessRepository {
   Future<bool> hasActivityPermission() async => _permissionGranted;
 
   @override
-  Future<bool> requestActivityPermission() async {
-    _permissionGranted = true;
-    return true;
-  }
+  Future<bool> requestActivityPermission() async => _permissionGranted;
 
   @override
   Future<DailySteps> getTodaySteps() async => _weeklySteps.last;
