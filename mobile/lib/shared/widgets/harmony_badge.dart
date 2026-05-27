@@ -80,6 +80,8 @@ class HarmonyBadge extends StatelessWidget {
           Text(
             label,
             style: AppTypography.textTheme.labelSmall?.copyWith(color: fg),
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
           ),
         ],
       ),
