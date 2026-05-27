@@ -17,11 +17,14 @@ import '../../../../shared/widgets/harmony_toggle.dart';
 
 // Chemins des images Unsplash placées dans assets/images/
 class _Images {
-  static const securite = 'assets/images/forêt brumeuse, cocon protecteur.png';
-  static const famille  = 'assets/images/famille au coucher du soleil, chaleureux.png';
-  static const fitness  = 'assets/images/joguese -dans-la foret.png';
-  static const agenda   = 'assets/images/bureau zen, carnet et café.png';
+  static const securite   = 'assets/images/forêt brumeuse, cocon protecteur.png';
+  static const famille    = 'assets/images/famille au coucher du soleil, chaleureux.png';
+  static const fitness    = 'assets/images/joguese -dans-la foret.png';
+  static const agenda     = 'assets/images/bureau zen, carnet et café.png';
   static const meditation = 'assets/images/océan calme, lever du soleil.png';
+  static const contacts   = 'assets/images/liens humains chaleureux — friends tea conversation.png';
+  static const messagerie = 'assets/images/écoute paisible — woman headphones pastel.png';
+  static const messages   = 'assets/images/correspondance précieuse — handwritten letter calligraphy.png';
 }
 
 class DashboardScreen extends StatefulWidget {
@@ -139,6 +142,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 iconColor: AppColors.accentCyan,
                 badge: l10n.moduleContactsBadge(5),
                 badgeVariant: HarmonyBadgeVariant.info,
+                backgroundImage: _Images.contacts,
                 onTap: () => context.push(RouteNames.contacts),
               ),
               _ModuleCard(
@@ -148,6 +152,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 iconColor: AppColors.accentPurple,
                 badge: '2',
                 badgeVariant: HarmonyBadgeVariant.purple,
+                backgroundImage: _Images.messagerie,
                 onTap: () => context.push(RouteNames.voicemail),
               ),
               _ModuleCard(
@@ -157,6 +162,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 iconColor: const Color(0xFF25D366),
                 badge: l10n.messagesModuleBadge,
                 badgeVariant: HarmonyBadgeVariant.success,
+                backgroundImage: _Images.messages,
                 onTap: () => context.push(RouteNames.messages),
               ),
             ],
