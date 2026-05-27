@@ -7,7 +7,7 @@
 
 | Champ | Valeur |
 |---|---|
-| **Version actuelle** | **2.2.3 — Dashboard propre, showcase extrait en /dev/components** ⭐ |
+| **Version actuelle** | **2.2.4 — Messages & SMS : overflow corrigé + tap détail** ⭐ |
 | **Phase en cours** | Monétisation — Freemium live (plans Solo/Famille/Sport/Lifetime) |
 | **Avancement global** | ~100 % |
 | **Date de début** | 23 mai 2026 |
@@ -621,6 +621,7 @@ Compléter les 3 derniers modules en retard du cahier des charges :
 
 | Version | Date | Phase | Description |
 |---|---|---|---|
+| **2.2.4** | 28/05/2026 | **Hotfix Messages** | BUG 1 : Flexible + ellipsis sur badges Row dans _RuleCard (overflow "bandeau jaune" S22) · BUG 2 : tap message → MessageDetailScreen (route /message-detail, GoRouter extra) · 6 clés i18n × 5 locales · 80 issues analyze · 304 tests · tag v2.2.4-messages-fix |
 | **2.2.3** | 27/05/2026 | **Hotfix Dashboard** | Extraction section "COMPOSANTS DU DESIGN SYSTEM" hors Dashboard utilisateur → route privée `/dev/components` (`ComponentsDemoScreen`) · 5 imports inutilisés supprimés · 3 variables d'état orphelines supprimées · 80 issues analyze (baseline) · 304 tests passants · tag v2.2.3-clean-dashboard |
 | **2.2.2** | 27/05/2026 | **Hotfix Visuels** | Compléter Dashboard 8/8 cards avec images : Contacts (liens humains chaleureux), Messagerie vocale (écoute paisible), Messages (correspondance précieuse) — Harmony 100% émotionnellement cohérent · 80 issues analyze · 304 tests · tag v2.2.2-cards-completion |
 | **2.2.1** | 27/05/2026 | **Hotfix Landing** | Splash → Landing page intentionnelle : suppression navigation auto 2.5s, bouton CTA glassmorphism "Entrer dans Harmony →", fade-in texte 900ms puis bouton 990-1800ms · splashCtaButton × 5 locales · 80 issues analyze · **304 tests** passants (+1 vs baseline) · tag v2.2.1-landing |
