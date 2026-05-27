@@ -1,0 +1,78 @@
+﻿BILAN DE LA JOURNEE - 2026-05-27
+================================================================
+
+Statut final : Sprint 7 + Sprint 8 + 2 hotfixes livres et valides
+
+----------------------------------------------------------------
+TAGS LIVRES AUJOURD'HUI
+----------------------------------------------------------------
+
+  v2.0.0-cdc-complete    Sprint 7 (Fitness + Parental + Messages)
+  v2.0.1-sprint7-fix     Hotfix Sprint 7 (DatabaseHelper pattern)
+  v2.1.0-paywall         Sprint 8 (Paywall + Feature Gating + AdMob)
+  v2.1.1-paywall-fix     Hotfix Sprint 8 (count DB total)
+
+Tag actuel : v2.1.1-paywall-fix
+
+----------------------------------------------------------------
+METRIQUES
+----------------------------------------------------------------
+
+  Tests Flutter      : 303+ verts
+  flutter analyze    : 0 erreurs
+  CDC fonctionnel    : 93 pourcent
+
+----------------------------------------------------------------
+ETAT DES MODULES
+----------------------------------------------------------------
+
+  M1 Filtrage appels         : 100 pourcent
+  M2 Listes (Blacklist)      : 100 pourcent
+  M3 WhatsApp / SMS          : 100 pourcent
+  M4 Controle parental       : 90 pourcent
+  M5 Agenda                  : 100 pourcent
+  M6 Fitness                 : 80 pourcent
+  M7 Securite                : 100 pourcent
+  M8 Monetisation (nouveau)  : 100 pourcent
+
+----------------------------------------------------------------
+SYSTEME DE MONETISATION ACTIVE
+----------------------------------------------------------------
+
+  Premium Solo      4,99 euros / mois ou 49,99 euros / an
+  Premium Famille   9,99 euros / mois ou 99,99 euros / an (POPULAIRE)
+  Premium Sport     6,99 euros / mois ou 69,99 euros / an
+  Licence a vie     149,99 euros
+
+Limites version gratuite :
+  - Blacklist : 10 numeros max
+  - Controle parental : 1 enfant max
+  - Fitness : 1 semaine d'historique
+  - AdMob banner en bas de Blacklist + Fitness
+
+----------------------------------------------------------------
+APK INSTALLABLE SUR PHONE ANDROID
+----------------------------------------------------------------
+
+Fichier : APK-builds\2026-05-27\harmony-debug-2026-05-27.apk
+
+Comment installer :
+  1. Copier l'APK sur ton phone (USB, email, Google Drive)
+  2. Ouvrir le fichier depuis ton phone
+  3. Autoriser 'Installer depuis sources inconnues' si demande
+  4. Installer et lancer Harmony
+
+Note importante : version debug, donc :
+  - Plus lente qu'une version release
+  - AdMob en mode test (bannieres 'Test Ad')
+  - RevenueCat ne permet pas de vrai achat sans sandbox
+  - Stockage local uniquement (Sprint 9 backend a venir)
+
+----------------------------------------------------------------
+PROCHAINE ETAPE : SPRINT 9 (BACKEND FASTAPI)
+----------------------------------------------------------------
+
+Prevu pour demain matin 9h00.
+Pre-requis : Docker Desktop installe.
+
+Bonne nuit !
