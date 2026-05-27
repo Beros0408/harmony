@@ -21,6 +21,7 @@ import '../../features/contacts/presentation/screens/contacts_screen.dart';
 import '../../features/messages/presentation/screens/messages_filter_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
 import '../../features/call_log/presentation/screens/call_log_screen.dart';
+import '../../features/dev/presentation/screens/components_demo_screen.dart';
 import '../../features/meditation/presentation/screens/meditation_screen.dart';
 import '../../features/splash/presentation/screens/splash_screen.dart';
 import '../../features/subscription/presentation/screens/paywall_screen.dart';
@@ -248,6 +249,14 @@ final GoRouter appRouter = GoRouter(
       pageBuilder: (context, state) => _slidePage(
         key: state.pageKey,
         child: const SubscriptionStatusScreen(),
+      ),
+    ),
+    // ── Dev — Design System Showcase (route privée, non exposée en production) ─
+    GoRoute(
+      path: RouteNames.devComponents,
+      pageBuilder: (context, state) => _slidePage(
+        key: state.pageKey,
+        child: const ComponentsDemoScreen(),
       ),
     ),
   ],

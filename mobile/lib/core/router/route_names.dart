@@ -37,4 +37,7 @@ class RouteNames {
 
   // Mini-Sprint Visuels — Méditation
   static const String meditation = '/meditation';
+
+  // Dev only — design system showcase (non indexée en production)
+  static const String devComponents = '/dev/components';
 }
