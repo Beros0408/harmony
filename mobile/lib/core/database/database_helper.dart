@@ -8,7 +8,7 @@ class DatabaseHelper {
   DatabaseHelper._();
 
   static const _dbName = 'harmony.db';
-  static const _dbVersion = 4;
+  static const _dbVersion = 5;
   // ignore: constant_identifier_names
   static const _passphrase = 'harmony_mvp_2026';
 
@@ -33,6 +33,7 @@ class DatabaseHelper {
     await _createAgendaTables(db);
     await _createFitnessTables(db);
     await _createMessageRulesTables(db);
+    await _createSubscriptionTable(db);
   }
 
   static Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
@@ -45,6 +46,9 @@ class DatabaseHelper {
     if (oldVersion < 4) {
       await _createFitnessTables(db);
       await _createMessageRulesTables(db);
+    }
+    if (oldVersion < 5) {
+      await _createSubscriptionTable(db);
     }
   }
 
@@ -244,6 +248,21 @@ class DatabaseHelper {
         schedule_end_hour   INTEGER,
         is_active           INTEGER NOT NULL DEFAULT 1,
         created_at          INTEGER NOT NULL
+      )
+    ''');
+  }
+
+  static Future<void> _createSubscriptionTable(Database db) async {
+    // Abonnement utilisateur — table à une ligne (upsert sur id=1)
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS user_subscription (
+        id            INTEGER PRIMARY KEY DEFAULT 1,
+        plan_id       TEXT NOT NULL DEFAULT 'none',
+        status        TEXT NOT NULL DEFAULT 'none',
+        expires_at    INTEGER,
+        will_renew    INTEGER NOT NULL DEFAULT 0,
+        trial_ends_at INTEGER,
+        cached_at     INTEGER NOT NULL
       )
     ''');
   }

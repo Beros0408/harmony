@@ -6,9 +6,12 @@ import 'package:harmony/l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_radius.dart';
 import '../../../../core/constants/app_spacing.dart';
+import '../../../../core/services/feature_gating_service.dart';
+import '../../../../shared/widgets/ad_banner.dart';
 import '../../../../shared/widgets/harmony_app_bar.dart';
 import '../../../../shared/widgets/harmony_card.dart';
 import '../../../../shared/widgets/harmony_empty_state.dart';
+import '../../../subscription/presentation/widgets/upgrade_prompt.dart';
 import '../../data/models/daily_steps.dart';
 import '../../data/models/workout_session.dart';
 import '../../logic/fitness_cubit.dart';
@@ -278,9 +281,55 @@ class _FitnessBodyState extends State<_FitnessBody> {
                   .toList(),
             ),
           ),
+          const SizedBox(height: AppSpacing.sm),
+          if (!FeatureGatingService.instance.canAccessFitnessHistory(1))
+            _WorkoutHistoryLock(),
           const SizedBox(height: AppSpacing.xxl),
         ],
+        const AdBanner(),
       ],
+    );
+  }
+}
+
+// ─── Workout history lock ──────────────────────────────────────────────────────
+
+class _WorkoutHistoryLock extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+
+    return GestureDetector(
+      onTap: () => UpgradePrompt.show(
+        context,
+        title: 'Historique Premium',
+        description:
+            'Accédez à l\'historique complet de vos séances avec Premium Sport.',
+        icon: Icons.fitness_center_outlined,
+      ),
+      child: Container(
+        padding: const EdgeInsets.all(AppSpacing.md),
+        decoration: BoxDecoration(
+          color: cs.surfaceContainerLow,
+          borderRadius: BorderRadius.circular(AppRadius.md),
+          border: Border.all(color: cs.outlineVariant),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.lock_outline, size: 18, color: AppColors.accentAmber),
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              child: Text(
+                'Historique des semaines précédentes — Premium Sport',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: cs.onSurface.withValues(alpha: 0.6),
+                    ),
+              ),
+            ),
+            const Icon(Icons.chevron_right, size: 18, color: AppColors.accentAmber),
+          ],
+        ),
+      ),
     );
   }
 }
