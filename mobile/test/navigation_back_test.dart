@@ -54,6 +54,15 @@ Future<void> _settle(WidgetTester tester) async {
   await tester.pump(const Duration(milliseconds: 400));
 }
 
+Future<void> _scrollTo(WidgetTester tester, Finder finder) async {
+  await tester.dragUntilVisible(
+    finder,
+    find.byType(ListView),
+    const Offset(0, -100),
+  );
+  await tester.pump();
+}
+
 void main() {
   setUpAll(() async {
     await initializeDateFormatting('fr_FR');
@@ -71,6 +80,7 @@ void main() {
       await tester.pumpWidget(_buildTestApp());
       await tester.pump();
 
+      await _scrollTo(tester, find.text('Sécurité'));
       await tester.tap(find.text('Sécurité'));
       await _settle(tester);
 
@@ -82,6 +92,7 @@ void main() {
       await tester.pumpWidget(_buildTestApp());
       await tester.pump();
 
+      await _scrollTo(tester, find.text('Sécurité'));
       await tester.tap(find.text('Sécurité'));
       await _settle(tester);
       expect(find.byType(CallFilterScreen), findsOneWidget);

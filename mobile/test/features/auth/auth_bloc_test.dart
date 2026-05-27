@@ -1,6 +1,7 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:harmony/core/security/token_storage.dart';
 import 'package:harmony/features/auth/domain/repositories/i_auth_repository.dart';
 import 'package:harmony/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:harmony/features/auth/presentation/bloc/auth_event.dart';
@@ -8,14 +9,25 @@ import 'package:harmony/features/auth/presentation/bloc/auth_state.dart';
 
 class MockAuthRepository extends Mock implements IAuthRepository {}
 
+class MockTokenStorage extends Mock implements ITokenStorage {}
+
 void main() {
   late MockAuthRepository repository;
+  late MockTokenStorage tokenStorage;
+
 
   setUp(() {
     repository = MockAuthRepository();
+    tokenStorage = MockTokenStorage();
+    // Stubs par défaut : token storage est vide, toutes les écritures acceptées
+    when(() => tokenStorage.getAccessToken()).thenAnswer((_) async => null);
+    when(() => tokenStorage.getRefreshToken()).thenAnswer((_) async => null);
+    when(() => tokenStorage.saveAccessToken(any())).thenAnswer((_) async {});
+    when(() => tokenStorage.saveRefreshToken(any())).thenAnswer((_) async {});
+    when(() => tokenStorage.clearAll()).thenAnswer((_) async {});
   });
 
-  AuthBloc buildBloc() => AuthBloc(repository: repository);
+  AuthBloc buildBloc() => AuthBloc(repository: repository, tokenStorage: tokenStorage);
 
   group('AuthCheckRequested', () {
     blocTest<AuthBloc, AuthState>(

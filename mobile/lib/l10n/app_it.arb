@@ -411,5 +411,26 @@
   "messageDetailTypeSignal": "Signal",
   "messageDetailTypeTelegram": "Telegram",
   "messageDetailMarkRead": "Segna come letto",
-  "messageDetailBlockContact": "Blocca questo contatto"
+  "messageDetailBlockContact": "Blocca questo contatto",
+
+  "greetingMorning": "Buongiorno 🌅",
+  "greetingAfternoon": "Buon pomeriggio ☀",
+  "greetingEvening": "Buonasera 🌙",
+  "greetingNight": "Buona notte 🌟",
+
+  "welcomeStatsFiltered": "{count} messaggi filtrati oggi",
+  "@welcomeStatsFiltered": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "welcomeStatsSteps": "{current} / {goal} passi",
+  "@welcomeStatsSteps": {
+    "placeholders": {
+      "current": {"type": "int"},
+      "goal": {"type": "int"}
+    }
+  },
+  "welcomeStatsEvents": "{count} eventi oggi",
+  "@welcomeStatsEvents": {
+    "placeholders": {"count": {"type": "int"}}
+  }
 }

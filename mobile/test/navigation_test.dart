@@ -19,6 +19,10 @@ import 'package:harmony/features/call_filter/data/repositories/i_blacklist_repos
 import 'package:harmony/features/call_filter/logic/blacklist_cubit.dart';
 import 'package:harmony/features/call_filter/presentation/screens/call_filter_screen.dart';
 import 'package:harmony/features/dashboard/presentation/screens/dashboard_screen.dart';
+import 'package:harmony/features/fitness/data/models/daily_steps.dart';
+import 'package:harmony/features/fitness/data/models/workout_session.dart';
+import 'package:harmony/features/fitness/domain/i_fitness_repository.dart';
+import 'package:harmony/features/fitness/logic/fitness_cubit.dart';
 import 'package:harmony/features/fitness/presentation/screens/fitness_screen.dart';
 import 'package:harmony/features/parental/data/models/child_profile.dart';
 import 'package:harmony/features/parental/data/models/safe_zone.dart';
@@ -118,6 +122,22 @@ class _EmptyLocationService implements ILocationService {
   @override Future<LocationPermissionStatus> checkPermissions() async => LocationPermissionStatus.denied;
 }
 
+class _EmptyFitnessRepo implements IFitnessRepository {
+  @override Future<bool> hasActivityPermission() async => true;
+  @override Future<bool> requestActivityPermission() async => true;
+  @override Future<DailySteps> getTodaySteps() async =>
+      DailySteps(date: DateTime.now(), stepCount: 0);
+  @override Future<List<DailySteps>> getWeeklySteps() async => [];
+  @override Future<void> saveTodaySteps(DailySteps steps) async {}
+  @override Future<int> getGoal() async => 8000;
+  @override Future<void> saveGoal(int goal) async {}
+  @override Future<WorkoutSession> startWorkout(WorkoutType type) async =>
+      WorkoutSession(id: 'test', type: type, startTime: DateTime.now());
+  @override Future<WorkoutSession> stopWorkout(String sessionId, {int steps = 0}) async =>
+      WorkoutSession(id: sessionId, type: WorkoutType.walking, startTime: DateTime.now(), endTime: DateTime.now());
+  @override Future<List<WorkoutSession>> getRecentWorkouts() async => [];
+}
+
 class _EmptySosRepo implements ISosAlertRepository {
   @override Future<void> trigger(SosAlert alert) async {}
   @override Future<List<SosAlert>> getActive() async => [];
@@ -163,6 +183,7 @@ Widget _buildTestApp() => MultiBlocProvider(
         BlocProvider(
           create: (_) => SosCubit(_EmptySosRepo(), _EmptyLocationRepo(), _EmptyLocationService()),
         ),
+        BlocProvider(create: (_) => FitnessCubit(repository: _EmptyFitnessRepo())),
         // Sprint 4 — Agenda cubits
         BlocProvider(create: (_) => AgendaEventCubit(repository: _EmptyAgendaEventRepo())),
         BlocProvider(create: (_) => CalendarViewCubit()),
@@ -204,6 +225,7 @@ void main() {
       await tester.pumpWidget(_buildTestApp());
       await tester.pump();
 
+      await _scrollTo(tester, find.text('Sécurité'));
       await tester.tap(find.text('Sécurité'));
       await _settle(tester);
 
@@ -215,6 +237,7 @@ void main() {
       await tester.pumpWidget(_buildTestApp());
       await tester.pump();
 
+      await _scrollTo(tester, find.text('Famille'));
       await tester.tap(find.text('Famille'));
       await _settle(tester);
 
@@ -253,6 +276,7 @@ void main() {
       await tester.pumpWidget(_buildTestApp());
       await tester.pump();
 
+      await _scrollTo(tester, find.text('Sécurité'));
       await tester.tap(find.text('Sécurité'));
       await _settle(tester);
       expect(find.byType(CallFilterScreen), findsOneWidget);

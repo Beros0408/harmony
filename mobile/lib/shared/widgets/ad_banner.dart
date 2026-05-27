@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
@@ -30,7 +31,7 @@ class _AdBannerState extends State<AdBanner> {
   }
 
   Future<void> _loadAd() async {
-    final adUnitId = Theme.of(context).platform == TargetPlatform.iOS
+    final adUnitId = defaultTargetPlatform == TargetPlatform.iOS
         ? _iosTestId
         : _androidTestId;
 

@@ -20,6 +20,7 @@ Widget _wrap(Widget child, {MessagesCubit? cubit}) {
       AppLocalizations.delegate,
       GlobalMaterialLocalizations.delegate,
       GlobalWidgetsLocalizations.delegate,
+      GlobalCupertinoLocalizations.delegate,
     ],
     supportedLocales: AppLocalizations.supportedLocales,
     locale: const Locale('fr'),
