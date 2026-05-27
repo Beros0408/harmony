@@ -372,5 +372,30 @@
   "childSettingsTitle": "Child settings",
   "sosContactsTitle": "SOS contacts",
   "sosContactsEmpty": "No SOS contacts",
-  "sosContactsAdd": "Add a contact"
+  "sosContactsAdd": "Add a contact",
+
+  "subscriptionPaywallTitle": "Harmony Premium",
+  "subscriptionPaywallSubtitle": "Unlock all features",
+  "subscriptionCtaStart": "Get started",
+  "subscriptionRestorePurchases": "Restore purchases",
+  "subscriptionPeriodMonthly": "Monthly",
+  "subscriptionPeriodYearly": "Yearly  −20%",
+  "subscriptionPeriodLifetime": "once",
+  "subscriptionTrialNote": "{days}-day free trial — cancel anytime",
+  "@subscriptionTrialNote": {
+    "placeholders": {
+      "days": { "type": "int" }
+    }
+  },
+  "subscriptionStatusTitle": "My subscription",
+  "subscriptionStatusFree": "Free",
+  "subscriptionStatusActive": "Active",
+  "subscriptionStatusTrial": "Free trial",
+  "subscriptionStatusExpired": "Expired",
+  "subscriptionUpgradeCta": "View plans",
+  "subscriptionManage": "Manage subscription",
+  "subscriptionManageSubtitle": "Edit or cancel via App Store / Google Play",
+  "subscriptionWillNotRenew": "Your subscription will not be renewed.",
+  "subscriptionUpgradeTitle": "Go Premium",
+  "subscriptionUpgradeSubtitle": "Unlock unlimited blacklist, child profiles and advanced fitness tracking."
 }

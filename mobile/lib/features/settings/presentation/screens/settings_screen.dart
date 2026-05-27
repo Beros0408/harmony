@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:harmony/l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/language/language_cubit.dart';
+import '../../../../core/router/route_names.dart';
 import '../../../../core/theme/theme_cubit.dart';
 import '../../../../shared/widgets/harmony_app_bar.dart';
 import '../../../../shared/widgets/harmony_card.dart';
@@ -111,6 +113,37 @@ class SettingsScreen extends StatelessWidget {
                   ),
                 );
               }).toList(),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.md),
+
+          // Abonnement
+          HarmonyCard(
+            padding: AppSpacing.md,
+            child: InkWell(
+              onTap: () => context.push(RouteNames.subscriptionStatus),
+              borderRadius: BorderRadius.circular(8),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.sm,
+                  vertical: AppSpacing.md,
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.workspace_premium_outlined,
+                        size: 20, color: AppColors.accentBlue),
+                    const SizedBox(width: AppSpacing.md),
+                    Expanded(
+                      child: Text(
+                        'Mon abonnement',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ),
+                    const Icon(Icons.chevron_right,
+                        size: 20, color: AppColors.textMuted),
+                  ],
+                ),
+              ),
             ),
           ),
         ],

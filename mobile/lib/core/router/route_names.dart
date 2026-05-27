@@ -31,4 +31,7 @@ class RouteNames {
   static const String sosActive = '/parental/sos/active';
   static const String sosHistory = '/parental/sos/history';
 
+  // Sprint 8 — Paywall
+  static const String paywall = '/paywall';
+  static const String subscriptionStatus = '/subscription';
 }

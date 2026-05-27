@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'app.dart';
 import 'core/services/harmony_services.dart';
 import 'core/services/notification_service.dart';
+import 'core/services/subscription_service.dart';
 import 'features/call_filter/data/repositories/blacklist_repository.dart';
 import 'features/parental/data/repositories/child_profile_repository.dart';
 import 'features/parental/data/repositories/safe_zone_repository.dart';
@@ -10,6 +12,10 @@ import 'features/parental/data/repositories/safe_zone_repository.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('fr_FR');
+
+  // Sprint 8 — AdMob + RevenueCat
+  await MobileAds.instance.initialize();
+  await SubscriptionService.instance.initialize();
 
   // Sprint 5 — Services partagés (TokenStorage + DioClient avec intercepteur JWT)
   HarmonyServices.init();

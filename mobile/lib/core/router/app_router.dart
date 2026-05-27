@@ -21,6 +21,8 @@ import '../../features/contacts/presentation/screens/contacts_screen.dart';
 import '../../features/messages/presentation/screens/messages_filter_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
 import '../../features/call_log/presentation/screens/call_log_screen.dart';
+import '../../features/subscription/presentation/screens/paywall_screen.dart';
+import '../../features/subscription/presentation/screens/subscription_status_screen.dart';
 import '../../features/voicemail/presentation/screens/voicemail_screen.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_typography.dart';
@@ -222,6 +224,20 @@ final GoRouter appRouter = GoRouter(
       pageBuilder: (context, state) => _slidePage(
         key: state.pageKey,
         child: const SosActiveScreen(),
+      ),
+    ),
+    GoRoute(
+      path: RouteNames.paywall,
+      pageBuilder: (context, state) => _slidePage(
+        key: state.pageKey,
+        child: const PaywallScreen(),
+      ),
+    ),
+    GoRoute(
+      path: RouteNames.subscriptionStatus,
+      pageBuilder: (context, state) => _slidePage(
+        key: state.pageKey,
+        child: const SubscriptionStatusScreen(),
       ),
     ),
   ],

@@ -372,5 +372,30 @@
   "childSettingsTitle": "Configuración del niño",
   "sosContactsTitle": "Contactos SOS",
   "sosContactsEmpty": "Sin contactos SOS",
-  "sosContactsAdd": "Añadir un contacto"
+  "sosContactsAdd": "Añadir un contacto",
+
+  "subscriptionPaywallTitle": "Harmony Premium",
+  "subscriptionPaywallSubtitle": "Desbloquea todas las funciones",
+  "subscriptionCtaStart": "Empezar ahora",
+  "subscriptionRestorePurchases": "Restaurar compras",
+  "subscriptionPeriodMonthly": "Mensual",
+  "subscriptionPeriodYearly": "Anual  −20%",
+  "subscriptionPeriodLifetime": "una vez",
+  "subscriptionTrialNote": "Prueba gratuita de {days} días — cancela en cualquier momento",
+  "@subscriptionTrialNote": {
+    "placeholders": {
+      "days": { "type": "int" }
+    }
+  },
+  "subscriptionStatusTitle": "Mi suscripción",
+  "subscriptionStatusFree": "Gratis",
+  "subscriptionStatusActive": "Activo",
+  "subscriptionStatusTrial": "Prueba gratuita",
+  "subscriptionStatusExpired": "Expirado",
+  "subscriptionUpgradeCta": "Ver planes",
+  "subscriptionManage": "Gestionar suscripción",
+  "subscriptionManageSubtitle": "Modificar o cancelar en la App Store / Google Play",
+  "subscriptionWillNotRenew": "Tu suscripción no se renovará.",
+  "subscriptionUpgradeTitle": "Pasar a Premium",
+  "subscriptionUpgradeSubtitle": "Desbloquea la lista negra ilimitada, perfiles infantiles y seguimiento avanzado de fitness."
 }

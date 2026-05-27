@@ -38,6 +38,9 @@ import 'features/messages/logic/messages_cubit.dart';
 // Sprint 7 — Fitness
 import 'features/fitness/data/repositories/native_fitness_repository.dart';
 import 'features/fitness/logic/fitness_cubit.dart';
+// Sprint 8 — Paywall
+import 'features/subscription/data/repositories/revenuecat_subscription_repository.dart';
+import 'features/subscription/logic/subscription_cubit.dart';
 import 'shared/theme/harmony_theme.dart';
 import 'shared/widgets/harmony_responsive_wrapper.dart';
 
@@ -115,6 +118,12 @@ class HarmonyApp extends StatelessWidget {
           create: (_) => FitnessCubit(
             repository: NativeFitnessRepository.instance,
           ),
+        ),
+        // Sprint 8 — Paywall
+        BlocProvider(
+          create: (_) => SubscriptionCubit(
+            repository: RevenueCatSubscriptionRepository.instance,
+          )..load(),
         ),
       ],
       child: BlocBuilder<LanguageCubit, Locale>(

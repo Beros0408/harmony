@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:harmony/core/constants/app_colors.dart';
 import 'package:harmony/core/constants/app_spacing.dart';
+import 'package:harmony/core/services/feature_gating_service.dart';
 import 'package:harmony/features/call_filter/data/models/blacklist_entry.dart';
 import 'package:harmony/features/call_filter/logic/blacklist_cubit.dart';
 import 'package:harmony/features/call_filter/presentation/widgets/blacklist_form_sheet.dart';
+import 'package:harmony/features/subscription/presentation/widgets/upgrade_prompt.dart';
 import 'package:harmony/l10n/app_localizations.dart';
+import 'package:harmony/shared/widgets/ad_banner.dart';
 import 'package:harmony/shared/widgets/harmony_app_bar.dart';
 import 'package:harmony/shared/widgets/harmony_card.dart';
 import 'package:harmony/shared/widgets/harmony_search_bar.dart';
@@ -25,6 +28,18 @@ class _BlacklistScreenState extends State<BlacklistScreen> {
   }
 
   Future<void> _openAddSheet() async {
+    final state = context.read<BlacklistCubit>().state;
+    final count = state.entries.length;
+    if (!FeatureGatingService.instance.canAddBlacklistEntry(count)) {
+      await UpgradePrompt.show(
+        context,
+        title: 'Blacklist complète',
+        description:
+            'Le plan gratuit est limité à 10 entrées. Passez à Premium pour une blacklist illimitée.',
+        icon: Icons.block_outlined,
+      );
+      return;
+    }
     await showBlacklistFormSheet(context: context);
   }
 
@@ -76,6 +91,7 @@ class _BlacklistScreenState extends State<BlacklistScreen> {
               },
             ),
           ),
+          const AdBanner(),
         ],
       ),
     );
