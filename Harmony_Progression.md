@@ -7,7 +7,7 @@
 
 | Champ | Valeur |
 |---|---|
-| **Version actuelle** | **2.1.0 — Sprint 8 Paywall RevenueCat + Feature Gating + AdMob** ⭐ |
+| **Version actuelle** | **2.1.1 — Hotfix Feature Gating Blacklist** ⭐ |
 | **Phase en cours** | Monétisation — Freemium live (plans Solo/Famille/Sport/Lifetime) |
 | **Avancement global** | ~100 % |
 | **Date de début** | 23 mai 2026 |
@@ -621,6 +621,7 @@ Compléter les 3 derniers modules en retard du cahier des charges :
 
 | Version | Date | Phase | Description |
 |---|---|---|---|
+| **2.1.1** | 27/05/2026 | **Hotfix** | Feature gating blacklist ne se déclenchait pas — 2 bugs corrigés : (1) count filtré → count DB total, (2) context invalidé après pop BottomSheet → GoRouter capturé avant pop · 45/45 Sprint 8 tests passants · tag v2.1.1-paywall-fix |
 | **2.1.0** | 27/05/2026 | **Sprint 8** ⭐ | Paywall RevenueCat + Feature Gating + AdMob · Solo/Famille/Sport/Lifetime · 45 nouveaux tests · 303 passants |
 | **2.0.1** | 27/05/2026 | **Hotfix** | DatabaseHelper.db pattern + ConflictAlgorithm.replace enum (v2.0.1) |
 | **2.0.0** | 27/05/2026 | **Sprint 7** ⭐ | CDC-COMPLETE — M6 Fitness BLoC + M4 Parental Settings/SOS + M3 Messages SQLCipher · 7/7 modules · ~290 tests |
