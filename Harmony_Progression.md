@@ -7,7 +7,7 @@
 
 | Champ | Valeur |
 |---|---|
-| **Version actuelle** | **2.2.0 — Direction Artistique Visuals** ⭐ |
+| **Version actuelle** | **2.2.1 — Landing Page CTA** ⭐ |
 | **Phase en cours** | Monétisation — Freemium live (plans Solo/Famille/Sport/Lifetime) |
 | **Avancement global** | ~100 % |
 | **Date de début** | 23 mai 2026 |
@@ -621,6 +621,7 @@ Compléter les 3 derniers modules en retard du cahier des charges :
 
 | Version | Date | Phase | Description |
 |---|---|---|---|
+| **2.2.1** | 27/05/2026 | **Hotfix Landing** | Splash → Landing page intentionnelle : suppression navigation auto 2.5s, bouton CTA glassmorphism "Entrer dans Harmony →", fade-in texte 900ms puis bouton 990-1800ms · splashCtaButton × 5 locales · 80 issues analyze · **304 tests** passants (+1 vs baseline) · tag v2.2.1-landing |
 | **2.2.0** | 27/05/2026 | **Mini-Sprint Visuels** | Direction artistique Harmony : 5 cards Dashboard avec images Unsplash + overlay sombre WCAG AA · Carte Méditation (ocean + rose badge) + MeditationScreen 5 sessions mockées · SplashScreen montagne/brume rose + fade-in 2.5s · HarmonyBadge variante rose · 5 locales + splashTagline · 80 issues analyze (baseline) · 303 tests passants · tag v2.2.0-visuals |
 | **2.1.2** | 27/05/2026 | **Hotfix** | Bug visuel S22 — bandeau jaune "RIGHT OVERFLOWED" sur card Messagerie vocale · Root cause : badge voicemailNewCount(2) = "2 nouveaux messages" (23 chars) trop long pour Row _ModuleCard · Fix : badge → '2', Flexible wrapper, TextOverflow.ellipsis · 303 tests passants · tag v2.1.2-dashboard-fix |
 | **2.1.1** | 27/05/2026 | **Hotfix** | Feature gating blacklist ne se déclenchait pas — 2 bugs corrigés : (1) count filtré → count DB total, (2) context invalidé après pop BottomSheet → GoRouter capturé avant pop · 45/45 Sprint 8 tests passants · tag v2.1.1-paywall-fix |
