@@ -7,7 +7,7 @@
 
 | Champ | Valeur |
 |---|---|
-| **Version actuelle** | **2.2.6 — Date dynamique i18n Welcome card** ⭐ |
+| **Version actuelle** | **2.2.7 — i18n Messages form règle + badge Bloqué** ⭐ |
 | **Phase en cours** | Monétisation — Freemium live (plans Solo/Famille/Sport/Lifetime) |
 | **Avancement global** | ~95 % |
 | **Date de début** | 23 mai 2026 |
@@ -713,6 +713,23 @@ Implémenter la monétisation freemium : paywall RevenueCat, feature gating par 
 
 ---
 
+### v2.2.7 — i18n Messages : form règle + badge Bloqué (Hotfix)
+
+**Inspection préalable** : les 3 corrections demandées ont été inspectées avant codage.
+- C1 (Agenda — ajouter un événement) : `EventEditorScreen` complet depuis Sprint 4, FAB branché → déjà fonctionnel.
+- C3 (tap Messages Récents) : `messages_filter_screen.dart:182` avait déjà `onTap: () => context.push(RouteNames.messageDetail, extra: msg)` depuis v2.2.4 → déjà fonctionnel.
+- C2 (form règle messages) : FAB opérationnel, mais `MessageRuleFormSheet` avait ~17 strings hardcodées FR → **corrigé**.
+
+**Changements** :
+- ✅ **17 nouvelles clés i18n** dans les 5 ARB (`messageBlockedBadge`, `messageRuleNewTitle`, `messageRuleEditTitle`, `messageRuleLabelType`, `messageRuleLabelContact`, `messageRuleLabelKeyword`, `messageRuleHintKeyword`, `messageRulePickContacts`, `messageRuleScheduleInfo`, `messageRuleScheduleLabel`, `messageRuleLabelAction`, `messageRuleLabelSources`, `messageRuleSourcesAll`, `messageRuleValidationEmpty`, `messageRuleAddButton`, `messageRuleEditButton`, `messageRuleScheduleDisplay`)
+- ✅ `MessageRuleFormSheet` entièrement internationalisé (fr/en/es/it/pt)
+- ✅ Badge « Bloqué » dans `CapturedMessageTile` internationalisé via `l10n.messageBlockedBadge`
+- ✅ Valeur « (plage horaire) » dans `_RuleCard` internationalisée via `l10n.messageRuleScheduleDisplay`
+- ✅ `flutter analyze` : **79 issues** (baseline 80 — amélioration) · `flutter test` : **320/320 verts**
+- ✅ tag `v2.2.7-i18n-messages`
+
+---
+
 ## Blocages actifs
 
 > *Aucun blocage actif.*
@@ -723,6 +740,7 @@ Implémenter la monétisation freemium : paywall RevenueCat, feature gating par 
 
 | Version | Date | Phase | Description |
 |---|---|---|---|
+| **2.2.7** | 28/05/2026 | **Hotfix i18n** | Messages : 17 clés i18n × 5 locales pour MessageRuleFormSheet + badge Bloqué (CapturedMessageTile) + plage horaire (_RuleCard) · C1 Agenda et C3 tap messages déjà implémentés · 79 issues analyze (−1) · 320 tests verts · tag v2.2.7-i18n-messages |
 | **2.2.6** | 28/05/2026 | **Hotfix** | Date figée Welcome card — _formattedDate(context) locale-aware (fr/es/it/pt/en) + initializeDateFormatting 5 locales dans main.dart · 320 tests verts · tag v2.2.6-dynamic-date |
 | **2.2.5** | 28/05/2026 | **Mini-Sprint UX** | Welcome card dynamique : salutation 4 plages horaires (5 locales) · PulsingDot 4s · WigglingEmoji one-shot (addPostFrameCallback) · 3 mini-stats mockées (filtrés/pas/événements) · Fix AdBanner initState crash · HarmonyAppBar GoRouter.maybeOf() safe · MockTokenStorage auth tests · 320 tests verts · tag v2.2.5-welcome-dynamic |
 | **2.2.4** | 27/05/2026 | **Hotfix** | Messages & SMS : RenderFlex overflow badge row (_RuleCard Flexible) + tap message → MessageDetailScreen via GoRouter state.extra · 304 tests passants · tag v2.2.4-messages-overflow-detail |
