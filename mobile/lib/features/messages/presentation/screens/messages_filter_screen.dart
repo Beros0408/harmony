@@ -242,7 +242,9 @@ class _ListenerStatusCard extends StatelessWidget {
                       ? l10n.messagesListenerEnabledSubtitle
                       : l10n.messagesListenerDisabledSubtitle,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: cs.onSurfaceVariant,
+                        color: enabled
+                            ? const Color(0xFF1976D2)
+                            : cs.onSurfaceVariant,
                       ),
                 ),
               ],
@@ -354,7 +356,6 @@ class _RuleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context)!;
 
     return HarmonyCard(

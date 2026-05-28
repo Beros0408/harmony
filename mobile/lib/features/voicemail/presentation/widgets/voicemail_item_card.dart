@@ -27,6 +27,11 @@ class _VoicemailItemCardState extends State<VoicemailItemCard> {
   bool _isPlaying = false;
   double _progress = 0.0;
 
+  Color _mutedColor(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return isDark ? AppColors.textMuted : const Color(0xFF757575);
+  }
+
   String _formatDuration(Duration d) {
     final m = d.inMinutes.remainder(60).toString().padLeft(2, '0');
     final s = d.inSeconds.remainder(60).toString().padLeft(2, '0');
@@ -126,10 +131,10 @@ class _VoicemailItemCardState extends State<VoicemailItemCard> {
                         const SizedBox(height: 4),
                         Text(
                           _formatDuration(widget.voicemail.duration),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontFamily: 'GeistMono',
                             fontSize: 11,
-                            color: AppColors.textMuted,
+                            color: _mutedColor(context),
                           ),
                         ),
                       ],
@@ -205,10 +210,10 @@ class _VoicemailItemCardState extends State<VoicemailItemCard> {
                           const SizedBox(height: 12),
                           Text(
                             l10n.voicemailTranscriptionLabel,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w600,
-                              color: AppColors.textMuted,
+                              color: _mutedColor(context),
                               letterSpacing: 0.8,
                             ),
                           ),

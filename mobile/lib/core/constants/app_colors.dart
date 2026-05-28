@@ -45,7 +45,7 @@ class AppColors {
 
   static const Color textPrimaryLight = Color(0xFF1F2937);
   static const Color textSecondaryLight = Color(0xFF4B5563);
-  static const Color textMutedLight = Color(0xFF9CA3AF);
+  static const Color textMutedLight = Color(0xFF757575);
   static const Color textInverseLight = Color(0xFFFFFFFF);
 
   // --- Badges light mode (WCAG AAA — fond pastel + texte sombre) ---

@@ -225,9 +225,11 @@ class _VoicemailScreenState extends State<VoicemailScreen>
           Expanded(
             child: Text(
               l10n.voicemailMockNote,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 11,
-                color: AppColors.textMuted,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.textMuted
+                    : const Color(0xFF757575),
               ),
             ),
           ),

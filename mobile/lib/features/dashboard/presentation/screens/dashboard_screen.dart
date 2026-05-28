@@ -255,7 +255,23 @@ class _WelcomeBanner extends StatelessWidget {
             ],
           ),
           const SizedBox(height: AppSpacing.xs),
-          Text(date, style: Theme.of(context).textTheme.bodyMedium),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Flexible(
+                child: Text(date, style: Theme.of(context).textTheme.bodyMedium),
+              ),
+              Text(
+                DateFormat('HH:mm').format(DateTime.now()),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: isDark
+                          ? const Color(0xFF8BA3C7)
+                          : const Color(0xFF616161),
+                    ),
+              ),
+            ],
+          ),
           const SizedBox(height: AppSpacing.lg),
 
           // Pastille pulsante + statut global
