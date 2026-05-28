@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../features/contacts/data/models/native_contact.dart';
 import '../../../../features/contacts/data/repositories/native_contacts_repository.dart';
 import '../../../../shared/widgets/harmony_search_bar.dart';
@@ -57,10 +58,11 @@ class _MessageRuleFormSheetState extends State<MessageRuleFormSheet> {
   }
 
   void _submit() {
+    final l10n = AppLocalizations.of(context)!;
     final value = _valueCtrl.text.trim();
     if (value.isEmpty && _ruleType != RuleType.schedule) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Saisissez une valeur')),
+        SnackBar(content: Text(l10n.messageRuleValidationEmpty)),
       );
       return;
     }
@@ -85,6 +87,7 @@ class _MessageRuleFormSheetState extends State<MessageRuleFormSheet> {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return DraggableScrollableSheet(
       initialChildSize: 0.75,
@@ -118,7 +121,7 @@ class _MessageRuleFormSheetState extends State<MessageRuleFormSheet> {
                 children: [
                   Expanded(
                     child: Text(
-                      _isEditing ? 'Modifier la règle' : 'Nouvelle règle',
+                      _isEditing ? l10n.messageRuleEditTitle : l10n.messageRuleNewTitle,
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                   ),
@@ -135,7 +138,7 @@ class _MessageRuleFormSheetState extends State<MessageRuleFormSheet> {
                 padding: const EdgeInsets.all(AppSpacing.lg),
                 children: [
                   // Type de règle
-                  Text('Type de règle', style: Theme.of(context).textTheme.labelMedium),
+                  Text(l10n.messageRuleLabelType, style: Theme.of(context).textTheme.labelMedium),
                   const SizedBox(height: AppSpacing.sm),
                   SegmentedButton<RuleType>(
                     segments: RuleType.values
@@ -157,11 +160,11 @@ class _MessageRuleFormSheetState extends State<MessageRuleFormSheet> {
                     HarmonyTextField(
                       controller: _valueCtrl,
                       label: _ruleType == RuleType.contact
-                          ? 'Numéro ou nom'
-                          : 'Mot-clé',
+                          ? l10n.messageRuleLabelContact
+                          : l10n.messageRuleLabelKeyword,
                       hint: _ruleType == RuleType.contact
                           ? '+336...'
-                          : 'spam, pub, promo...',
+                          : l10n.messageRuleHintKeyword,
                       keyboardType: _ruleType == RuleType.contact
                           ? TextInputType.phone
                           : TextInputType.text,
@@ -171,7 +174,7 @@ class _MessageRuleFormSheetState extends State<MessageRuleFormSheet> {
                       TextButton.icon(
                         onPressed: _pickFromContacts,
                         icon: const Icon(Icons.contacts_outlined, size: 16),
-                        label: const Text('Choisir depuis mes contacts'),
+                        label: Text(l10n.messageRulePickContacts),
                         style: TextButton.styleFrom(
                           foregroundColor: AppColors.accentBlue,
                         ),
@@ -182,7 +185,7 @@ class _MessageRuleFormSheetState extends State<MessageRuleFormSheet> {
 
                   if (_ruleType == RuleType.schedule) ...[
                     Text(
-                      'Plage horaire : la règle s\'applique entre ces heures',
+                      l10n.messageRuleScheduleInfo,
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                     const SizedBox(height: AppSpacing.md),
@@ -191,7 +194,7 @@ class _MessageRuleFormSheetState extends State<MessageRuleFormSheet> {
                         Expanded(
                           child: HarmonyTextField(
                             controller: _valueCtrl,
-                            label: 'Plage (ex: 22-7)',
+                            label: l10n.messageRuleScheduleLabel,
                             hint: 'startHour-endHour',
                           ),
                         ),
@@ -201,7 +204,7 @@ class _MessageRuleFormSheetState extends State<MessageRuleFormSheet> {
                   ],
 
                   // Action
-                  Text('Action', style: Theme.of(context).textTheme.labelMedium),
+                  Text(l10n.messageRuleLabelAction, style: Theme.of(context).textTheme.labelMedium),
                   const SizedBox(height: AppSpacing.sm),
                   SegmentedButton<RuleAction>(
                     segments: RuleAction.values
@@ -224,10 +227,10 @@ class _MessageRuleFormSheetState extends State<MessageRuleFormSheet> {
                   const SizedBox(height: AppSpacing.lg),
 
                   // Sources
-                  Text('Sources', style: Theme.of(context).textTheme.labelMedium),
+                  Text(l10n.messageRuleLabelSources, style: Theme.of(context).textTheme.labelMedium),
                   const SizedBox(height: AppSpacing.xs),
                   Text(
-                    'Laisser vide pour toutes les sources',
+                    l10n.messageRuleSourcesAll,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: cs.onSurfaceVariant,
                         ),
@@ -258,7 +261,7 @@ class _MessageRuleFormSheetState extends State<MessageRuleFormSheet> {
                     width: double.infinity,
                     child: FilledButton(
                       onPressed: _submit,
-                      child: Text(_isEditing ? 'Enregistrer' : 'Ajouter la règle'),
+                      child: Text(_isEditing ? l10n.messageRuleEditButton : l10n.messageRuleAddButton),
                     ),
                   ),
                 ],

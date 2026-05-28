@@ -355,6 +355,7 @@ class _RuleCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return HarmonyCard(
       child: Row(
@@ -393,7 +394,7 @@ class _RuleCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  rule.value.isEmpty ? '(plage horaire)' : rule.value,
+                  rule.value.isEmpty ? l10n.messageRuleScheduleDisplay : rule.value,
                   style: Theme.of(context).textTheme.bodySmall,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,

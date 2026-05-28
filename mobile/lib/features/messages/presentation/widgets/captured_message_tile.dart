@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/harmony_badge.dart';
 import '../../../../shared/widgets/harmony_card.dart';
 import '../../data/models/captured_message.dart';
@@ -76,7 +77,7 @@ class CapturedMessageTile extends StatelessWidget {
                   if (message.isBlocked) ...[
                     const SizedBox(height: AppSpacing.xs),
                     HarmonyBadge(
-                      label: 'Bloqué',
+                      label: AppLocalizations.of(context)!.messageBlockedBadge,
                       variant: HarmonyBadgeVariant.danger,
                     ),
                   ],
