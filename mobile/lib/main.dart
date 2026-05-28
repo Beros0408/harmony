@@ -11,7 +11,12 @@ import 'features/parental/data/repositories/safe_zone_repository.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Initialisation des données de formatage pour les 5 langues supportées
   await initializeDateFormatting('fr_FR');
+  await initializeDateFormatting('en_US');
+  await initializeDateFormatting('es_ES');
+  await initializeDateFormatting('it_IT');
+  await initializeDateFormatting('pt_BR');
 
   // Sprint 8 — AdMob + RevenueCat
   await MobileAds.instance.initialize();
