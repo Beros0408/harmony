@@ -31,9 +31,21 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  String get _formattedDate {
+  String _formattedDate(BuildContext context) {
     final now = DateTime.now();
-    return DateFormat('EEEE d MMMM yyyy', 'fr_FR').format(now);
+    final lang = Localizations.localeOf(context).languageCode;
+    switch (lang) {
+      case 'fr':
+        return DateFormat('EEEE d MMMM yyyy', 'fr').format(now);
+      case 'es':
+        return DateFormat("EEEE d 'de' MMMM yyyy", 'es').format(now);
+      case 'it':
+        return DateFormat('EEEE d MMMM yyyy', 'it').format(now);
+      case 'pt':
+        return DateFormat("EEEE, d 'de' MMMM yyyy", 'pt').format(now);
+      default:
+        return DateFormat('EEEE, MMMM d yyyy', 'en').format(now);
+    }
   }
 
   @override
@@ -64,7 +76,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       body: ListView(
         padding: const EdgeInsets.all(AppSpacing.lg),
         children: [
-          _WelcomeBanner(date: _formattedDate),
+          _WelcomeBanner(date: _formattedDate(context)),
           const SizedBox(height: AppSpacing.xl),
 
           Text(l10n.dashboardSectionModules, style: Theme.of(context).textTheme.titleSmall),
