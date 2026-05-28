@@ -146,13 +146,8 @@ final GoRouter appRouter = GoRouter(
       ),
     ),
     // ── Sprint 4 — Agenda ─────────────────────────────────────────────────
-    GoRoute(
-      path: '${RouteNames.agendaEvent}/:id',
-      pageBuilder: (context, state) => _slidePage(
-        key: state.pageKey,
-        child: EventDetailScreen(eventId: state.pathParameters['id']!),
-      ),
-    ),
+    // IMPORTANT: les routes spécifiques (edit) doivent être déclarées AVANT
+    // la route paramétrée (:id) pour éviter que GoRouter capture "edit" comme id.
     GoRoute(
       path: RouteNames.agendaEventEdit,
       pageBuilder: (context, state) => _slidePage(
@@ -165,6 +160,13 @@ final GoRouter appRouter = GoRouter(
       pageBuilder: (context, state) => _slidePage(
         key: state.pageKey,
         child: EventEditorScreen(eventId: state.pathParameters['id']),
+      ),
+    ),
+    GoRoute(
+      path: '${RouteNames.agendaEvent}/:id',
+      pageBuilder: (context, state) => _slidePage(
+        key: state.pageKey,
+        child: EventDetailScreen(eventId: state.pathParameters['id']!),
       ),
     ),
     GoRoute(

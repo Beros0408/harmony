@@ -7,7 +7,7 @@
 
 | Champ | Valeur |
 |---|---|
-| **Version actuelle** | **2.2.7 — i18n Messages form règle + badge Bloqué** ⭐ |
+| **Version actuelle** | **2.2.8 — Fix câblage Agenda FAB + règle Messages async** ⭐ |
 | **Phase en cours** | Monétisation — Freemium live (plans Solo/Famille/Sport/Lifetime) |
 | **Avancement global** | ~95 % |
 | **Date de début** | 23 mai 2026 |
@@ -730,6 +730,29 @@ Implémenter la monétisation freemium : paywall RevenueCat, feature gating par 
 
 ---
 
+### v2.2.8 — Fix câblage Agenda FAB + règle Messages async (Hotfix)
+
+**Bugs signalés** : 2 bugs fonctionnels confirmés sur émulateur réel (S22).
+
+**BUG 1 — Agenda FAB → "Bientôt disponible" au lieu du formulaire événement :**
+- Root cause : GoRouter déclarait `/agenda/event/:id` AVANT `/agenda/event/edit` — "edit" était capturé comme `id`, donc GoRouter appelait `EventDetailScreen(eventId: 'edit')` qui affichait son fallback "Bientôt disponible".
+- Fix : réordonnancement des routes dans `app_router.dart` — routes spécifiques (`/edit`) déclarées AVANT les routes paramétrées (`/:id`).
+- AVANT : `/:id` (l.165) → `/edit` (l.151) — ordre inversé = bug.
+- APRÈS : `/edit` (l.151) → `/:id/edit` (l.158) → `/:id` (l.165) — ordre correct.
+
+**BUG 2 — Messages "Ajouter la règle" sans effet :**
+- Root cause : `_submit()` était synchrone (`void`), n'attendait pas `cubit.addRule()` / `cubit.updateRule()` — si une exception async se produisait, `Navigator.pop()` n'était jamais atteint et le sheet restait ouvert sans persister la règle.
+- Fix : `_submit()` réécriture async (pattern `blacklist_form_sheet._save`) avec `await cubit.addRule()`, `_submitting` guard double-tap, `try/finally` pour reset loading, `if (mounted)` avant pop.
+- Bouton désactivé + `CircularProgressIndicator(strokeWidth:2)` pendant soumission.
+
+**Résultats** :
+- ✅ `flutter analyze` : **79 issues** (inchangé)
+- ✅ `flutter test` : **320/320 verts**
+- ✅ `flutter run` : app lancée sans crash sur `emulator-5554` (sdk gphone64 x86 64, Android 14)
+- ✅ tag `v2.2.8-fix-agenda-rule-actions`
+
+---
+
 ## Blocages actifs
 
 > *Aucun blocage actif.*
@@ -740,6 +763,7 @@ Implémenter la monétisation freemium : paywall RevenueCat, feature gating par 
 
 | Version | Date | Phase | Description |
 |---|---|---|---|
+| **2.2.8** | 28/05/2026 | **Hotfix câblage** | BUG 1 : GoRouter `/agenda/event/:id` avant `/edit` → réordonnancement routes (edit avant :id) · BUG 2 : `_submit()` sync sans await → async + _submitting guard + mounted check (pattern blacklist) · 79 issues analyze · 320 tests verts · tag v2.2.8-fix-agenda-rule-actions |
 | **2.2.7** | 28/05/2026 | **Hotfix i18n** | Messages : 17 clés i18n × 5 locales pour MessageRuleFormSheet + badge Bloqué (CapturedMessageTile) + plage horaire (_RuleCard) · C1 Agenda et C3 tap messages déjà implémentés · 79 issues analyze (−1) · 320 tests verts · tag v2.2.7-i18n-messages |
 | **2.2.6** | 28/05/2026 | **Hotfix** | Date figée Welcome card — _formattedDate(context) locale-aware (fr/es/it/pt/en) + initializeDateFormatting 5 locales dans main.dart · 320 tests verts · tag v2.2.6-dynamic-date |
 | **2.2.5** | 28/05/2026 | **Mini-Sprint UX** | Welcome card dynamique : salutation 4 plages horaires (5 locales) · PulsingDot 4s · WigglingEmoji one-shot (addPostFrameCallback) · 3 mini-stats mockées (filtrés/pas/événements) · Fix AdBanner initState crash · HarmonyAppBar GoRouter.maybeOf() safe · MockTokenStorage auth tests · 320 tests verts · tag v2.2.5-welcome-dynamic |

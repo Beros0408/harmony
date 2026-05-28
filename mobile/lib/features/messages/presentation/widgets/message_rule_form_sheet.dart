@@ -27,6 +27,7 @@ class _MessageRuleFormSheetState extends State<MessageRuleFormSheet> {
   late TextEditingController _valueCtrl;
   late List<MessageSource> _sources;
   bool _isEditing = false;
+  bool _submitting = false;
 
   @override
   void initState() {
@@ -57,7 +58,8 @@ class _MessageRuleFormSheetState extends State<MessageRuleFormSheet> {
     }
   }
 
-  void _submit() {
+  Future<void> _submit() async {
+    if (_submitting) return;
     final l10n = AppLocalizations.of(context)!;
     final value = _valueCtrl.text.trim();
     if (value.isEmpty && _ruleType != RuleType.schedule) {
@@ -66,7 +68,7 @@ class _MessageRuleFormSheetState extends State<MessageRuleFormSheet> {
       );
       return;
     }
-
+    setState(() => _submitting = true);
     final rule = MessageRule(
       id: widget.rule?.id ?? '',
       ruleType: _ruleType,
@@ -74,14 +76,17 @@ class _MessageRuleFormSheetState extends State<MessageRuleFormSheet> {
       action: _action,
       sources: List.unmodifiable(_sources),
     );
-
-    final cubit = context.read<MessagesCubit>();
-    if (_isEditing) {
-      cubit.updateRule(rule);
-    } else {
-      cubit.addRule(rule);
+    try {
+      final cubit = context.read<MessagesCubit>();
+      if (_isEditing) {
+        await cubit.updateRule(rule);
+      } else {
+        await cubit.addRule(rule);
+      }
+    } finally {
+      if (mounted) setState(() => _submitting = false);
     }
-    Navigator.of(context).pop();
+    if (mounted) Navigator.of(context).pop();
   }
 
   @override
@@ -260,8 +265,14 @@ class _MessageRuleFormSheetState extends State<MessageRuleFormSheet> {
                   SizedBox(
                     width: double.infinity,
                     child: FilledButton(
-                      onPressed: _submit,
-                      child: Text(_isEditing ? l10n.messageRuleEditButton : l10n.messageRuleAddButton),
+                      onPressed: _submitting ? null : _submit,
+                      child: _submitting
+                          ? const SizedBox(
+                              height: 18,
+                              width: 18,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : Text(_isEditing ? l10n.messageRuleEditButton : l10n.messageRuleAddButton),
                     ),
                   ),
                 ],
