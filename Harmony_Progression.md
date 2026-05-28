@@ -7,7 +7,7 @@
 
 | Champ | Valeur |
 |---|---|
-| **Version actuelle** | **2.2.5 — Welcome card dynamique (PulsingDot + WigglingEmoji + stats)** ⭐ |
+| **Version actuelle** | **2.2.6 — Date dynamique i18n Welcome card** ⭐ |
 | **Phase en cours** | Monétisation — Freemium live (plans Solo/Famille/Sport/Lifetime) |
 | **Avancement global** | ~100 % |
 | **Date de début** | 23 mai 2026 |
@@ -622,6 +622,7 @@ Compléter les 3 derniers modules en retard du cahier des charges :
 | Version | Date | Phase | Description |
 |---|---|---|---|
 | **2.2.4** | 28/05/2026 | **Hotfix Messages** | BUG 1 : Flexible + ellipsis sur badges Row dans _RuleCard (overflow "bandeau jaune" S22) · BUG 2 : tap message → MessageDetailScreen (route /message-detail, GoRouter extra) · 6 clés i18n × 5 locales · 80 issues analyze · 304 tests · tag v2.2.4-messages-fix |
+| **2.2.6** | 28/05/2026 | **Hotfix** | Date figée Welcome card — _formattedDate(context) locale-aware (fr/es/it/pt/en) + initializeDateFormatting 5 locales dans main.dart · 320 tests verts · tag v2.2.6-dynamic-date |
 | **2.2.5** | 28/05/2026 | **Mini-Sprint UX** | Welcome card dynamique : salutation 4 plages horaires (5 locales) · PulsingDot 4s · WigglingEmoji one-shot (addPostFrameCallback) · 3 mini-stats mockées (filtrés/pas/événements) · Fix AdBanner initState crash · HarmonyAppBar GoRouter.maybeOf() safe · MockTokenStorage auth tests · 320 tests verts · tag v2.2.5-welcome-dynamic |
 | **2.2.4** | 27/05/2026 | **Hotfix** | Messages & SMS : RenderFlex overflow badge row (_RuleCard Flexible) + tap message → MessageDetailScreen via GoRouter state.extra · 304 tests passants · tag v2.2.4-messages-overflow-detail |
 | **2.2.3** | 27/05/2026 | **Hotfix Dashboard** | Extraction section "COMPOSANTS DU DESIGN SYSTEM" hors Dashboard utilisateur → route privée `/dev/components` (`ComponentsDemoScreen`) · 5 imports inutilisés supprimés · 3 variables d'état orphelines supprimées · 80 issues analyze (baseline) · 304 tests passants · tag v2.2.3-clean-dashboard |
