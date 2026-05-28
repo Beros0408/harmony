@@ -213,7 +213,7 @@ class _WelcomeBanner extends StatelessWidget {
               child: Text(
                 text,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: cs.onSurfaceVariant,
+                      color: isDark ? cs.onSurfaceVariant : const Color(0xFF555555),
                     ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -233,7 +233,10 @@ class _WelcomeBanner extends StatelessWidget {
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: cs.outline),
+        border: Border.all(
+          color: isDark ? cs.outline : const Color(0xFFE0E0E0),
+          width: 1.0,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -262,8 +265,8 @@ class _WelcomeBanner extends StatelessWidget {
               const SizedBox(width: AppSpacing.sm),
               Text(
                 l10n.dashboardAllServicesActive,
-                style: const TextStyle(
-                  color: AppColors.accentGreen,
+                style: TextStyle(
+                  color: isDark ? AppColors.accentGreen : const Color(0xFF1A7A4A),
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
                 ),

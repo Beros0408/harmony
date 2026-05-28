@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:harmony/l10n/app_localizations.dart';
 import '../../core/constants/app_colors.dart';
@@ -36,6 +37,9 @@ class HarmonyAppBar extends StatelessWidget implements PreferredSizeWidget {
     final cs = Theme.of(context).colorScheme;
 
     return AppBar(
+      systemOverlayStyle: Theme.of(context).brightness == Brightness.dark
+          ? SystemUiOverlayStyle.light
+          : SystemUiOverlayStyle.dark,
       backgroundColor: showGradient ? null : Colors.transparent,
       flexibleSpace: showGradient
           ? Container(
