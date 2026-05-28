@@ -1,6 +1,6 @@
 # 🔄 Harmony — Fichier des itérations
 > Un sprint = 2 semaines (ou moins en mode rapide)
-> Mise à jour : 25 mai 2026
+> Mise à jour : 28 mai 2026
 
 ---
 
@@ -33,13 +33,28 @@
 | **Sprint 3** | **Phase 1** | **Géolocalisation + SOS + Famille** ⭐ | **✅** | **`b808a8d`** |
 | **Sprint 4** | **Phase 1** | **Agenda + Planification Intelligente** ⭐ | **✅** | **`6e2505c`** |
 | **Sprint 3.2** | **UI premium** | **Light Mode complet et cohérent** | **✅** | **`f2be549`** |
-| Sprint 5 | Phase 2 | IA spam + STT + Score confiance | ⬜ | — |
-| Sprint 6 | Phase 2 | Filtrage WhatsApp Android | ⬜ | — |
-| Sprint 7 | Phase 2 | Filtrage WhatsApp iOS + NLP | ⬜ | — |
-| Sprint 8 | Phase 2 | Geofencing avancé | ⬜ | — |
-| Sprint 9 | Phase 2 | Temps écran + Rapports parentaux | ⬜ | — |
-| Sprint 10-13 | Phase 3 | Fitness | ⬜ | — |
-| Sprint 14-17 | Phase 4 | Premium + déploiement stores | ⬜ | — |
+| **Sprint 3.3** | **Phase 1** | **Hotfix Dark Mode — BUGs 6/7/8** | **✅** | `v1.3.2-dark-mode-fix` |
+| **Sprint 5** | **Phase 1** | **APIs Réelles — JWT + Google Cal + Contacts** ⭐ | **✅** | **`8e085fe`** |
+| **Hotfix v1.4.1** | **Phase 1** | **Contacts debug + filtre relâché** | **✅** | `v1.4.1-contacts-debug` |
+| **Sprint 5.2** | **Phase 1** | **Plugin Kotlin ContactsReader** ⭐ | **✅** | **`f8e8f97`** |
+| **Sprint 6** | **Phase 1** | **Module Messages WhatsApp/SMS** ⭐ | **✅** | **`5fbb9c3`** |
+| **Hotfix v1.5.1** | **Phase 1** | **i18n ARB clés messages*** | **✅** | `v1.5.1-messages-i18n-fix` |
+| **Hotfix v1.5.2** | **Phase 1** | **READ_SMS runtime permission Android** | **✅** | `v1.5.2-sms-permission` |
+| **Sprint 7** | **Phase 1** | **CDC-COMPLETE — Fitness + Parental + Messages** ⭐ | **✅** | **`40e4e84`** |
+| **Hotfix v2.0.1** | **Phase 1** | **DatabaseHelper.db pattern** | **✅** | `v2.0.1` |
+| **Sprint 8** | **Monétisation** | **Paywall RevenueCat + Feature Gating + AdMob** ⭐ | **✅** | **`fe410db`** |
+| **Hotfix v2.1.1** | **Monétisation** | **Feature gating blacklist fix** | **✅** | `v2.1.1-paywall-fix` |
+| **Hotfix v2.1.2** | **Monétisation** | **Dashboard RenderFlex S22** | **✅** | `v2.1.2-dashboard-fix` |
+| **Mini-Sprint v2.2.0** | **DA** | **Direction Artistique — images Unsplash WCAG AA** ⭐ | **✅** | `v2.2.0-visuals` |
+| **Hotfix v2.2.1** | **DA** | **Splash → Landing page CTA** | **✅** | `v2.2.1-landing` |
+| **Hotfix v2.2.2** | **DA** | **Dashboard 8/8 cards completion** | **✅** | `v2.2.2-cards-completion` |
+| **Hotfix v2.2.3** | **DA** | **Dashboard clean + /dev/components** | **✅** | `v2.2.3-clean-dashboard` |
+| **Hotfix v2.2.4** | **UX** | **Messages overflow + tap détail** | **✅** | `v2.2.4-messages-fix` |
+| **Mini-Sprint v2.2.5** | **UX** | **Welcome card dynamique i18n** ⭐ | **✅** | `v2.2.5-welcome-dynamic` |
+| **Hotfix v2.2.6** | **UX** | **Date dynamique locale-aware** | **✅** | `v2.2.6-dynamic-date` |
+| Sprint 9 | Phase 2 | Backend FastAPI + Auth JWT réel | ⬜ | — |
+| Sprint 10 | Phase 2 | IA spam TensorFlow Lite on-device | ⬜ | — |
+| Sprint 11 | Phase 2 | STT Voicemail + déploiement stores | ⬜ | — |
 
 ---
 
@@ -414,6 +429,183 @@ Corriger les BUGs 3, 4, 5 identifiés : textes quasi-invisibles en mode clair (d
 
 ---
 
+### Sprint 3.3 — Hotfix Dark Mode (régressions Sprint 3.2) ✅ TERMINÉ
+
+**Date :** 26/05/2026 · **Tag :** `v1.3.2-dark-mode-fix`
+
+#### Bugs corrigés
+
+| BUG | Symptôme | Fix |
+|---|---|---|
+| **BUG 6** | Titres HarmonyAppBar invisibles en dark | `.copyWith(color: cs.onSurface)` |
+| **BUG 7** | Séparateur AppBar | `cs.outlineVariant` → `cs.outline` |
+| **BUG 8** | Section "MODE ACTIF" barrée (CallFilterScreen) | `_SectionHeader` adaptatif |
+
+Audit complet 5 écrans (Parental, Fitness, Settings, Contacts, Voicemail) — tous les `AppTypography.textTheme.*` hardcodés supprimés.
+
+#### Bilan
+
+| Métrique | Valeur |
+|---|---|
+| Tests Flutter | **218 verts** (inchangés) |
+| Tests Kotlin JUnit | **13 verts** (inchangés) |
+| Issues flutter analyze | **0** |
+
+---
+
+### Sprint 5 — APIs Réelles & Production-Ready ⭐ TERMINÉ
+
+**Date :** 26/05/2026 · **Commit :** `8e085fe` → `f8e8f97` · **Tags :** `v1.4.0` → `v1.4.2`
+
+#### Phases livrées
+
+**Phase 1 — JWT End-to-End :**
+- `ITokenStorage` interface + `SecureTokenStorage` (flutter_secure_storage)
+- `DioClient` refactorisé — `_AuthInterceptor` Bearer injection + retry 401 + refresh token + queue requêtes pending
+
+**Phase 2 — Google Calendar API Réelle :**
+- Sync incrémentale `nextSyncToken` + fallback full-sync (HTTP 410 → reset + retry)
+- `events.list` + `events.insert` + `events.patch` + persistance `googleEventId`
+
+**Phase 3 — Contacts Natifs :**
+- `ContactsService` wrapper flutter_contacts + permission_handler
+- `ContactsCubit` états sealed + `ContactsScreen` refonte complète
+- `BlacklistFormSheet` — bouton "Choisir depuis mes contacts"
+
+**Hotfix v1.4.1 — Contacts debug :** logs `[CONTACTS-DEBUG]`, filtre relâché account_type=NULL, rawCount, bouton refresh.
+
+**Sprint 5.2 — Plugin Kotlin ContactsReader :**
+- `ContactsReaderPlugin.kt` — query directe `ContactsContract.RawContacts.CONTENT_URI` (contourne flutter_contacts account_type=NULL)
+- Stratégie 2 niveaux : MethodChannel primaire → flutter_contacts fallback
+
+#### Bilan
+
+| Métrique | Valeur |
+|---|---|
+| Tests Flutter | **~228 verts** (+10 contacts) |
+| Tests Kotlin JUnit | **13 verts** (inchangés) |
+| Issues flutter analyze | **0** |
+| Commits | `8e085fe` (debug) → `f8e8f97` (natif) |
+
+---
+
+### Sprint 6 — Module Messages WhatsApp/SMS ⭐ TERMINÉ
+
+**Date :** 26/05/2026 · **Commit :** `5fbb9c3` · **Tag :** `v1.5.0-messages`
+
+#### Livraisons clés
+
+**Kotlin :**
+- `HarmonyNotificationListener` — `NotificationListenerService` capturant WhatsApp/Signal/Telegram (FIFO 200)
+- `MessagesFilterPlugin` — MethodChannel 4 méthodes (listener check, SMS, notifs, stats)
+
+**Flutter :**
+- `MessageRule` — règles de filtrage (keyword/contact/schedule, sources, action block/allow)
+- `MessagesCubit` — 6 états sealed + CRUD règles
+- `MessagesFilterScreen` — statut, stats, liste règles, messages récents
+- 17 clés i18n × 5 locales
+
+**Hotfixes post-Sprint 6 :**
+- **v1.5.1** — i18n ARB : les 17 clés `messages*` écrites dans les `.dart` auto-générés → déplacées dans les 5 ARB sources
+- **v1.5.2** — READ_SMS runtime permission Android 6+ : `MessagesPermissionDenied` state + `_SmsPermissionCard` UI
+
+#### Bilan
+
+| Métrique | Valeur |
+|---|---|
+| Tests Flutter | **~258 verts** (+30 messages) |
+| Tests Kotlin JUnit | **13 verts** (inchangés) |
+| Issues flutter analyze | **0** |
+
+---
+
+### Sprint 7 — Fitness + Parental + Messages Complets ⭐ CDC-COMPLETE TERMINÉ
+
+**Date :** 27/05/2026 · **Commit :** `40e4e84` · **Tag :** `v2.0.0-cdc-complete`
+
+#### Modules complétés
+
+**M6 Fitness (10% → 80%) :**
+- `PedometerService` + `NativeFitnessRepository` (pedometer ^4.0.2, mock fallback émulateur)
+- `FitnessCubit` + `FitnessScreen` — progress circulaire, `_WeeklyBarChart` (fl_chart), slider objectif
+- Tables SQLCipher v4 : `daily_steps`, `workout_sessions`
+
+**M4 Parental (55% → 90%) :**
+- `ChildSettingsScreen` — avatar, nom, âge, palette couleurs, jours autorisés
+- `SosContactsScreen` — contacts urgence, badges priorité, réordonnement, bouton test SOS
+
+**M3 Messages (85% → 100%) :**
+- `NativeMessagesRepository` — règles migrées de in-memory → SQLCipher (CRUD + cache mémoire sync)
+
+#### Bilan
+
+| Métrique | Valeur |
+|---|---|
+| Points planifiés | 35 |
+| Points réalisés | 35 |
+| Vélocité | 100 % |
+| Tests Flutter | **~290 verts** (+32) |
+| Tests Kotlin JUnit | **13 verts** (inchangés) |
+| Issues flutter analyze | **0** |
+
+---
+
+### Sprint 8 — Paywall RevenueCat + Feature Gating + AdMob ⭐ TERMINÉ
+
+**Date :** 27/05/2026 · **Commit :** `fe410db` · **Tag :** `v2.1.0-paywall`
+
+#### Livraisons clés
+
+- `SubscriptionPlan` — 4 plans : Free / Solo 4,99€ / Famille 8,99€ / Sport 6,99€ / Lifetime 79,99€
+- `SubscriptionService` + `SubscriptionCubit` — RevenueCat `purchases_flutter`
+- `FeatureGatingService` — gate par plan (Blacklist/Parental/Fitness/Messages)
+- `PaywallScreen` — présentation plans + CTA upgrade
+- `AdBanner` — bannière AdMob TEST ID (conditionnel `hasPremium()`)
+
+**Hotfixes post-Sprint 8 :**
+- **v2.1.1** — Feature gating blacklist : 2 bugs (count filtré → DB total, context invalidé après pop BottomSheet)
+- **v2.1.2** — RenderFlex overflow S22 badge voicemail : badge `'2'` + `Flexible` + `TextOverflow.ellipsis`
+
+#### Bilan
+
+| Métrique | Valeur |
+|---|---|
+| Points planifiés | 35 |
+| Points réalisés | 35 |
+| Vélocité | 100 % |
+| Tests Flutter | **303 verts** (+45) |
+| Tests Kotlin JUnit | **13 verts** (inchangés) |
+| Issues flutter analyze | **80** (baseline — lint warnings non-critiques) |
+
+---
+
+### Mini-Sprints Visuels & UX v2.2.x ✅ TERMINÉS
+
+**27–28 mai 2026 · Tags v2.2.0 → v2.2.6**
+
+| Version | Thème | Tests | Tag |
+|---|---|---|---|
+| **v2.2.0** | Direction artistique — images Unsplash WCAG AA, MeditationScreen, SplashScreen montagne | 303 | `v2.2.0-visuals` |
+| **v2.2.1** | Splash → Landing page intentionnelle (CTA glassmorphism, fade-in 2 étapes) | 304 | `v2.2.1-landing` |
+| **v2.2.2** | Dashboard 8/8 cards : Contacts + Messagerie vocale + Messages images ajoutées | 304 | `v2.2.2-cards-completion` |
+| **v2.2.3** | Dashboard propre : `ComponentsDemoScreen` route privée `/dev/components` | 304 | `v2.2.3-clean-dashboard` |
+| **v2.2.4** | Messages overflow S22 (`Flexible`+ellipsis) + `MessageDetailScreen` GoRouter extra | 304 | `v2.2.4-messages-fix` |
+| **v2.2.5** | Welcome card dynamique : `PulsingDot`, `WigglingEmoji`, salutation i18n×5, 3 mini-stats, 7 fixes tests | 320 | `v2.2.5-welcome-dynamic` |
+| **v2.2.6** | Date locale-aware : `_formattedDate(context)` switch lang + `initializeDateFormatting` ×5 | 320 | `v2.2.6-dynamic-date` |
+
+#### Enseignements techniques v2.2.x
+
+| Leçon | Règle |
+|---|---|
+| `Future.delayed` dans `initState` | Toujours `addPostFrameCallback` — pas de timers pending dans les tests |
+| `GoRouter.of(context)` en widget test | `GoRouter.maybeOf(context)?.canPop() ?? false` — null-safe |
+| `Theme.of(context)` dans `initState` | Utiliser `defaultTargetPlatform` (flutter/foundation) — InheritedWidget non disponible à initState |
+| `FlutterSecureStorage` en unit test | Injecter `MockTokenStorage` via l'interface `ITokenStorage` |
+| Locale hardcodée `'fr_FR'` | Toujours `Localizations.localeOf(context).languageCode` + initialiser les 5 locales dans `main()` |
+| `GlobalCupertinoLocalizations` | Ajouter `.delegate` dans les tests avec locale `fr` + CupertinoLocalizations |
+
+---
+
 ## Vélocité de l'équipe
 
 | Sprint | Points planifiés | Points réalisés | Vélocité |
@@ -432,49 +624,63 @@ Corriger les BUGs 3, 4, 5 identifiés : textes quasi-invisibles en mode clair (d
 | **Sprint 3** | **35** | **35** | **100 %** |
 | **Sprint 4** | **40** | **40** | **100 %** |
 | **Sprint 3.2** | **15** | **15** | **100 %** |
+| **Sprint 3.3** | **5** | **5** | **100 %** |
+| **Sprint 5** | **30** | **30** | **100 %** |
+| **Hotfix v1.4.1** | **3** | **3** | **100 %** |
+| **Sprint 5.2** | **8** | **8** | **100 %** |
+| **Sprint 6** | **35** | **35** | **100 %** |
+| **Hotfix v1.5.1+v1.5.2** | **5** | **5** | **100 %** |
+| **Sprint 7** | **35** | **35** | **100 %** |
+| **Sprint 8** | **35** | **35** | **100 %** |
+| **Hotfixes v2.1.x** | **4** | **4** | **100 %** |
+| **Mini-Sprints v2.2.0–v2.2.6** | **20** | **20** | **100 %** |
 
-**Vélocité moyenne 14 sprints : 14.1 pts/sprint** · **100% complétion**
+**Vélocité moyenne 25 sprints : ~18.3 pts/sprint** · **100% complétion** · **320 tests verts · 13 tags majeurs**
 
 ---
 
 ## Référence des commits sur main
 
 ```
+1770f5b docs: bilan journee 2026-05-27 (Sprint 7 + 8 + hotfixes valides)
+c209c81 docs(tracking): Sprint 8 Hotfix v2.1.1 — feature gating blacklist fix
+718bf6b chore: merge fix/sprint-8-feature-gating-blacklist into main (v2.1.1)
+10882f8 fix(paywall): hotfix feature gating blacklist + SubscriptionCubit init
+fe410db docs(tracking): Sprint 8 Paywall RevenueCat + Feature Gating + AdMob v2.1.0
+40e4e84 feat: Sprint 7 — CDC-COMPLETE Fitness + Parental + Messages [TAG v2.0.0-cdc-complete]
+5fbb9c3 feat(messages): Sprint 6 — Module Messages WhatsApp/SMS Android [TAG v1.5.0-messages]
+f8e8f97 feat(contacts): Sprint 5.2 — ContactsReaderPlugin Kotlin [TAG v1.4.2-contacts-native]
+8e085fe fix(contacts): hotfix v1.4.1 — contacts debug logs + filtre relâché
+          feat(apis): Sprint 5 — JWT DioClient + Google Calendar réel + Contacts natifs [TAG v1.4.0-real-apis]
+6e2505c feat(agenda): Sprint 4 — Agenda + Planification Intelligente [TAG v1.3.0-sprint-4]
 9ba306d fix(android): downgrade AGP 8.9.2 + Gradle 8.13 — fix build Sprint 3
 9d3737f chore: merge feat/sprint-3-geolocation-sos into main (Sprint 3)
 b808a8d feat(parental): Sprint 3 — Géolocalisation + SOS + Module Famille [TAG v1.2.0-sprint-3]
-eec515a docs(tracking): Sprint 1.5 — Blacklist UI interactive + sync Kotlin
 a665503 feat(blacklist): Sprint 1.5 — UI blacklist interactive + SQLCipher + sync Kotlin [TAG v1.1.1-blacklist-ui-sync]
-295e58b chore: merge fix/sprint-1-blacklist-sync-flutter-kotlin into main
-25c714e fix(blacklist-sync): wire Flutter blacklist -> Kotlin CallDecisionEngine snapshot
 50aff7e chore: merge feat/sprint-2-ios-callkit-outgoing into main (Sprint 2) [TAG v1.1.0-sprint-2]
-ba9225b feat(sprint-2): iOS CallKit extension + outgoing call detector + predefined filter modes
-47dbfe2 chore: merge feat/sprint-1-android-call-filtering into main (Sprint 1) [TAG v1.0.0-sprint-1]
-267cc37 feat(sprint-1): Android native call filtering — CallScreeningService + MethodChannel
-e8fcbfb chore: merge feat/sprint-c4-responsive-desktop into main (Sprint C4)
-881237b feat(c4): mobile-first responsive wrapper (max-width 480px on desktop)
-50fa88f chore: merge feat/sprint-c3-voicemail-mockups into main (Sprint C3)
+267cc37 feat(sprint-1): Android native call filtering — CallScreeningService + MethodChannel [TAG v1.0.0-sprint-1]
+881237b feat(c4): mobile-first responsive wrapper (max-width 480px on desktop) [TAG v0.7.0-sprint-c4]
 9c88026 feat(sprint-c3): voicemail mockup screen — VoicemailScreen, push simulation, i18n x5
-a7954d0 docs(tracking): mise a jour suivi projet apres Sprint C2 [TAG v0.5.0-sprint-c2]
-e85e30c chore: merge feat/sprint-c2-premium-polish into main (Sprint C2)
-d34ce4f feat(sprint-c2): premium polish — light mode, ThemeCubit, contacts, new widgets
-243f786 chore: merge fix/sprint-c1-settings-back-button into main
+d34ce4f feat(sprint-c2): premium polish — light mode, ThemeCubit, contacts, new widgets [TAG v0.5.0]
 3a45086 fix(navigation): SettingsScreen back button + audit navigation calls
-1b92449 Merge feat/sprint-c1-i18n-back-button into main (Sprint C1)
 9c69cf3 feat(sprint-c1): i18n complète 5 locales + bouton retour universel
-e78060c chore: merge feat/sprint-b-mockup-screens into main
 f36a7cb feat(ui): Sprint B — rich mockup screens for all 4 modules
+48ecc93 feat(ui): Sprint A — Navigation Dashboard avec transitions
 ```
 
 ---
 
-## Prochaine étape — Sprint 5
+## Prochaine étape — Sprint 9
 
-**IA spam + STT + Score confiance** — démarrer quand prêt.
+**Backend FastAPI + Auth JWT réel** — démarrer quand prêt.
 
-TensorFlow Lite on-device pour classification spam, Speech-to-Text pour transcription voicemail, score de confiance pour les décisions de blocage.
+Objectif : connecter l'app Flutter à un vrai backend Python FastAPI avec authentification JWT, stockage utilisateur PostgreSQL, et endpoints pour les fonctionnalités en-ligne (profil, sync).
 
-Cf. cahier des charges sections 3.2.x (Phase 2).
+Après Sprint 9, la Phase 2 débutera avec :
+- **Sprint 10** — IA spam TensorFlow Lite on-device (classification, score de confiance)
+- **Sprint 11** — STT Voicemail + déploiement stores (Google Play + App Store)
+
+Cf. cahier des charges sections 3.2.x (Phase 2) + ADR-002 (FastAPI).
 
 ---
 

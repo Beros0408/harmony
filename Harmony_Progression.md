@@ -9,10 +9,10 @@
 |---|---|
 | **Version actuelle** | **2.2.6 — Date dynamique i18n Welcome card** ⭐ |
 | **Phase en cours** | Monétisation — Freemium live (plans Solo/Famille/Sport/Lifetime) |
-| **Avancement global** | ~100 % |
+| **Avancement global** | ~95 % |
 | **Date de début** | 23 mai 2026 |
 | **Date cible MVP** | J+16 semaines |
-| **Dernière mise à jour** | 27 mai 2026 |
+| **Dernière mise à jour** | 28 mai 2026 |
 
 ---
 
@@ -359,9 +359,9 @@
 | Surconsommation batterie | < 8 % par jour | Sprint 4 | — | ⬜ Non démarré |
 | Taux de blocage appels indésirables | > 98 % | Sprint 5 | — | ⬜ Non démarré |
 | Taux de détection contournement | > 95 % | Phase 2 | — | ⬜ Non démarré |
-| Couverture tests unitaires | > 70 % | Phase 1 | ~80 % (~290 tests Flutter) | 🟢 OK |
+| Couverture tests unitaires | > 70 % | Phase 1 | ~80 % (**320 tests Flutter** + 13 Kotlin) | 🟢 OK |
 | Couverture tests intégration | > 60 % | Phase 2 | — | ⬜ Non démarré |
-| Issues `flutter analyze` | 0 | Continu | **0** | 🟢 OK |
+| Issues `flutter analyze` | 0 | Continu | **80** (baseline Sprint 8 — lint warnings non-critiques) | 🟡 Baseline |
 | Tests CI/CD GitHub Actions | Vert | Continu | **Vert** | 🟢 OK |
 | Tests Kotlin JUnit | Vert | Sprint 1+ | **13/13 verts** | 🟢 OK |
 
@@ -410,6 +410,12 @@
 | **ADR-026** | 26/05/2026 | NotificationListenerService + MethodChannel pour WhatsApp/Signal/Telegram | Seule API Android permettant de capturer les notifications cross-app sans root | Sprint 6 |
 | **ADR-027** | 26/05/2026 | Stockage en mémoire (CopyOnWriteArrayList) pour les notifications captées au Sprint 6 | Simplicité + thread-safety ; persistance SQLCipher reportée au Sprint 7 | Sprint 6 |
 | **ADR-028** | 26/05/2026 | WhatsApp iOS explicitement déclaré comme non-filtrable | Sandboxing Apple interdit l'accès aux notifications cross-app ; Screen Time suggéré à la place | Sprint 6 |
+| **ADR-032** | 27/05/2026 | RevenueCat `purchases_flutter` pour la monétisation | SDK officiel RevenueCat — gestion entitlements, receipts, restore cross-platform sans logique custom | Sprint 8 |
+| **ADR-033** | 27/05/2026 | AdMob TEST IDs en dev, prod IDs à configurer avant store | Évite les clics accidentels sur pubs réelles en dev + conformité politique AdMob | Sprint 8 |
+| **ADR-034** | 27/05/2026 | 80 issues flutter analyze comme baseline acceptable | Issues = lint warnings prefer_const/use_super_parameters — correctifs non prioritaires vs livraison fonctionnelle | Sprint 8 |
+| **ADR-035** | 28/05/2026 | `WidgetsBinding.addPostFrameCallback` pour `WigglingEmoji` (pas `Future.delayed`) | Future.delayed laisse des timers pending dans les tests — addPostFrameCallback est test-safe | v2.2.5 |
+| **ADR-036** | 28/05/2026 | `GoRouter.maybeOf(context)?.canPop() ?? false` dans HarmonyAppBar | `GoRouter.of()` throw sans GoRouter dans l'arbre (widget tests avec plain MaterialApp) | v2.2.5 |
+| **ADR-037** | 28/05/2026 | `Localizations.localeOf(context).languageCode` pour `_formattedDate` | Locale hardcodée `fr_FR` affichait la date en français pour tous les utilisateurs non-FR | v2.2.6 |
 
 ---
 
@@ -611,6 +617,102 @@ Compléter les 3 derniers modules en retard du cahier des charges :
 
 ---
 
+## Sprint 8 — Paywall RevenueCat + Feature Gating + AdMob ✅ TERMINÉ
+
+**Date :** 27/05/2026 · **Commit :** `fe410db` · **Tag :** `v2.1.0-paywall`
+
+### Objectif
+
+Implémenter la monétisation freemium : paywall RevenueCat, feature gating par plan, et bannière AdMob pour les utilisateurs gratuits.
+
+### Livraisons techniques
+
+**Plans & Modèles :**
+- ✅ `SubscriptionPlan` — 4 plans : Free, Solo (4,99€/mois), Famille (8,99€/mois), Sport (6,99€/mois), Lifetime (79,99€)
+- ✅ `SubscriptionStatus` — état abonnement (plan, dateExpiry, isActive, isLifetime)
+- ✅ `SubscriptionState` sealed (Initial/Loading/Loaded/Error)
+
+**RevenueCat :**
+- ✅ `SubscriptionService` — wrapper `purchases_flutter`, initialisation dans `main()`
+- ✅ `SubscriptionCubit` — load, purchase, restore, checkEntitlement
+- ✅ `PaywallScreen` — présentation 4 plans avec liste features + CTA upgrade
+
+**Feature Gating :**
+- ✅ `FeatureGatingService` — `hasPremium()`, `canUseBlacklist()`, `canUseParental()`, `canUseFitness()`, `canUseMessages()`
+- ✅ Gate : Blacklist (> Free), Parental (Famille/Lifetime), Fitness (Sport/Lifetime), Messages (Solo+/Lifetime)
+
+**AdMob :**
+- ✅ `AdBanner` — bannière 320×50 TEST ID (prod ID à configurer avant store)
+- ✅ Chargement conditionnel `hasPremium()` — aucune pub si abonné premium
+- ✅ `MobileAds.instance.initialize()` dans `main()`
+
+### Hotfixes post-Sprint 8
+
+- ✅ **v2.1.1** — Feature gating blacklist ne déclenchait pas : (1) count filtré → count DB total, (2) context invalidé après pop BottomSheet → GoRouter capturé avant pop · tag `v2.1.1-paywall-fix`
+- ✅ **v2.1.2** — Overflow S22 badge Messagerie vocale : `voicemailNewCount(2)` = "2 nouveaux messages" (23 chars) → badge `'2'` + `Flexible` + `TextOverflow.ellipsis` · tag `v2.1.2-dashboard-fix`
+
+### Tests
+- ✅ 45 nouveaux tests Sprint 8 (subscription models, cubit, feature gating)
+- ✅ **303 tests Flutter total** (was ~290)
+- ✅ **80 issues flutter analyze** — baseline acceptable (lint warnings prefer_const/use_super_parameters non-critiques)
+
+---
+
+## Mini-Sprints Visuels & UX v2.2.x ✅ TERMINÉS
+
+**27–28 mai 2026 · Tags v2.2.0 → v2.2.6**
+
+### v2.2.0 — Direction Artistique Harmony
+
+- ✅ 5 cards Dashboard avec images Unsplash + overlay WCAG AA (gradient 45%→75% opacité)
+- ✅ `MeditationScreen` — 5 sessions mockées + 8e card dédiée Dashboard
+- ✅ `SplashScreen` — montagne brumeuse + fade-in 2.5s
+- ✅ `HarmonyBadge` variante `.rose` (Méditation)
+- ✅ `splashTagline` × 5 locales · **303 tests** · tag `v2.2.0-visuals`
+
+### v2.2.1 — Splash → Landing page intentionnelle
+
+- ✅ Suppression navigation auto 2.5s → bouton CTA glassmorphism "Entrer dans Harmony →"
+- ✅ Fade-in texte 900ms puis bouton 990–1800ms
+- ✅ `splashCtaButton` × 5 locales · **304 tests** (+1) · tag `v2.2.1-landing`
+
+### v2.2.2 — Complétion 8/8 cards Dashboard
+
+- ✅ 3 cards ajoutées avec images : Contacts, Messagerie vocale, Messages
+- ✅ Dashboard 100% émotionnellement cohérent · **304 tests** · tag `v2.2.2-cards-completion`
+
+### v2.2.3 — Dashboard propre + route /dev/components
+
+- ✅ `ComponentsDemoScreen` — route privée `/dev/components` (hors prod)
+- ✅ Dashboard nettoyé : 8 cards modules uniquement
+- ✅ **304 tests** · **80 issues analyze** (baseline) · tag `v2.2.3-clean-dashboard`
+
+### v2.2.4 — Messages overflow + tap détail
+
+- ✅ `Flexible` + `TextOverflow.ellipsis` sur badges `_RuleCard` (overflow "bandeau jaune" S22)
+- ✅ `MessageDetailScreen` route `/message-detail` via GoRouter `state.extra`
+- ✅ 6 nouvelles clés i18n × 5 locales · **304 tests** · tag `v2.2.4-messages-fix`
+
+### v2.2.5 — Welcome card dynamique (Mini-Sprint UX)
+
+- ✅ `PulsingDot` — animation 4s loop (pastille verte "services actifs")
+- ✅ `WigglingEmoji` — one-shot via `addPostFrameCallback` (économie batterie, test-safe)
+- ✅ Salutation contextuelle i18n × 5 : matin/après-midi/soir/nuit
+- ✅ 3 mini-stats mockées : filtrés / pas / événements (connexion cubits v2.3)
+- ✅ Fix `AdBanner.initState()` crash → `defaultTargetPlatform` (flutter/foundation)
+- ✅ Fix `HarmonyAppBar` GoRouter → `GoRouter.maybeOf()` null-safe
+- ✅ Fix `MockTokenStorage` injection auth tests (ITokenStorage interface)
+- ✅ Fix `FitnessCubit` manquant navigation tests, `GlobalCupertinoLocalizations` messages tests
+- ✅ **320 tests verts** (+16) · tag `v2.2.5-welcome-dynamic`
+
+### v2.2.6 — Date dynamique i18n (Hotfix)
+
+- ✅ `_formattedDate(BuildContext context)` locale-aware : fr → `EEEE d MMMM`, es → `EEEE d 'de' MMMM`, it → `EEEE d MMMM`, pt → `EEEE, d 'de' MMMM`, en → `EEEE, MMMM d`
+- ✅ `initializeDateFormatting` pour les 5 locales (fr_FR/en_US/es_ES/it_IT/pt_BR) dans `main()`
+- ✅ **320 tests verts** · tag `v2.2.6-dynamic-date`
+
+---
+
 ## Blocages actifs
 
 > *Aucun blocage actif.*
@@ -621,7 +723,6 @@ Compléter les 3 derniers modules en retard du cahier des charges :
 
 | Version | Date | Phase | Description |
 |---|---|---|---|
-| **2.2.4** | 28/05/2026 | **Hotfix Messages** | BUG 1 : Flexible + ellipsis sur badges Row dans _RuleCard (overflow "bandeau jaune" S22) · BUG 2 : tap message → MessageDetailScreen (route /message-detail, GoRouter extra) · 6 clés i18n × 5 locales · 80 issues analyze · 304 tests · tag v2.2.4-messages-fix |
 | **2.2.6** | 28/05/2026 | **Hotfix** | Date figée Welcome card — _formattedDate(context) locale-aware (fr/es/it/pt/en) + initializeDateFormatting 5 locales dans main.dart · 320 tests verts · tag v2.2.6-dynamic-date |
 | **2.2.5** | 28/05/2026 | **Mini-Sprint UX** | Welcome card dynamique : salutation 4 plages horaires (5 locales) · PulsingDot 4s · WigglingEmoji one-shot (addPostFrameCallback) · 3 mini-stats mockées (filtrés/pas/événements) · Fix AdBanner initState crash · HarmonyAppBar GoRouter.maybeOf() safe · MockTokenStorage auth tests · 320 tests verts · tag v2.2.5-welcome-dynamic |
 | **2.2.4** | 27/05/2026 | **Hotfix** | Messages & SMS : RenderFlex overflow badge row (_RuleCard Flexible) + tap message → MessageDetailScreen via GoRouter state.extra · 304 tests passants · tag v2.2.4-messages-overflow-detail |
