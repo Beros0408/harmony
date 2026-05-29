@@ -7,7 +7,6 @@ import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_radius.dart';
-import '../../../../core/services/feature_gating_service.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/router/route_names.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -21,7 +20,6 @@ import '../../data/models/location_point.dart';
 import '../../data/models/safe_zone.dart';
 import '../../data/models/security_score.dart';
 import '../../logic/child_profile_cubit.dart';
-import '../../../subscription/presentation/widgets/upgrade_prompt.dart';
 import '../../logic/location_cubit.dart';
 import '../../logic/safe_zone_cubit.dart';
 import '../widgets/sos_button.dart';
@@ -499,39 +497,21 @@ class _ZonesList extends StatelessWidget {
 class _AddChildButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ChildProfileCubit, ChildProfileState>(
-      builder: (context, state) {
-        final count =
-            state is ChildProfileLoaded ? state.profiles.length : 0;
-
-        return OutlinedButton.icon(
-          icon: const Icon(Icons.person_add_outlined, size: 16),
-          label: const Text('Ajouter un enfant'),
-          style: OutlinedButton.styleFrom(
-            foregroundColor: AppColors.accentBlue,
-            side: const BorderSide(color: AppColors.accentBlue),
-            padding: const EdgeInsets.symmetric(
-              vertical: AppSpacing.sm,
-              horizontal: AppSpacing.md,
-            ),
-          ),
-          onPressed: () async {
-            if (!FeatureGatingService.instance.canAddChildProfile(count)) {
-              await UpgradePrompt.show(
-                context,
-                title: 'Limite atteinte',
-                description:
-                    'Le plan gratuit est limité à 1 profil enfant. Passez à Premium Famille pour des profils illimités.',
-                icon: Icons.family_restroom_outlined,
-              );
-              return;
-            }
-            if (context.mounted) {
-              context.push(RouteNames.addChildPairing);
-            }
-          },
-        );
-      },
+    return OutlinedButton.icon(
+      icon: const Icon(Icons.person_add_outlined, size: 16),
+      label: const Text('Ajouter un enfant'),
+      style: OutlinedButton.styleFrom(
+        foregroundColor: AppColors.accentBlue,
+        side: const BorderSide(color: AppColors.accentBlue),
+        padding: const EdgeInsets.symmetric(
+          vertical: AppSpacing.sm,
+          horizontal: AppSpacing.md,
+        ),
+      ),
+      // TODO(Sprint-A finalisation): appeler FeatureGatingService.canAddChildProfile(count)
+      // depuis PairingCubit.finalize() — le mur premium appartient à la création du
+      // profil, pas à l'ouverture de l'écran de génération de code.
+      onPressed: () => context.push(RouteNames.addChildPairing),
     );
   }
 }
