@@ -1,3 +1,4 @@
+import '../network/api_config.dart';
 import '../network/dio_client.dart';
 import '../security/token_storage.dart';
 
@@ -11,6 +12,10 @@ class HarmonyServices {
 
   static void init() {
     tokenStorage = SecureTokenStorage();
-    dioClient = DioClient(tokenStorage: tokenStorage);
+    // ApiConfig.baseUrl choisit l'URL adaptée à la plateforme (émulateur, simulateur, prod).
+    dioClient = DioClient(
+      baseUrl: ApiConfig.baseUrl,
+      tokenStorage: tokenStorage,
+    );
   }
 }
