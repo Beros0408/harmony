@@ -11,7 +11,6 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_radius.dart';
 import '../../../../core/services/feature_gating_service.dart';
 import '../../../../core/constants/app_spacing.dart';
-import '../../../../core/constants/app_typography.dart';
 import '../../../../core/router/route_names.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/harmony_app_bar.dart';
@@ -176,6 +175,8 @@ class _ChildCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
     final scoreVal = score?.value ?? 50;
     final scoreVariant = scoreVal >= 70
         ? HarmonyBadgeVariant.success
@@ -191,9 +192,9 @@ class _ChildCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(AppSpacing.md),
         decoration: BoxDecoration(
-          color: AppColors.bgSurface,
+          color: cs.surface,
           borderRadius: AppRadius.lgRadius,
-          border: Border.all(color: AppColors.borderDefault),
+          border: Border.all(color: cs.outlineVariant),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -209,7 +210,7 @@ class _ChildCard extends StatelessWidget {
               child: Center(
                 child: Text(
                   child.name[0].toUpperCase(),
-                  style: AppTypography.textTheme.titleLarge?.copyWith(
+                  style: tt.titleLarge?.copyWith(
                     color: child.avatarColor,
                     fontWeight: FontWeight.w700,
                   ),
@@ -219,7 +220,7 @@ class _ChildCard extends StatelessWidget {
             const SizedBox(height: AppSpacing.sm),
             Text(
               l10n.familyChildAge(child.name, child.age),
-              style: AppTypography.textTheme.labelLarge,
+              style: tt.labelLarge,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
@@ -231,7 +232,7 @@ class _ChildCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     statusText,
-                    style: AppTypography.textTheme.bodySmall,
+                    style: tt.bodySmall,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -406,9 +407,9 @@ class _PermissionBanner extends StatelessWidget {
         children: [
           const Icon(Icons.location_off, color: AppColors.accentAmber, size: 40),
           const SizedBox(height: AppSpacing.sm),
-          Text(l10n.permissionLocationTitle, style: AppTypography.textTheme.titleMedium),
+          Text(l10n.permissionLocationTitle, style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: AppSpacing.xs),
-          Text(l10n.permissionLocationBody, style: AppTypography.textTheme.bodySmall, textAlign: TextAlign.center),
+          Text(l10n.permissionLocationBody, style: Theme.of(context).textTheme.bodySmall, textAlign: TextAlign.center),
           const SizedBox(height: AppSpacing.md),
           HarmonyButton(
             label: l10n.permissionLocationGrant,
@@ -456,10 +457,10 @@ class _ZonesList extends StatelessWidget {
               ),
               child: Icon(_iconFor(zone.icon), color: zone.color, size: 20),
             ),
-            title: Text(zone.name, style: AppTypography.textTheme.labelLarge),
+            title: Text(zone.name, style: Theme.of(context).textTheme.labelLarge),
             subtitle: Text(
               '${zone.radiusMeters.toInt()}m · ${_schedule(zone)}',
-              style: AppTypography.textTheme.bodySmall,
+              style: Theme.of(context).textTheme.bodySmall,
             ),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,

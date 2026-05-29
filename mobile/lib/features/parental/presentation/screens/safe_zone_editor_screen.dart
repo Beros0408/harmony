@@ -8,7 +8,6 @@ import 'package:uuid/uuid.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_radius.dart';
 import '../../../../core/constants/app_spacing.dart';
-import '../../../../core/constants/app_typography.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/harmony_app_bar.dart';
 import '../../../../shared/widgets/harmony_button.dart';
@@ -70,10 +69,11 @@ class _SafeZoneEditorScreenState extends State<SafeZoneEditorScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
     final isEditing = widget.zoneId != null;
 
     return Scaffold(
-      backgroundColor: AppColors.bgBase,
       appBar: HarmonyAppBar(title: isEditing ? l10n.zoneEditorEditTitle : l10n.zoneEditorAddTitle),
       body: ListView(
         padding: const EdgeInsets.all(AppSpacing.lg),
@@ -123,7 +123,7 @@ class _SafeZoneEditorScreenState extends State<SafeZoneEditorScreen> {
           const SizedBox(height: AppSpacing.sm),
           Text(
             'Appuyez sur la carte pour positionner la zone',
-            style: AppTypography.textTheme.bodySmall,
+            style: tt.bodySmall,
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: AppSpacing.lg),
@@ -137,7 +137,7 @@ class _SafeZoneEditorScreenState extends State<SafeZoneEditorScreen> {
           const SizedBox(height: AppSpacing.lg),
 
           // Rayon
-          Text(l10n.zoneFieldRadius, style: AppTypography.textTheme.labelLarge),
+          Text(l10n.zoneFieldRadius, style: tt.labelLarge),
           const SizedBox(height: AppSpacing.xs),
           Row(
             children: [
@@ -153,14 +153,14 @@ class _SafeZoneEditorScreenState extends State<SafeZoneEditorScreen> {
               ),
               Text(
                 '${_radius.toInt()}m',
-                style: AppTypography.textTheme.labelMedium,
+                style: tt.labelMedium,
               ),
             ],
           ),
           const SizedBox(height: AppSpacing.lg),
 
           // Icône
-          Text(l10n.zoneFieldIcon, style: AppTypography.textTheme.labelLarge),
+          Text(l10n.zoneFieldIcon, style: tt.labelLarge),
           const SizedBox(height: AppSpacing.sm),
           Row(
             children: SafeZoneIcon.values.map((icon) {
@@ -172,21 +172,21 @@ class _SafeZoneEditorScreenState extends State<SafeZoneEditorScreen> {
                     margin: const EdgeInsets.symmetric(horizontal: 4),
                     padding: const EdgeInsets.all(AppSpacing.sm),
                     decoration: BoxDecoration(
-                      color: isSelected ? _color.withValues(alpha: 0.15) : AppColors.bgSurface,
+                      color: isSelected ? _color.withValues(alpha: 0.15) : cs.surfaceContainerHighest,
                       borderRadius: AppRadius.smRadius,
                       border: Border.all(
-                        color: isSelected ? _color : AppColors.borderDefault,
+                        color: isSelected ? _color : cs.outlineVariant,
                         width: isSelected ? 2 : 1,
                       ),
                     ),
                     child: Column(
                       children: [
-                        Icon(_iconDataFor(icon), color: isSelected ? _color : AppColors.textMuted, size: 20),
+                        Icon(_iconDataFor(icon), color: isSelected ? _color : cs.onSurfaceVariant, size: 20),
                         const SizedBox(height: 4),
                         Text(
                           _iconLabel(icon, l10n),
-                          style: AppTypography.textTheme.labelSmall?.copyWith(
-                            color: isSelected ? _color : AppColors.textMuted,
+                          style: tt.labelSmall?.copyWith(
+                            color: isSelected ? _color : cs.onSurfaceVariant,
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -206,7 +206,7 @@ class _SafeZoneEditorScreenState extends State<SafeZoneEditorScreen> {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Enfants concernés', style: AppTypography.textTheme.labelLarge),
+                  Text('Enfants concernés', style: tt.labelLarge),
                   const SizedBox(height: AppSpacing.sm),
                   ...state.profiles.map((child) {
                     final isSelected = _selectedChildIds.contains(child.id);
