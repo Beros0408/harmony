@@ -12,6 +12,7 @@ import '../../features/dashboard/presentation/screens/dashboard_screen.dart';
 import '../../features/fitness/presentation/screens/fitness_screen.dart';
 import '../../features/parental/presentation/screens/child_detail_screen.dart';
 import '../../features/parental/presentation/screens/child_settings_screen.dart';
+import '../../features/parental/presentation/screens/add_child_pairing_screen.dart';
 import '../../features/parental/presentation/screens/parental_screen.dart';
 import '../../features/parental/presentation/screens/safe_zone_editor_screen.dart';
 import '../../features/parental/presentation/screens/sos_active_screen.dart';
@@ -181,6 +182,14 @@ final GoRouter appRouter = GoRouter(
       pageBuilder: (context, state) => _slidePage(
         key: state.pageKey,
         child: const GoogleCalendarSettingsScreen(),
+      ),
+    ),
+    // ── Sprint A — Appairage parent/enfant ───────────────────────────────
+    GoRoute(
+      path: RouteNames.addChildPairing,
+      pageBuilder: (context, state) => _slidePage(
+        key: state.pageKey,
+        child: const AddChildPairingScreen(),
       ),
     ),
     // ── Sprint 3 — Parental ───────────────────────────────────────────────

@@ -5,8 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:uuid/uuid.dart';
-
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_radius.dart';
 import '../../../../core/services/feature_gating_service.dart';
@@ -499,8 +497,6 @@ class _ZonesList extends StatelessWidget {
 // ─── Add Child Button ─────────────────────────────────────────────────────────
 
 class _AddChildButton extends StatelessWidget {
-  static const _uuid = Uuid();
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ChildProfileCubit, ChildProfileState>(
@@ -530,16 +526,8 @@ class _AddChildButton extends StatelessWidget {
               );
               return;
             }
-            // Crée un profil stub et redirige vers les réglages
-            final newChild = ChildProfile(
-              id: _uuid.v4(),
-              name: 'Nouvel enfant',
-              age: 8,
-              avatarColor: AppColors.accentBlue,
-            );
-            await context.read<ChildProfileCubit>().add(newChild);
             if (context.mounted) {
-              context.push('${RouteNames.childDetail}/${newChild.id}/settings');
+              context.push(RouteNames.addChildPairing);
             }
           },
         );

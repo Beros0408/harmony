@@ -24,6 +24,9 @@ class RouteNames {
   // Sprint 6 — Messages
   static const String messages = '/messages';
 
+  // Sprint A — Appairage parent/enfant
+  static const String addChildPairing = '/parental/add-child';
+
   // Sprint 3 — Parental
   static const String childDetail = '/parental/child';
   static const String safeZones = '/parental/zones';
