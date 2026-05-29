@@ -230,25 +230,30 @@ class _VoicemailItemCardState extends State<VoicemailItemCard> {
                           ),
                           const SizedBox(height: 12),
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              _ActionButton(
-                                icon: Icons.phone_outlined,
-                                label: l10n.voicemailCallBack,
-                                onTap: widget.onCallBack,
+                              Expanded(
+                                child: _ActionButton(
+                                  icon: Icons.phone_outlined,
+                                  label: l10n.voicemailCallBack,
+                                  onTap: widget.onCallBack,
+                                ),
                               ),
                               const SizedBox(width: 8),
-                              _ActionButton(
-                                icon: Icons.mark_email_read_outlined,
-                                label: l10n.voicemailMarkRead,
-                                onTap: widget.onMarkRead,
+                              Expanded(
+                                child: _ActionButton(
+                                  icon: Icons.mark_email_read_outlined,
+                                  label: l10n.voicemailMarkRead,
+                                  onTap: widget.onMarkRead,
+                                ),
                               ),
                               const SizedBox(width: 8),
-                              _ActionButton(
-                                icon: Icons.delete_outline_rounded,
-                                label: l10n.voicemailDelete,
-                                onTap: widget.onDelete,
-                                isDestructive: true,
+                              Expanded(
+                                child: _ActionButton(
+                                  icon: Icons.delete_outline_rounded,
+                                  label: l10n.voicemailDelete,
+                                  onTap: widget.onDelete,
+                                  isDestructive: true,
+                                ),
                               ),
                             ],
                           ),
@@ -331,16 +336,20 @@ class _ActionButton extends StatelessWidget {
           border: Border.all(color: color.withValues(alpha: 0.3)),
         ),
         child: Row(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(icon, size: 14, color: color),
             const SizedBox(width: 4),
-            Text(
-              label,
-              style: TextStyle(
-                color: color,
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
+            Flexible(
+              child: Text(
+                label,
+                style: TextStyle(
+                  color: color,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                ),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
               ),
             ),
           ],
