@@ -56,7 +56,7 @@ async def generate_pairing_code(
             INSERT INTO public.pairing_codes
                 (code, parent_id, child_name, is_used, expires_at)
             VALUES
-                (:code, :parent_id::uuid, :child_name, false, :expires_at)
+                (:code, CAST(:parent_id AS uuid), :child_name, false, :expires_at)
             """,
         ),
         {
