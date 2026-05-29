@@ -1,0 +1,32 @@
+# Framework
+fastapi[standard]>=0.115.0
+uvicorn[standard]>=0.30.0
+
+# Base de données
+sqlalchemy[asyncio]>=2.0.0
+asyncpg>=0.29.0
+alembic>=1.13.0
+
+# Cache
+redis[hiredis]>=5.0.0
+
+# Sécurité & authentification
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.4
+cryptography>=42.0.0
+
+# Validation & configuration
+pydantic>=2.8.0
+pydantic-settings>=2.4.0
+email-validator>=2.2.0
+
+# Middleware & utilitaires
+python-multipart>=0.0.9
+slowapi>=0.1.9
+structlog>=24.4.0
+
+# Push notifications
+firebase-admin>=6.5.0
+
+# WebSockets
+websockets>=13.0

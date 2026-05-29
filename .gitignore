@@ -7,3 +7,8 @@ APK-builds/
 # Fichiers système
 .DS_Store
 Thumbs.db
+
+# Secrets et fichiers locaux — ne jamais publier
+INFORMATION HARMONY - SUPABASE.txt
+.claude/
+backup_*/

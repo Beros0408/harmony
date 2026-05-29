@@ -22,6 +22,8 @@ class Settings(BaseSettings):
 
     # Base de données PostgreSQL
     database_url: str = "postgresql+asyncpg://harmony:harmony@localhost:5432/harmony_db"
+    # URL directe pour les migrations Alembic via le session pooler Supabase (port 5432)
+    direct_url: str | None = None
     database_pool_size: int = 10
     database_max_overflow: int = 20
 
@@ -46,6 +48,10 @@ class Settings(BaseSettings):
 
     # Firebase (pour les push notifications)
     firebase_credentials_path: str = "firebase-credentials.json"
+
+    # Supabase
+    supabase_url: str = ""
+    supabase_secret_key: str = ""
 
     # Google Maps (pour le calcul de trajet)
     google_maps_api_key: str = ""

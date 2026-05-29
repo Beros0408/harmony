@@ -5,7 +5,7 @@ from slowapi.errors import RateLimitExceeded
 import structlog
 
 from app.core.config import settings
-from app.core.database import check_database_health, check_redis_health, close_redis
+from app.core.database import check_database_health, check_db_connection, check_redis_health, close_redis
 from app.core.middleware import setup_middleware, limiter, rate_limit_exceeded_handler
 from app.api.v1.router import api_router
 
@@ -45,10 +45,20 @@ setup_middleware(app)
 app.include_router(api_router)
 
 
+@app.get("/", tags=["Root"])
+async def root():
+    return {
+        "message": "Bienvenue sur Harmony Backend",
+        "version": settings.app_version,
+        "docs": "/docs" if settings.debug else "Activez DEBUG=true pour accéder à la documentation.",
+    }
+
+
 @app.get("/health", tags=["Monitoring"])
 async def health_check():
     db_health = await check_database_health()
     redis_health = await check_redis_health()
+    db_connected = await check_db_connection()
 
     all_ok = all(h["status"] == "ok" for h in [db_health, redis_health])
     status_code = 200 if all_ok else 503
@@ -57,8 +67,10 @@ async def health_check():
         status_code=status_code,
         content={
             "status": "ok" if all_ok else "degraded",
+            # Format simplifié attendu par le mobile : "connected" | "disconnected"
+            "database": "connected" if db_connected else "disconnected",
+            "env": settings.environment,
             "version": settings.app_version,
-            "environment": settings.environment,
             "services": {
                 "database": db_health,
                 "redis": redis_health,

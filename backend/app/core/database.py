@@ -81,6 +81,17 @@ async def close_redis() -> None:
 # Health check
 # ---------------------------------------------------------------------------
 
+async def check_db_connection() -> bool:
+    """Vérifie que la base répond — renvoie True ou False sans lever d'exception."""
+    try:
+        async with AsyncSessionLocal() as session:
+            await session.execute(__import__("sqlalchemy").text("SELECT 1"))
+        return True
+    except Exception as exc:
+        logger.error("db_connection_check_failed", error=str(exc))
+        return False
+
+
 async def check_database_health() -> dict:
     try:
         async with AsyncSessionLocal() as session:
