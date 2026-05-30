@@ -39,7 +39,8 @@ class _ParentalScreenState extends State<ParentalScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      context.read<ChildProfileCubit>().load();
+      // Charge les vrais enfants depuis Supabase (Sprint B2+)
+      context.read<ChildProfileCubit>().loadFromApi();
       context.read<SafeZoneCubit>().load();
     });
   }
@@ -98,29 +99,34 @@ class _ChildrenSection extends StatelessWidget {
         if (profileState is ChildProfileLoading) {
           return const Center(child: CircularProgressIndicator());
         }
+
+        // État vide : aucun enfant appairé pour le moment
         if (profileState is! ChildProfileLoaded || profileState.profiles.isEmpty) {
-          return const SizedBox.shrink();
+          return _EmptyChildrenCard();
         }
+
         return BlocBuilder<LocationCubit, LocationState>(
           builder: (context, locState) {
             final locs = locState is LocationTracking ? locState.latestByChild : <String, LocationPoint>{};
             final zones = _zonesFrom(context);
             return Row(
               children: profileState.profiles
-                  .map((child) => Expanded(
-                        child: Padding(
-                          padding: EdgeInsets.only(
-                            right: child == profileState.profiles.last ? 0 : AppSpacing.md,
-                          ),
-                          child: _ChildCard(
-                            child: child,
-                            score: profileState.scores[child.id],
-                            location: locs[child.id],
-                            zones: zones,
-                            onTap: () => context.push('${RouteNames.childDetail}/${child.id}'),
-                          ),
+                  .map(
+                    (child) => Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                          right: child == profileState.profiles.last ? 0 : AppSpacing.md,
                         ),
-                      ),)
+                        child: _ChildCard(
+                          child: child,
+                          score: profileState.scores[child.id],
+                          location: locs[child.id],
+                          zones: zones,
+                          onTap: () => context.push('${RouteNames.childDetail}/${child.id}'),
+                        ),
+                      ),
+                    ),
+                  )
                   .toList(),
             );
           },
@@ -132,6 +138,30 @@ class _ChildrenSection extends StatelessWidget {
   List<SafeZone> _zonesFrom(BuildContext context) {
     final s = context.read<SafeZoneCubit>().state;
     return s is SafeZoneLoaded ? s.zones : [];
+  }
+}
+
+// Widget compact pour ne pas décaler le reste du ListView hors viewport.
+class _EmptyChildrenCard extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+      child: Row(
+        children: [
+          Icon(Icons.child_care_outlined, size: 18, color: cs.onSurfaceVariant),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: Text(
+              'Aucun enfant appairé pour le moment',
+              style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -214,8 +244,9 @@ class _ChildCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: AppSpacing.sm),
+            // age == 0 pour les enfants issus de l'API (âge non stocké dans Supabase)
             Text(
-              l10n.familyChildAge(child.name, child.age),
+              child.age > 0 ? l10n.familyChildAge(child.name, child.age) : child.name,
               style: tt.labelLarge,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,

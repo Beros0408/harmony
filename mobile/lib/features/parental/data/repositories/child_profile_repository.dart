@@ -1,24 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:sqflite_sqlcipher/sqflite.dart';
 import '../../../../core/database/database_helper.dart';
 import '../models/child_profile.dart';
 import 'i_child_profile_repository.dart';
-
-// Données seed Sprint 3 — Lucas 12 ans (bleu) + Emma 9 ans (violet)
-const _defaultChildren = [
-  ChildProfile(
-    id: 'child-lucas-001',
-    name: 'Lucas',
-    age: 12,
-    avatarColor: Color(0xFF4A90D9),
-  ),
-  ChildProfile(
-    id: 'child-emma-002',
-    name: 'Emma',
-    age: 9,
-    avatarColor: Color(0xFF9B59B6),
-  ),
-];
 
 class ChildProfileRepository implements IChildProfileRepository {
   ChildProfileRepository._();
@@ -27,14 +10,12 @@ class ChildProfileRepository implements IChildProfileRepository {
 
   static const _table = 'child_profiles';
 
+  /// Initialise le schéma local. Plus de seed fictif depuis Sprint B2 :
+  /// les vrais enfants sont chargés depuis Supabase via FamilyApiService.
   Future<void> init() async {
-    final db = await DatabaseHelper.db;
-    final count = Sqflite.firstIntValue(
-      await db.rawQuery('SELECT COUNT(*) FROM $_table'),
-    );
-    if (count == 0) {
-      await seed(_defaultChildren);
-    }
+    // Appel suffisant pour s'assurer que la table existe (DatabaseHelper.db
+    // crée le schéma lors de la première ouverture).
+    await DatabaseHelper.db;
   }
 
   @override
