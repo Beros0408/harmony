@@ -1,3 +1,5 @@
+import re
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import text
@@ -92,7 +94,8 @@ class RedeemCodeRequest(BaseModel):
     def validate_code(cls, v: object) -> str:
         if not isinstance(v, str):
             raise ValueError("Le code doit être une chaîne de caractères.")
-        v = v.strip()
+        # Supprime les espaces en tête/queue ET les espaces internes (ex : "919 489")
+        v = re.sub(r"\s+", "", v.strip())
         if not v.isdigit() or len(v) != 6:
             raise ValueError("Le code doit être composé de 6 chiffres.")
         return v
@@ -115,23 +118,63 @@ async def redeem_pairing_code(
     db: AsyncSession = Depends(get_db),
 ) -> RedeemCodeResponse:
     try:
-        # 1. Chercher le code valide (non utilisé, non expiré)
+        # Nettoyage défensif : on ne garde que les chiffres au cas où un caractère
+        # parasite (espace, tiret, nbsp…) aurait traversé la validation Pydantic.
+        clean_code = re.sub(r"[^\d]", "", payload.code)
+
+        # LOG TEMPORAIRE — à retirer après confirmation du fix
+        logger.debug(
+            "pairing_redeem_lookup",
+            code_from_payload=payload.code,
+            code_clean=clean_code,
+            code_repr=repr(payload.code),
+        )
+
+        # 1. Chercher le code valide (non utilisé, non expiré).
+        #    • code::text = :code  — cast explicite pour éviter toute ambiguïté
+        #      de type entre la colonne (text ou integer) et le paramètre asyncpg.
+        #    • clock_timestamp() au lieu de now() : retourne l'heure murale réelle,
+        #      pas l'horodatage de début de transaction qui peut être stale dans un pool.
         result = await db.execute(
             text(
                 """
                 SELECT id, parent_id, child_name
                 FROM public.pairing_codes
-                WHERE code = :code
+                WHERE code::text = :code
                   AND is_used = false
-                  AND expires_at > now()
+                  AND expires_at > clock_timestamp()
                 LIMIT 1
                 """
             ),
-            {"code": payload.code},
+            {"code": clean_code},
         )
         row = result.fetchone()
 
+        # LOG TEMPORAIRE — combien de lignes correspondent ?
+        logger.debug(
+            "pairing_redeem_query_result",
+            row_found=(row is not None),
+            code_searched=clean_code,
+        )
+
         if row is None:
+            # Log de diagnostic supplémentaire : le code existe-t-il du tout ?
+            exists_result = await db.execute(
+                text(
+                    "SELECT is_used, expires_at, expires_at > clock_timestamp() AS not_expired "
+                    "FROM public.pairing_codes WHERE code::text = :code LIMIT 1"
+                ),
+                {"code": clean_code},
+            )
+            exists_row = exists_result.fetchone()
+            logger.warning(
+                "pairing_redeem_not_found",
+                code=clean_code,
+                row_in_db=(exists_row is not None),
+                is_used=exists_row[0] if exists_row else None,
+                expires_at=str(exists_row[1]) if exists_row else None,
+                not_expired=exists_row[2] if exists_row else None,
+            )
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Code invalide ou expiré.",
