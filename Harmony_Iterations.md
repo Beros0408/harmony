@@ -1,6 +1,6 @@
 # 🔄 Harmony — Fichier des itérations
 > Un sprint = 2 semaines (ou moins en mode rapide)
-> Mise à jour : 28 mai 2026
+> Mise à jour : **29 mai 2026** — v2.4.4-sprint-A-pairing-parent
 
 ---
 
@@ -52,7 +52,15 @@
 | **Hotfix v2.2.4** | **UX** | **Messages overflow + tap détail** | **✅** | `v2.2.4-messages-fix` |
 | **Mini-Sprint v2.2.5** | **UX** | **Welcome card dynamique i18n** ⭐ | **✅** | `v2.2.5-welcome-dynamic` |
 | **Hotfix v2.2.6** | **UX** | **Date dynamique locale-aware** | **✅** | `v2.2.6-dynamic-date` |
-| Sprint 9 | Phase 2 | Backend FastAPI + Auth JWT réel | ⬜ | — |
+| **Hotfix v2.2.7** | **i18n** | **MessageRuleFormSheet i18n + badge Bloqué** | **✅** | `v2.2.7-i18n-messages` |
+| **Hotfix v2.2.8** | **Bugfix** | **Agenda FAB câblage + Messages règle async** | **✅** | `v2.2.8-fix-agenda-rule-actions` |
+| **Sprint v2.2.9** | **Visuel** | **Corrections UI Dashboard (status bar, badges, contraste)** ⭐ | **✅** | `v2.2.9-visual-fixes` |
+| **Sprint v2.2.10** | **A11y** | **WCAG AA textes secondaires + heure 24h FR** ⭐ | **✅** | `v2.2.10-a11y-time-fixes` |
+| **Hotfix v2.3.2** | **UX** | **Overflow boutons voicemail (Rappeler/Marquer/Supprimer)** | **✅** | `v2.3.2-fix-voicemail-overflow` |
+| **Hotfix v2.3.3** | **Thème** | **Cards enfants + Nouvelle zone theme-aware (mode clair)** | **✅** | `v2.3.3-fix-theme-parental` |
+| **Sprint 9 / Backend** | **Phase 2** | **Backend FastAPI + Supabase opérationnel** ⭐ | **✅** | `c93eea5` |
+| **Sprint A — Parent** | **Phase 2** | **Appairage parent : génération code + écran + URL adaptative** 🔄 | **✅** | `eb40c6c` |
+| Sprint A — Enfant | Phase 2 | App enfant Harmony Kids (saisie code + confirmation) | ⬜ | — |
 | Sprint 10 | Phase 2 | IA spam TensorFlow Lite on-device | ⬜ | — |
 | Sprint 11 | Phase 2 | STT Voicemail + déploiement stores | ⬜ | — |
 
@@ -634,14 +642,23 @@ Audit complet 5 écrans (Parental, Fitness, Settings, Contacts, Voicemail) — t
 | **Sprint 8** | **35** | **35** | **100 %** |
 | **Hotfixes v2.1.x** | **4** | **4** | **100 %** |
 | **Mini-Sprints v2.2.0–v2.2.6** | **20** | **20** | **100 %** |
+| **Hotfixes v2.3.2+v2.3.3** | **4** | **4** | **100 %** |
+| **Sprint 9 Backend** | **15** | **15** | **100 %** |
+| **Sprint A — Parent** | **12** | **12** | **100 %** |
 
-**Vélocité moyenne 25 sprints : ~18.3 pts/sprint** · **100% complétion** · **320 tests verts · 13 tags majeurs**
+**Vélocité moyenne 28 sprints : ~18.1 pts/sprint** · **100% complétion** · **325 tests verts · 16 tags majeurs**
 
 ---
 
 ## Référence des commits sur main
 
 ```
+c93eea5 fix(backend): uniformise parametres SQL INSERT pairing_codes (erreur syntaxe asyncpg)
+8c93765 fix(network): base URL adaptative 10.0.2.2 pour emulateur Android (dev)
+eb40c6c fix(parental): acces ecran appairage avant mur premium (Sprint A)
+3693516 feat(parental): generation code appairage cote parent (Sprint A)
+7cfdb46 fix(parental): theme-aware cards enfants + ecran Nouvelle zone (mode clair)
+c796483 fix(voicemail): correction overflow rangee boutons action (Rappeler/Marquer/Supprimer)
 1770f5b docs: bilan journee 2026-05-27 (Sprint 7 + 8 + hotfixes valides)
 c209c81 docs(tracking): Sprint 8 Hotfix v2.1.1 — feature gating blacklist fix
 718bf6b chore: merge fix/sprint-8-feature-gating-blacklist into main (v2.1.1)
@@ -670,17 +687,100 @@ f36a7cb feat(ui): Sprint B — rich mockup screens for all 4 modules
 
 ---
 
-## Prochaine étape — Sprint 9
+### Sprint 9 / Phase 2 — Backend FastAPI + Supabase ⭐ TERMINÉ
 
-**Backend FastAPI + Auth JWT réel** — démarrer quand prêt.
+**Date :** 29/05/2026 · **Tags :** `v2.4.0` → `v2.4.3` · **Commit :** `c93eea5`
 
-Objectif : connecter l'app Flutter à un vrai backend Python FastAPI avec authentification JWT, stockage utilisateur PostgreSQL, et endpoints pour les fonctionnalités en-ligne (profil, sync).
+#### Livraisons
 
-Après Sprint 9, la Phase 2 débutera avec :
+- ✅ Projet Supabase "harmony-backend" (West EU Ireland, plan gratuit) — 5 tables : `profiles`, `family_links`, `locations`, `call_rules`, `pairing_codes`
+- ✅ Backend FastAPI connecté (`database: connected` via `/health`)
+- ✅ `NullPool` + `statement_cache_size=0` — compatibilité asyncpg + transaction pooler PgBouncer Supabase
+- ✅ `POST /api/v1/pairing/generate` — code 6 chiffres cryptographiquement sûr, expiration 10 min, INSERT dans `pairing_codes`
+- ✅ Fix SQL `CAST(:parent_id AS uuid)` — `::uuid` confondait le parseur `sqlalchemy.text()`
+- ✅ Abandon Docker (erreur DISM 0x80240021) → décision ADR-038
+
+#### Bilan
+
+| Métrique | Valeur |
+|---|---|
+| Tests Flutter | **325 verts** (+5 PairingCubit) |
+| Tests Kotlin JUnit | **13 verts** (inchangés) |
+| Issues flutter analyze | **78** (baseline stable) |
+
+---
+
+### Sprint A — Appairage parent↔enfant (côté parent) ✅ TERMINÉ
+
+**Date :** 29/05/2026 · **Tags :** `v2.4.0` → `v2.4.4` · **Commits :** `3693516` → `eb40c6c`
+
+#### Objectif
+
+Permettre au parent de générer un code à 6 chiffres pour associer l'app enfant "Harmony Kids" à son compte.
+
+#### User stories réalisées
+
+| ID | Story | Statut |
+|---|---|---|
+| US-A-001 | `PairingService` — appel Dio `/api/v1/pairing/generate` (parent_id = session UUID) | ✅ |
+| US-A-002 | `PairingCubit` — états `Initial/Loading/Success/Error`, gestion `DioException` | ✅ |
+| US-A-003 | `AddChildPairingScreen` — formulaire prénom + bouton + code affiché en GeistMono 40px | ✅ |
+| US-A-004 | Compte à rebours 10 min color-codé (vert/orange/rouge) + expiration explicite | ✅ |
+| US-A-005 | Copie presse-papier au tap du code | ✅ |
+| US-A-006 | Texte d'aide "Saisis ce code dans l'app Harmony Kids…" | ✅ |
+| US-A-007 | Bouton "Régénérer un code" | ✅ |
+| US-A-008 | Route `/parental/add-child` + `_AddChildButton` redirige vers l'écran | ✅ |
+| US-A-009 | Mur premium déplacé à la finalisation (ADR-042) | ✅ |
+| US-A-010 | `ApiConfig.baseUrl` adaptative : `10.0.2.2` / `localhost` / `--dart-define` (ADR-040) | ✅ |
+| US-A-011 | 5 tests `PairingCubit` (stub service, sans `HarmonyServices`) | ✅ |
+
+#### Bilan
+
+| Métrique | Valeur |
+|---|---|
+| Points planifiés | 12 |
+| Points réalisés | 12 |
+| Vélocité | 100 % |
+| Tests Flutter | **325 verts** (+5) |
+| Issues flutter analyze | **78** (baseline) |
+| Commits | `3693516` (feat) → `eb40c6c` (fix accès) → `8c93765` (fix URL) → `c93eea5` (fix SQL) |
+| Tag final | `v2.4.4-sprint-A-pairing-parent` |
+
+#### Reste à faire (Sprint A+1 — app enfant)
+
+| ID | Story | Statut |
+|---|---|---|
+| US-A-012 | `main_kids.dart` — point d'entrée app enfant Harmony Kids | ⬜ |
+| US-A-013 | Écran saisie code 6 chiffres côté enfant | ⬜ |
+| US-A-014 | `POST /api/v1/pairing/confirm` — validation + lien parent↔enfant en base | ⬜ |
+| US-A-015 | `PairingCubit.finalize()` + re-branchage `canAddChildProfile` | ⬜ |
+| US-A-016 | Auth réelle backend (JWT) — remplacer session UUID local par vrai user ID | ⬜ |
+
+---
+
+### Hotfixes v2.3.x — UI/UX journée du 29 mai ✅
+
+**Date :** 29/05/2026 · **Tags :** `v2.3.2` + `v2.3.3`
+
+| Version | Bug | Fix |
+|---|---|---|
+| **v2.3.2** | `VoicemailItemCard` — 3 boutons d'action débordent de 9,3 px à droite (S22) | `Row` → 3 `Expanded` + inner `Row(mainAxisAlignment.center)` + `Flexible(Text, overflow: ellipsis)` |
+| **v2.3.3** | Cards enfants + `SafeZoneEditorScreen` restent sombres en mode clair | `AppColors.bgSurface/bgBase/borderDefault` → `cs.surface/outlineVariant` · `AppTypography.textTheme.*` → `Theme.of(context).textTheme.*` · imports morts supprimés |
+
+---
+
+## Prochaine étape — Sprint A+1 (app enfant Harmony Kids)
+
+**App enfant "Harmony Kids"** — côté enfant de l'appairage.
+
+Objectif : créer le point d'entrée `main_kids.dart`, l'écran de saisie du code, et le endpoint backend `/api/v1/pairing/confirm` qui valide le code et crée le lien `family_links` en base.
+
+Après Sprint A+1, les prochains sprints Phase 2 :
 - **Sprint 10** — IA spam TensorFlow Lite on-device (classification, score de confiance)
 - **Sprint 11** — STT Voicemail + déploiement stores (Google Play + App Store)
+- **Auth JWT** — remplacer le session UUID local par un vrai système d'authentification (email/password → JWT via backend FastAPI)
 
-Cf. cahier des charges sections 3.2.x (Phase 2) + ADR-002 (FastAPI).
+Cf. cahier des charges sections 3.2.x (Phase 2) + ADR-002 (FastAPI) + ADR-038 (Supabase).
 
 ---
 

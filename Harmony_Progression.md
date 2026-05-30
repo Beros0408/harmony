@@ -7,12 +7,32 @@
 
 | Champ | Valeur |
 |---|---|
-| **Version actuelle** | **2.2.8 — Fix câblage Agenda FAB + règle Messages async** ⭐ |
-| **Phase en cours** | Monétisation — Freemium live (plans Solo/Famille/Sport/Lifetime) |
-| **Avancement global** | ~95 % |
+| **Version actuelle** | **v2.4.4-sprint-A-pairing-parent** ⭐ |
+| **Phase en cours** | Sprint A — Appairage parent↔enfant (Phase 2 démarrée) |
+| **Avancement global** | **96 %** (mobile) · Backend **20 %** |
 | **Date de début** | 23 mai 2026 |
 | **Date cible MVP** | J+16 semaines |
-| **Dernière mise à jour** | 28 mai 2026 |
+| **Dernière mise à jour** | **29 mai 2026** |
+
+---
+
+## Avancement par module
+
+| Module | Avancement |
+|---|---|
+| M1 Filtrage appels | 100 % |
+| M2 Listes (Blacklist) | 100 % |
+| M3 Messages (WhatsApp/SMS) | 100 % |
+| M4 Contrôle parental | 90 % |
+| M5 Agenda | 100 % |
+| M6 Fitness | 80 % |
+| M7 Sécurité | 100 % |
+| M8 Monétisation (Paywall/RevenueCat) | 100 % |
+| M9 Méditation | 100 % |
+| Direction Artistique | 100 % |
+| Accessibilité (WCAG AA) | 80 % |
+| **Backend / Infrastructure** | **20 %** (Supabase connecté, pairing endpoint ✅) |
+| **Sprint A — Appairage parent↔enfant** | **50 %** (parent ✅, enfant Harmony Kids ⬜) |
 
 ---
 
@@ -23,7 +43,7 @@
 | **Phase 0** | Initialisation et architecture | 2 semaines | ✅ Terminée | 100 % | 23/05/2026 | 24/05/2026 |
 | **Phase 0+** | UI premium (Sprints A, B, C1, C2, C3, C4) | 1 semaine | ✅ Terminée | 100 % | 23/05/2026 | 24/05/2026 |
 | **Phase 1** | MVP — Cœur métier | 3-4 mois | ✅ Terminée | 100 % | 24/05/2026 | 25/05/2026 |
-| **Phase 2** | Intelligence et IA | 2-3 mois | ⬜ À faire | 0 % | — | — |
+| **Phase 2** | Intelligence et IA + Backend + Appairage | 2-3 mois | 🔄 En cours | 10 % | 29/05/2026 | — |
 | **Phase 3** | Fitness et performance | 2-3 mois | ⬜ À faire | 0 % | — | — |
 | **Phase 4** | Premium et écosystème | 2-3 mois | ⬜ À faire | 0 % | — | — |
 
@@ -359,7 +379,7 @@
 | Surconsommation batterie | < 8 % par jour | Sprint 4 | — | ⬜ Non démarré |
 | Taux de blocage appels indésirables | > 98 % | Sprint 5 | — | ⬜ Non démarré |
 | Taux de détection contournement | > 95 % | Phase 2 | — | ⬜ Non démarré |
-| Couverture tests unitaires | > 70 % | Phase 1 | ~80 % (**320 tests Flutter** + 13 Kotlin) | 🟢 OK |
+| Couverture tests unitaires | > 70 % | Phase 1 | ~80 % (**325 tests Flutter** + 13 Kotlin) | 🟢 OK |
 | Couverture tests intégration | > 60 % | Phase 2 | — | ⬜ Non démarré |
 | Issues `flutter analyze` | 0 | Continu | **80** (baseline Sprint 8 — lint warnings non-critiques) | 🟡 Baseline |
 | Tests CI/CD GitHub Actions | Vert | Continu | **Vert** | 🟢 OK |
@@ -416,6 +436,11 @@
 | **ADR-035** | 28/05/2026 | `WidgetsBinding.addPostFrameCallback` pour `WigglingEmoji` (pas `Future.delayed`) | Future.delayed laisse des timers pending dans les tests — addPostFrameCallback est test-safe | v2.2.5 |
 | **ADR-036** | 28/05/2026 | `GoRouter.maybeOf(context)?.canPop() ?? false` dans HarmonyAppBar | `GoRouter.of()` throw sans GoRouter dans l'arbre (widget tests avec plain MaterialApp) | v2.2.5 |
 | **ADR-037** | 28/05/2026 | `Localizations.localeOf(context).languageCode` pour `_formattedDate` | Locale hardcodée `fr_FR` affichait la date en français pour tous les utilisateurs non-FR | v2.2.6 |
+| **ADR-038** | 29/05/2026 | Supabase hébergé au lieu de Docker (erreur DISM 0x80240021) | Docker Desktop bloqué par politique Windows — Supabase plan gratuit (West EU Ireland) + Vercel pour le backend — zéro infrastructure locale à maintenir | Backend |
+| **ADR-039** | 29/05/2026 | `NullPool` + `statement_cache_size=0` pour asyncpg + transaction pooler Supabase | Le transaction pooler Supabase (PgBouncer) ne supporte pas les prepared statements — `NullPool` désactive le pool SQLAlchemy, `connect_args={"statement_cache_size":0}` désactive le cache côté asyncpg | Backend |
+| **ADR-040** | 29/05/2026 | `ApiConfig.baseUrl` getter runtime (Platform.isAndroid + kDebugMode) | `String.fromEnvironment` est compile-time — impossible d'y injecter `Platform.isAndroid`. Source unique dans `ApiConfig` : prod (`--dart-define`), debug Android (`10.0.2.2`), desktop/iOS (`localhost`) | Sprint A |
+| **ADR-041** | 29/05/2026 | `CAST(:parent_id AS uuid)` au lieu de `:parent_id::uuid` dans `sqlalchemy.text()` | `::uuid` après un placeholder nommé empêche SQLAlchemy de détecter `:parent_id` (le `::` est ambigu pour le parseur text) → `CAST()` SQL standard résout l'ambiguïté | Backend |
+| **ADR-042** | 29/05/2026 | Check `canAddChildProfile` à la finalisation, pas à l'ouverture de l'écran d'appairage | L'écran génère uniquement un code ; le profil enfant n'est créé qu'à la finalisation (Sprint A+1 `PairingCubit.finalize`) — bloquer l'écran revient à bloquer une action inexistante | Sprint A |
 
 ---
 
@@ -753,6 +778,49 @@ Implémenter la monétisation freemium : paywall RevenueCat, feature gating par 
 
 ---
 
+## Sprint 9 / Phase 2 — Backend FastAPI + Supabase ✅ OPÉRATIONNEL
+
+**Date :** 29/05/2026 · **Tags :** `v2.4.0` → `v2.4.4`
+
+### Infrastructure
+
+- ✅ Projet Supabase "harmony-backend" créé (région West EU Ireland, plan gratuit)
+- ✅ 5 tables créées : `profiles`, `family_links`, `locations`, `call_rules`, `pairing_codes`
+- ✅ Backend FastAPI connecté à Supabase (`database: connected` validé via `/health`)
+- ✅ Abandon de Docker (erreur DISM 0x80240021) → Supabase + Vercel (cf. ADR-038)
+- ✅ `NullPool` + `statement_cache_size=0` pour compatibilité asyncpg + pooler Supabase (cf. ADR-039)
+
+### Endpoint pairing
+
+- ✅ `POST /api/v1/pairing/generate` — code 6 chiffres (`secrets.randbelow`), expiration 10 min
+- ✅ Validation Pydantic : `child_name` (strip, max 50), `parent_id` (UUID)
+- ✅ Fix SQL : `CAST(:parent_id AS uuid)` (cf. ADR-041)
+- ✅ Commit auto géré par `get_db()` dependency (pas d'appel explicite dans le handler)
+
+---
+
+## Sprint A — Appairage parent↔enfant (côté parent ✅ | côté enfant ⬜)
+
+**Date :** 29/05/2026 · **Tags :** `v2.4.0` → `v2.4.1`
+
+### Livraisons côté parent (✅ terminé)
+
+- ✅ `PairingService` — appel Dio vers `/api/v1/pairing/generate`, `parent_id` = session token UUID
+- ✅ `PairingCubit` — états `Initial/Loading/Success/Error`, gestion `DioException` typée
+- ✅ `AddChildPairingScreen` — formulaire prénom → code 6 chiffres (GeistMono 40px, format `123 · 456`), compte à rebours 10 min color-codé (vert/orange/rouge), copie presse-papier, bouton "Régénérer", texte d'aide Harmony Kids
+- ✅ Route `/parental/add-child` · `_AddChildButton` redirige vers le nouvel écran
+- ✅ Mur premium déplacé à la finalisation (cf. ADR-042)
+- ✅ `ApiConfig.baseUrl` adaptative (cf. ADR-040)
+- ✅ 5 tests `PairingCubit` (stub service sans `HarmonyServices`) · **325 tests verts**
+
+### Reste à faire (⬜ Sprint A+1)
+
+- ⬜ App enfant "Harmony Kids" (`main_kids.dart`) — saisie du code + `POST /api/v1/pairing/confirm`
+- ⬜ Finalisation du lien parent↔enfant + `PairingCubit.finalize()` avec check `canAddChildProfile`
+- ⬜ Auth réelle backend (JWT) — remplacer le session UUID local par un vrai user ID
+
+---
+
 ## Blocages actifs
 
 > *Aucun blocage actif.*
@@ -763,6 +831,15 @@ Implémenter la monétisation freemium : paywall RevenueCat, feature gating par 
 
 | Version | Date | Phase | Description |
 |---|---|---|---|
+| **v2.4.4** | 29/05/2026 | **Sprint A** ⭐ | Tag fin de journée — backend Supabase opérationnel + appairage parent complet (AddChildPairingScreen testé émulateur) · 325 tests verts · 78 issues analyze |
+| **v2.4.3** | 29/05/2026 | **Fix SQL** | `CAST(:parent_id AS uuid)` — `::uuid` après placeholder confond le parseur `sqlalchemy.text()` (asyncpg reçoit syntaxe mixte `$N` + `:name`) |
+| **v2.4.2** | 29/05/2026 | **Fix réseau** | `ApiConfig.baseUrl` runtime : `10.0.2.2:8000` émulateur Android / `localhost:8000` sinon / `--dart-define` prod Vercel |
+| **v2.4.1** | 29/05/2026 | **Fix accès** | Mur premium déplacé de l'ouverture de l'écran d'appairage à la finalisation (`PairingCubit.finalize` Sprint A+1) |
+| **v2.4.0** | 29/05/2026 | **Sprint A** | `AddChildPairingScreen` : code 6 chiffres (GeistMono 40px), compte à rebours 10 min, copie presse-papier · `PairingService`+`PairingCubit` · backend `POST /api/v1/pairing/generate` · 5 tests PairingCubit · 325 tests |
+| **v2.3.3** | 29/05/2026 | **Fix thème** | Cards enfants + `SafeZoneEditorScreen` theme-aware : `AppColors.bgSurface` → `cs.surface`, `AppTypography.textTheme` static → `Theme.of(context).textTheme` |
+| **v2.3.2** | 29/05/2026 | **Fix overflow** | `VoicemailItemCard` : `Row` boutons → `Expanded` + `TextOverflow.ellipsis` (overflow 9,3 px "Supprimer" S22) |
+| **v2.2.10** | 29/05/2026 | **A11y** | Heure 24h FR WelcomeBanner · textMutedLight #9CA3AF→#757575 (WCAG AA) · voicemail theme-aware · subtitle Messages bleu informatif #1976D2 · 78 issues analyze · 320 tests verts · tag v2.2.10-a11y-time-fixes |
+| **v2.2.9** | 29/05/2026 | **Visuel** | Status bar icônes lisibles (AppBar.systemOverlayStyle) · WelcomeBanner contraste #1A7A4A + bordure #E0E0E0 · overlays cartes conformes WCAG AA · badges borderRadius(12) · 320 tests verts · tag v2.2.9-visual-fixes |
 | **2.2.8** | 28/05/2026 | **Hotfix câblage** | BUG 1 : GoRouter `/agenda/event/:id` avant `/edit` → réordonnancement routes (edit avant :id) · BUG 2 : `_submit()` sync sans await → async + _submitting guard + mounted check (pattern blacklist) · 79 issues analyze · 320 tests verts · tag v2.2.8-fix-agenda-rule-actions |
 | **2.2.7** | 28/05/2026 | **Hotfix i18n** | Messages : 17 clés i18n × 5 locales pour MessageRuleFormSheet + badge Bloqué (CapturedMessageTile) + plage horaire (_RuleCard) · C1 Agenda et C3 tap messages déjà implémentés · 79 issues analyze (−1) · 320 tests verts · tag v2.2.7-i18n-messages |
 | **2.2.6** | 28/05/2026 | **Hotfix** | Date figée Welcome card — _formattedDate(context) locale-aware (fr/es/it/pt/en) + initializeDateFormatting 5 locales dans main.dart · 320 tests verts · tag v2.2.6-dynamic-date |
