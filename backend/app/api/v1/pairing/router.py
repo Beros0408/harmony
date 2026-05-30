@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import text
 from pydantic import BaseModel, field_validator
 from datetime import datetime, timezone, timedelta
-from uuid import UUID
+from uuid import UUID, uuid4
 import secrets
 import structlog
 
@@ -79,3 +79,142 @@ async def generate_pairing_code(
         child_name=payload.child_name,
         expires_at=expires_at,
     )
+
+
+# ─── Redeem (côté enfant) ────────────────────────────────────────────────────
+
+class RedeemCodeRequest(BaseModel):
+    code: str
+    device_label: str = ""
+
+    @field_validator("code", mode="before")
+    @classmethod
+    def validate_code(cls, v: object) -> str:
+        if not isinstance(v, str):
+            raise ValueError("Le code doit être une chaîne de caractères.")
+        v = v.strip()
+        if not v.isdigit() or len(v) != 6:
+            raise ValueError("Le code doit être composé de 6 chiffres.")
+        return v
+
+
+class RedeemCodeResponse(BaseModel):
+    parent_name: str
+    child_name: str
+    linked: bool
+
+
+@router.post(
+    "/redeem",
+    response_model=RedeemCodeResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Valide un code d'appairage et crée le lien parent ↔ enfant",
+)
+async def redeem_pairing_code(
+    payload: RedeemCodeRequest,
+    db: AsyncSession = Depends(get_db),
+) -> RedeemCodeResponse:
+    try:
+        # 1. Chercher le code valide (non utilisé, non expiré)
+        result = await db.execute(
+            text(
+                """
+                SELECT id, parent_id, child_name
+                FROM public.pairing_codes
+                WHERE code = :code
+                  AND is_used = false
+                  AND expires_at > now()
+                LIMIT 1
+                """
+            ),
+            {"code": payload.code},
+        )
+        row = result.fetchone()
+
+        if row is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Code invalide ou expiré.",
+            )
+
+        pairing_row_id: UUID = row[0]
+        parent_id: UUID = row[1]
+        child_name: str = row[2]
+
+        # 2. Récupérer le nom du parent (full_name ou email)
+        parent_result = await db.execute(
+            text(
+                """
+                SELECT COALESCE(full_name, email, 'Parent') AS parent_name
+                FROM public.profiles
+                WHERE id = CAST(:parent_id AS uuid)
+                LIMIT 1
+                """
+            ),
+            {"parent_id": str(parent_id)},
+        )
+        parent_row = parent_result.fetchone()
+        parent_name: str = parent_row[0] if parent_row else "Parent"
+
+        # 3. Créer un profil enfant
+        child_id = uuid4()
+        generated_email = f"child_{child_id.hex[:8]}@harmony.local"
+        await db.execute(
+            text(
+                """
+                INSERT INTO public.profiles (id, role, full_name, email)
+                VALUES (CAST(:id AS uuid), 'child', :full_name, :email)
+                """
+            ),
+            {
+                "id": str(child_id),
+                "full_name": child_name,
+                "email": generated_email,
+            },
+        )
+
+        # 4. Créer le lien family_links
+        await db.execute(
+            text(
+                """
+                INSERT INTO public.family_links (parent_id, child_id)
+                VALUES (CAST(:parent_id AS uuid), CAST(:child_id AS uuid))
+                """
+            ),
+            {"parent_id": str(parent_id), "child_id": str(child_id)},
+        )
+
+        # 5. Marquer le code comme utilisé
+        await db.execute(
+            text(
+                """
+                UPDATE public.pairing_codes
+                SET is_used = true
+                WHERE id = CAST(:row_id AS uuid)
+                """
+            ),
+            {"row_id": str(pairing_row_id)},
+        )
+
+        logger.info(
+            "pairing_code_redeemed",
+            parent_id=str(parent_id),
+            child_id=str(child_id),
+            child_name=child_name,
+            device_label=payload.device_label,
+        )
+
+        return RedeemCodeResponse(
+            parent_name=parent_name,
+            child_name=child_name,
+            linked=True,
+        )
+
+    except HTTPException:
+        raise
+    except Exception as exc:
+        logger.error("pairing_redeem_error", error=str(exc))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Erreur serveur lors de la validation du code.",
+        ) from exc
