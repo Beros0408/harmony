@@ -12,6 +12,7 @@ class _SuccessKidsPairingService extends KidsPairingService {
     return const KidsPairingResult(
       parentName: 'Marie',
       childName: 'Emma',
+      childId: 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee',
     );
   }
 }
@@ -66,7 +67,7 @@ void main() {
     );
 
     blocTest<KidsPairingCubit, KidsPairingState>(
-      'redeem("123456") émet Loading puis Success avec parentName et childName',
+      'redeem("123456") émet Loading puis Success avec parentName, childName et childId',
       build: () => KidsPairingCubit(service: _SuccessKidsPairingService()),
       act: (c) => c.redeem('123456'),
       expect: () => [
@@ -75,8 +76,9 @@ void main() {
           (s) =>
               s is KidsPairingSuccess &&
               s.parentName == 'Marie' &&
-              s.childName == 'Emma',
-          'KidsPairingSuccess parentName=Marie childName=Emma',
+              s.childName == 'Emma' &&
+              s.childId == 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee',
+          'KidsPairingSuccess parentName=Marie childName=Emma childId=uuid',
         ),
       ],
     );

@@ -25,13 +25,15 @@ class KidsPairingSuccess extends KidsPairingState {
   const KidsPairingSuccess({
     required this.parentName,
     required this.childName,
+    required this.childId,
   });
 
   final String parentName;
   final String childName;
+  final String childId; // UUID Supabase du profil enfant — utilisé par le polling
 
   @override
-  List<Object?> get props => [parentName, childName];
+  List<Object?> get props => [parentName, childName, childId];
 }
 
 class KidsPairingError extends KidsPairingState {
@@ -63,6 +65,7 @@ class KidsPairingCubit extends Cubit<KidsPairingState> {
         KidsPairingSuccess(
           parentName: result.parentName,
           childName: result.childName,
+          childId: result.childId,
         ),
       );
     } on DioException catch (e) {

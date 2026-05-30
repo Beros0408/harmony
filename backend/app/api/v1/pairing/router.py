@@ -104,6 +104,7 @@ class RedeemCodeRequest(BaseModel):
 class RedeemCodeResponse(BaseModel):
     parent_name: str
     child_name: str
+    child_id: str   # UUID du profil enfant créé dans public.profiles
     linked: bool
 
 
@@ -218,6 +219,7 @@ async def redeem_pairing_code(
         return RedeemCodeResponse(
             parent_name=parent_name,
             child_name=child_name,
+            child_id=str(child_id),
             linked=True,
         )
 

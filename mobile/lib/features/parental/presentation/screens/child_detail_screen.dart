@@ -16,6 +16,7 @@ import '../../../../shared/widgets/harmony_card.dart';
 import '../../data/models/child_profile.dart';
 import '../../data/models/location_point.dart';
 import '../../data/models/security_score.dart';
+import '../../data/services/lock_command_service.dart';
 import '../../logic/child_profile_cubit.dart';
 import '../../logic/location_cubit.dart';
 
@@ -132,11 +133,77 @@ class _ChildDetailBody extends StatelessWidget {
             shape: const RoundedRectangleBorder(borderRadius: AppRadius.lgRadius),
           ),
         ),
+        const SizedBox(height: AppSpacing.md),
+
+        // Bouton verrouillage à distance (Sprint B2)
+        _LockButton(childId: profile.id),
         const SizedBox(height: AppSpacing.xxxl),
       ],
     );
   }
 }
+
+// ─── Bouton de verrouillage à distance ───────────────────────────────────────
+
+class _LockButton extends StatefulWidget {
+  const _LockButton({required this.childId});
+  final String childId;
+
+  @override
+  State<_LockButton> createState() => _LockButtonState();
+}
+
+class _LockButtonState extends State<_LockButton> {
+  bool _sending = false;
+
+  Future<void> _onLockPressed() async {
+    setState(() => _sending = true);
+    try {
+      await LockCommandService.instance.sendLock(widget.childId);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Demande de verrouillage envoyée.'),
+          duration: Duration(seconds: 3),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erreur : impossible d\'envoyer la commande ($e).'),
+          backgroundColor: AppColors.accentRed,
+          duration: const Duration(seconds: 4),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _sending = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FilledButton.icon(
+      icon: _sending
+          ? const SizedBox(
+              width: 18,
+              height: 18,
+              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+            )
+          : const Icon(Icons.lock_outline),
+      label: const Text('Verrouiller le téléphone'),
+      style: FilledButton.styleFrom(
+        backgroundColor: AppColors.accentAmber,
+        foregroundColor: Colors.white,
+        minimumSize: const Size.fromHeight(48),
+        shape: const RoundedRectangleBorder(borderRadius: AppRadius.lgRadius),
+      ),
+      onPressed: _sending ? null : _onLockPressed,
+    );
+  }
+}
+
+// ─── Carte de localisation ───────────────────────────────────────────────────
 
 class _ChildMap extends StatelessWidget {
   const _ChildMap({required this.childId, required this.avatarColor});

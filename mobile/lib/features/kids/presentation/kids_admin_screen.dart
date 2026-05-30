@@ -3,15 +3,18 @@ import 'package:flutter/services.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../data/services/command_polling_service.dart';
 import '../data/services/device_admin_service.dart';
 
 /// Écran de configuration du mode protection (administrateur d'appareil).
 /// Accessible après l'appairage réussi depuis [KidsPairingScreen].
-///
-/// Permet à l'enfant (ou au parent qui configure l'appareil) d'activer
-/// les droits d'administrateur nécessaires au verrouillage à distance.
+/// Démarre automatiquement le polling des commandes distantes si [childId] est fourni.
 class KidsAdminScreen extends StatefulWidget {
-  const KidsAdminScreen({super.key});
+  const KidsAdminScreen({super.key, this.childId});
+
+  /// UUID du profil enfant dans Supabase.
+  /// Null uniquement si l'écran est ouvert sans appairage préalable (cold start).
+  final String? childId;
 
   @override
   State<KidsAdminScreen> createState() => _KidsAdminScreenState();
@@ -19,7 +22,7 @@ class KidsAdminScreen extends StatefulWidget {
 
 class _KidsAdminScreenState extends State<KidsAdminScreen>
     with WidgetsBindingObserver {
-  final _service = DeviceAdminService.instance;
+  final _adminService = DeviceAdminService.instance;
 
   bool _isAdminActive = false;
   bool _loading = false;
@@ -28,29 +31,31 @@ class _KidsAdminScreenState extends State<KidsAdminScreen>
   @override
   void initState() {
     super.initState();
-    // Écoute le cycle de vie de l'app : rafraîchit le statut admin
-    // quand l'utilisateur revient de l'écran système d'activation.
     WidgetsBinding.instance.addObserver(this);
     _refreshAdminStatus();
+    // Démarre le polling si le child_id est connu
+    if (widget.childId != null) {
+      CommandPollingService.instance.start(widget.childId!);
+    }
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    // Le polling continue en arrière-plan tant que l'app est vivante ;
+    // on ne l'arrête PAS ici pour qu'il persiste même si l'écran est dépilé.
     super.dispose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    // Quand l'app reprend le premier plan après que l'utilisateur a quitté
-    // l'écran système de demande d'admin, on re-vérifie le statut.
     if (state == AppLifecycleState.resumed) {
       _refreshAdminStatus();
     }
   }
 
   Future<void> _refreshAdminStatus() async {
-    final active = await _service.isAdminActive();
+    final active = await _adminService.isAdminActive();
     if (mounted) setState(() => _isAdminActive = active);
   }
 
@@ -60,7 +65,7 @@ class _KidsAdminScreenState extends State<KidsAdminScreen>
       _errorMessage = null;
     });
     try {
-      await _service.requestAdmin();
+      await _adminService.requestAdmin();
       // Le statut sera mis à jour via didChangeAppLifecycleState au retour.
     } catch (e) {
       if (mounted) {
@@ -77,7 +82,7 @@ class _KidsAdminScreenState extends State<KidsAdminScreen>
       _errorMessage = null;
     });
     try {
-      await _service.lockNow();
+      await _adminService.lockNow();
       // L'écran se verrouille immédiatement — pas de retour UI attendu.
     } on PlatformException catch (e) {
       if (mounted) {

@@ -8,10 +8,12 @@ class KidsPairingResult {
   const KidsPairingResult({
     required this.parentName,
     required this.childName,
+    required this.childId,
   });
 
   final String parentName;
   final String childName;
+  final String childId; // UUID du profil enfant dans Supabase (public.profiles)
 }
 
 /// Appelle POST /api/v1/pairing/redeem et retourne les infos de liaison.
@@ -36,6 +38,7 @@ class KidsPairingService {
     return KidsPairingResult(
       parentName: data['parent_name'] as String,
       childName: data['child_name'] as String,
+      childId: data['child_id'] as String,
     );
   }
 

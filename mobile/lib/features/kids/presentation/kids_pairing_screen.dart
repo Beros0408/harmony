@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../data/services/kids_storage.dart';
 import '../logic/kids_pairing_cubit.dart';
 import 'kids_admin_screen.dart';
 
@@ -39,7 +40,13 @@ class _KidsPairingScreenState extends State<KidsPairingScreen> {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => KidsPairingCubit(),
-      child: BlocBuilder<KidsPairingCubit, KidsPairingState>(
+      child: BlocConsumer<KidsPairingCubit, KidsPairingState>(
+        // Sauvegarde child_id en stockage sécurisé dès que l'appairage réussit
+        listener: (context, state) {
+          if (state is KidsPairingSuccess) {
+            KidsStorage.instance.saveChildId(state.childId);
+          }
+        },
         builder: (context, state) => Scaffold(
           body: SafeArea(child: _buildBody(context, state)),
         ),
@@ -285,7 +292,7 @@ class _KidsPairingScreenState extends State<KidsPairingScreen> {
             ),
             const SizedBox(height: AppSpacing.xl),
 
-            // Bouton vers la configuration du mode protection (Sprint B1)
+            // Bouton vers la configuration du mode protection (Sprint B1 + B2)
             FilledButton.icon(
               icon: const Icon(Icons.shield_outlined),
               label: const Text('Configurer la protection'),
@@ -297,7 +304,7 @@ class _KidsPairingScreenState extends State<KidsPairingScreen> {
               ),
               onPressed: () => Navigator.of(context).push(
                 MaterialPageRoute<void>(
-                  builder: (_) => const KidsAdminScreen(),
+                  builder: (_) => KidsAdminScreen(childId: state.childId),
                 ),
               ),
             ),
