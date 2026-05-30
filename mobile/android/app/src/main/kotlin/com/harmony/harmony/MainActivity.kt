@@ -1,6 +1,7 @@
 package com.harmony.harmony
 
 // local_auth nécessite FlutterFragmentActivity pour la biométrie
+import com.harmony.harmony.admin.DeviceAdminPlugin
 import com.harmony.harmony.channel.CallFilterMethodChannel
 import com.harmony.harmony.contacts.ContactsReaderPlugin
 import com.harmony.harmony.messages.MessagesFilterPlugin
@@ -32,5 +33,11 @@ class MainActivity : FlutterFragmentActivity() {
             flutterEngine.dartExecutor.binaryMessenger,
             MessagesFilterPlugin.CHANNEL_NAME,
         ).setMethodCallHandler(MessagesFilterPlugin(this))
+
+        // Canal administrateur d'appareil — verrouillage d'écran Harmony Kids (Sprint B1)
+        MethodChannel(
+            flutterEngine.dartExecutor.binaryMessenger,
+            DeviceAdminPlugin.CHANNEL_NAME,
+        ).setMethodCallHandler(DeviceAdminPlugin(this))
     }
 }

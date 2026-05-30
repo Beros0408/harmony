@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../logic/kids_pairing_cubit.dart';
+import 'kids_admin_screen.dart';
 
 class KidsPairingScreen extends StatefulWidget {
   const KidsPairingScreen({super.key});
@@ -280,6 +281,24 @@ class _KidsPairingScreenState extends State<KidsPairingScreen> {
                     ),
                   ),
                 ],
+              ),
+            ),
+            const SizedBox(height: AppSpacing.xl),
+
+            // Bouton vers la configuration du mode protection (Sprint B1)
+            FilledButton.icon(
+              icon: const Icon(Icons.shield_outlined),
+              label: const Text('Configurer la protection'),
+              style: FilledButton.styleFrom(
+                minimumSize: const Size.fromHeight(52),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => const KidsAdminScreen(),
+                ),
               ),
             ),
           ],
