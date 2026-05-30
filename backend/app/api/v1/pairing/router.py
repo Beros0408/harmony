@@ -122,14 +122,6 @@ async def redeem_pairing_code(
         # parasite (espace, tiret, nbsp…) aurait traversé la validation Pydantic.
         clean_code = re.sub(r"[^\d]", "", payload.code)
 
-        # LOG TEMPORAIRE — à retirer après confirmation du fix
-        logger.debug(
-            "pairing_redeem_lookup",
-            code_from_payload=payload.code,
-            code_clean=clean_code,
-            code_repr=repr(payload.code),
-        )
-
         # 1. Chercher le code valide (non utilisé, non expiré).
         #    • code::text = :code  — cast explicite pour éviter toute ambiguïté
         #      de type entre la colonne (text ou integer) et le paramètre asyncpg.
@@ -150,31 +142,7 @@ async def redeem_pairing_code(
         )
         row = result.fetchone()
 
-        # LOG TEMPORAIRE — combien de lignes correspondent ?
-        logger.debug(
-            "pairing_redeem_query_result",
-            row_found=(row is not None),
-            code_searched=clean_code,
-        )
-
         if row is None:
-            # Log de diagnostic supplémentaire : le code existe-t-il du tout ?
-            exists_result = await db.execute(
-                text(
-                    "SELECT is_used, expires_at, expires_at > clock_timestamp() AS not_expired "
-                    "FROM public.pairing_codes WHERE code::text = :code LIMIT 1"
-                ),
-                {"code": clean_code},
-            )
-            exists_row = exists_result.fetchone()
-            logger.warning(
-                "pairing_redeem_not_found",
-                code=clean_code,
-                row_in_db=(exists_row is not None),
-                is_used=exists_row[0] if exists_row else None,
-                expires_at=str(exists_row[1]) if exists_row else None,
-                not_expired=exists_row[2] if exists_row else None,
-            )
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Code invalide ou expiré.",
