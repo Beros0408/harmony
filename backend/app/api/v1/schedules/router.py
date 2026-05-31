@@ -66,8 +66,9 @@ async def create_schedule(
     try:
         schedule_id = uuid4()
         now = datetime.now(timezone.utc)
-        # Sérialise la liste Python en littéral tableau PostgreSQL : '{1,2,5}'
-        days_str = "{" + ",".join(str(d) for d in payload.days_of_week) + "}"
+        # Passe une vraie liste Python : asyncpg encode nativement list[int] → int[].
+        # Ne pas utiliser CAST(:x AS int[]) avec une chaîne '{1,2}' car asyncpg
+        # en mode prepared statement ne peut pas inférer le type source du paramètre.
 
         await db.execute(
             text(
@@ -80,7 +81,7 @@ async def create_schedule(
                     :label,
                     CAST(:start_time AS time),
                     CAST(:end_time AS time),
-                    CAST(:days_of_week AS int[]),
+                    :days_of_week,
                     true,
                     :created_at
                 )
@@ -92,7 +93,7 @@ async def create_schedule(
                 "label": payload.label.strip(),
                 "start_time": payload.start_time,
                 "end_time": payload.end_time,
-                "days_of_week": days_str,
+                "days_of_week": list(payload.days_of_week),
                 "created_at": now,
             },
         )
