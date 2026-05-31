@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     AsyncEngine,
@@ -5,6 +7,7 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
 )
 from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.pool import NullPool
 from redis.asyncio import Redis, from_url
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
@@ -16,14 +19,30 @@ logger = structlog.get_logger()
 
 # ---------------------------------------------------------------------------
 # SQLAlchemy — PostgreSQL async
+#
+# NullPool  : une connexion fraîche par requête, jamais réutilisée.
+#             Obligatoire avec le transaction pooler Supabase (pgBouncer),
+#             qui ne maintient pas l'état serveur entre transactions —
+#             ce qui invalide les prepared statements côté asyncpg (ADR-039).
+#
+# statement_cache_size=0 + prepared_statement_cache_size=0  :
+#             asyncpg ne crée aucun prepared statement, évite le
+#             DuplicatePreparedStatementError sur pgBouncer.
+#
+# prepared_statement_name_func  :
+#             protection supplémentaire — si un statement est quand même
+#             préparé, il reçoit un nom garanti unique (UUID hex).
 # ---------------------------------------------------------------------------
 
 engine: AsyncEngine = create_async_engine(
     settings.database_url,
-    pool_size=settings.database_pool_size,
-    max_overflow=settings.database_max_overflow,
+    poolclass=NullPool,
     echo=settings.debug,
-    pool_pre_ping=True,
+    connect_args={
+        "statement_cache_size": 0,
+        "prepared_statement_cache_size": 0,
+        "prepared_statement_name_func": lambda: f"__asyncpg_{uuid4().hex}__",
+    },
 )
 
 AsyncSessionLocal = async_sessionmaker(
