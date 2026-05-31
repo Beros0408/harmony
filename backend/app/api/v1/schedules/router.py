@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, time, timezone
 from uuid import UUID, uuid4
 
 import structlog
@@ -11,6 +11,15 @@ from app.core.database import get_db
 
 logger = structlog.get_logger()
 router = APIRouter(prefix="/schedules", tags=["Planification horaire"])
+
+
+def _parse_hhmm(value: str) -> time:
+    """Convertit 'HH:MM' en objet datetime.time. Lève ValueError si le format est invalide."""
+    try:
+        h, m = value.split(":")
+        return time(int(h), int(m))
+    except (ValueError, TypeError) as exc:
+        raise ValueError(f"Heure invalide '{value}' — format attendu HH:MM.") from exc
 
 
 # ─── Schémas ─────────────────────────────────────────────────────────────────
@@ -64,11 +73,16 @@ async def create_schedule(
     db: AsyncSession = Depends(get_db),
 ) -> dict:
     try:
+        # Convertit "HH:MM" → datetime.time : asyncpg encode les vrais types Python,
+        # pas les chaînes, même avec CAST(... AS time) côté SQL.
+        try:
+            start = _parse_hhmm(payload.start_time)
+            end = _parse_hhmm(payload.end_time)
+        except ValueError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+
         schedule_id = uuid4()
         now = datetime.now(timezone.utc)
-        # Passe une vraie liste Python : asyncpg encode nativement list[int] → int[].
-        # Ne pas utiliser CAST(:x AS int[]) avec une chaîne '{1,2}' car asyncpg
-        # en mode prepared statement ne peut pas inférer le type source du paramètre.
 
         await db.execute(
             text(
@@ -79,8 +93,8 @@ async def create_schedule(
                     CAST(:id AS uuid),
                     CAST(:child_id AS uuid),
                     :label,
-                    CAST(:start_time AS time),
-                    CAST(:end_time AS time),
+                    :start_time,
+                    :end_time,
                     :days_of_week,
                     true,
                     :created_at
@@ -91,8 +105,8 @@ async def create_schedule(
                 "id": str(schedule_id),
                 "child_id": str(payload.child_id),
                 "label": payload.label.strip(),
-                "start_time": payload.start_time,
-                "end_time": payload.end_time,
+                "start_time": start,
+                "end_time": end,
                 "days_of_week": list(payload.days_of_week),
                 "created_at": now,
             },
@@ -106,6 +120,8 @@ async def create_schedule(
         )
         return {"schedule_id": str(schedule_id)}
 
+    except HTTPException:
+        raise
     except Exception as exc:
         logger.error("create_schedule_error", error=str(exc))
         raise HTTPException(
