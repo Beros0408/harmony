@@ -19,6 +19,7 @@ import '../../data/models/security_score.dart';
 import '../../data/services/lock_command_service.dart';
 import '../../logic/child_profile_cubit.dart';
 import '../../logic/location_cubit.dart';
+import '../widgets/schedules_section.dart';
 
 class ChildDetailScreen extends StatelessWidget {
   const ChildDetailScreen({super.key, required this.childId});
@@ -137,6 +138,10 @@ class _ChildDetailBody extends StatelessWidget {
 
         // Bouton verrouillage à distance (Sprint B2)
         _LockButton(childId: profile.id),
+        const SizedBox(height: AppSpacing.xl),
+
+        // Section horaires de coucher (Sprint B3)
+        SchedulesSection(childId: profile.id),
         const SizedBox(height: AppSpacing.xxxl),
       ],
     );

@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 
 import '../../../../core/services/harmony_services.dart';
 import 'device_admin_service.dart';
+import 'schedule_service.dart';
 
 /// Représentation d'une commande reçue du backend.
 class DeviceCommand {
@@ -55,13 +56,35 @@ class CommandPollingService {
     if (childId == null) return;
 
     try {
+      // B2 : exécuter les commandes distantes en attente
       final commands = await _fetchPendingCommands(childId);
       for (final cmd in commands) {
         await _executeCommand(cmd);
       }
+
+      // B3 : vérifier si on est dans une plage horaire de verrouillage
+      await _checkSchedules(childId);
     } catch (e) {
       // Ne jamais planter l'app en cas d'erreur réseau — simple log
       debugPrint('[CommandPollingService] erreur poll: $e');
+    }
+  }
+
+  /// Récupère les plages actives et verrouille si l'heure locale tombe dedans.
+  Future<void> _checkSchedules(String childId) async {
+    try {
+      final schedules = await ScheduleService.instance.getActiveSchedules(childId);
+      final shouldLock = schedules.any((s) => isInSchedule(s));
+      if (shouldLock) {
+        final adminActive = await DeviceAdminService.instance.isAdminActive();
+        if (adminActive) {
+          await DeviceAdminService.instance.lockNow();
+          debugPrint('[CommandPollingService] verrouillage automatique (plage horaire)');
+        }
+      }
+    } catch (e) {
+      // Pas de plage ou réseau coupé — pas de verrouillage, pas de crash
+      debugPrint('[CommandPollingService] erreur checkSchedules: $e');
     }
   }
 
