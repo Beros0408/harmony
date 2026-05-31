@@ -40,6 +40,9 @@
     <!-- In-app purchases (Sprint 8) -->
     <uses-permission android:name="com.android.vending.BILLING" />
 
+    <!-- VPN DNS filtrant familial (Sprint C) -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+
     <application
         android:label="Harmony"
         android:name="${applicationName}"
@@ -89,6 +92,17 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.telecom.CallScreeningService"/>
+            </intent-filter>
+        </service>
+
+        <!-- HarmonyDnsVpnService — filtre DNS familial via tunnel TUN local (Sprint C) -->
+        <service
+            android:name=".vpn.HarmonyDnsVpnService"
+            android:permission="android.permission.BIND_VPN_SERVICE"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <intent-filter>
+                <action android:name="android.net.VpnService" />
             </intent-filter>
         </service>
 

@@ -16,6 +16,7 @@ import '../../../../shared/widgets/harmony_card.dart';
 import '../../data/models/child_profile.dart';
 import '../../data/models/location_point.dart';
 import '../../data/models/security_score.dart';
+import '../../data/services/content_filter_api_service.dart';
 import '../../data/services/lock_command_service.dart';
 import '../../logic/child_profile_cubit.dart';
 import '../../logic/location_cubit.dart';
@@ -142,6 +143,10 @@ class _ChildDetailBody extends StatelessWidget {
 
         // Section horaires de coucher (Sprint B3)
         SchedulesSection(childId: profile.id),
+        const SizedBox(height: AppSpacing.xl),
+
+        // Section filtrage de contenu (Sprint C)
+        _ContentFilterSection(childId: profile.id),
         const SizedBox(height: AppSpacing.xxxl),
       ],
     );
@@ -204,6 +209,164 @@ class _LockButtonState extends State<_LockButton> {
         shape: const RoundedRectangleBorder(borderRadius: AppRadius.lgRadius),
       ),
       onPressed: _sending ? null : _onLockPressed,
+    );
+  }
+}
+
+// ─── Section filtrage de contenu (Sprint C) ──────────────────────────────────
+
+class _ContentFilterSection extends StatefulWidget {
+  const _ContentFilterSection({required this.childId});
+  final String childId;
+
+  @override
+  State<_ContentFilterSection> createState() => _ContentFilterSectionState();
+}
+
+class _ContentFilterSectionState extends State<_ContentFilterSection> {
+  final _service = ContentFilterApiService.instance;
+
+  bool _enabled = false;
+  bool _loading = true;
+  bool _toggling = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    try {
+      final state = await _service.getFilterState(widget.childId);
+      if (mounted) setState(() => _enabled = state.enabled);
+    } catch (_) {
+      // Silently fallback to désactivé si le réseau est coupé
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _toggle(bool value) async {
+    if (_toggling) return;
+    setState(() => _toggling = true);
+    try {
+      await _service.setFilterState(childId: widget.childId, enabled: value);
+      if (mounted) setState(() => _enabled = value);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erreur : impossible de modifier le filtrage ($e).'),
+          backgroundColor: AppColors.accentRed,
+          duration: const Duration(seconds: 4),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _toggling = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'FILTRAGE DU CONTENU',
+          style: tt.labelSmall?.copyWith(
+            color: cs.onSurfaceVariant,
+            letterSpacing: 1.2,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        HarmonyCard(
+          padding: AppSpacing.md,
+          child: _loading
+              ? const Padding(
+                  padding: EdgeInsets.symmetric(vertical: AppSpacing.md),
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.dns_outlined,
+                          color: _enabled
+                              ? AppColors.accentGreen
+                              : cs.onSurfaceVariant,
+                        ),
+                        const SizedBox(width: AppSpacing.sm),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'DNS familial (CleanBrowsing)',
+                                style: tt.bodyMedium,
+                              ),
+                              Text(
+                                _enabled ? 'Filtrage actif' : 'Désactivé',
+                                style: tt.bodySmall?.copyWith(
+                                  color: _enabled
+                                      ? AppColors.accentGreen
+                                      : cs.onSurfaceVariant,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (_toggling)
+                          const SizedBox(
+                            width: 36,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        else
+                          Switch(value: _enabled, onChanged: _toggle),
+                      ],
+                    ),
+                    if (_enabled) ...[
+                      const SizedBox(height: AppSpacing.sm),
+                      Container(
+                        padding: const EdgeInsets.all(AppSpacing.sm),
+                        decoration: BoxDecoration(
+                          color: AppColors.accentGreen.withValues(alpha: 0.08),
+                          borderRadius: AppRadius.mdRadius,
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Icon(
+                              Icons.info_outline,
+                              size: 14,
+                              color: AppColors.accentGreen,
+                            ),
+                            const SizedBox(width: AppSpacing.xs),
+                            Expanded(
+                              child: Text(
+                                'Les sites pour adultes, malware et phishing sont '
+                                'bloqués automatiquement par le résolveur DNS '
+                                'CleanBrowsing Family (185.228.168.168).',
+                                style: tt.bodySmall?.copyWith(
+                                  color: cs.onSurfaceVariant,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+        ),
+      ],
     );
   }
 }

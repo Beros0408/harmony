@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import '../../../../core/services/harmony_services.dart';
+import 'content_filter_service.dart';
 import 'device_admin_service.dart';
 import 'schedule_service.dart';
 
@@ -64,6 +65,9 @@ class CommandPollingService {
 
       // B3 : vérifier si on est dans une plage horaire de verrouillage
       await _checkSchedules(childId);
+
+      // Sprint C : synchroniser l'état du VPN DNS avec le backend
+      await _checkContentFilter(childId);
     } catch (e) {
       // Ne jamais planter l'app en cas d'erreur réseau — simple log
       debugPrint('[CommandPollingService] erreur poll: $e');
@@ -119,6 +123,30 @@ class CommandPollingService {
       }
       // Acquittement dans tous les cas
       await _ackCommand(cmd.id);
+    }
+  }
+
+  /// Lit l'état du filtrage sur le backend et démarre/arrête le VPN DNS en
+  /// conséquence. Idempotent : ne redémarre pas si déjà dans le bon état.
+  Future<void> _checkContentFilter(String childId) async {
+    try {
+      final response = await HarmonyServices.dioClient.instance
+          .get<Map<String, dynamic>>(
+        '/api/v1/content-filter',
+        queryParameters: {'child_id': childId},
+      );
+      final enabled = (response.data?['enabled'] as bool?) ?? false;
+      final running = await ContentFilterService.instance.isFiltering();
+
+      if (enabled && !running) {
+        final status = await ContentFilterService.instance.startFiltering();
+        debugPrint('[CommandPollingService] filtrage démarré: $status');
+      } else if (!enabled && running) {
+        await ContentFilterService.instance.stopFiltering();
+        debugPrint('[CommandPollingService] filtrage arrêté');
+      }
+    } catch (e) {
+      debugPrint('[CommandPollingService] erreur checkContentFilter: $e');
     }
   }
 

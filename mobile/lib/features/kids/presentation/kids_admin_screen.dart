@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../data/services/command_polling_service.dart';
+import '../data/services/content_filter_service.dart';
 import '../data/services/device_admin_service.dart';
 
 /// Écran de configuration du mode protection (administrateur d'appareil).
@@ -22,10 +23,12 @@ class KidsAdminScreen extends StatefulWidget {
 
 class _KidsAdminScreenState extends State<KidsAdminScreen>
     with WidgetsBindingObserver {
-  final _adminService = DeviceAdminService.instance;
+  final _adminService   = DeviceAdminService.instance;
+  final _filterService  = ContentFilterService.instance;
 
-  bool _isAdminActive = false;
-  bool _loading = false;
+  bool _isAdminActive    = false;
+  bool _isFiltering      = false;
+  bool _loading          = false;
   String? _errorMessage;
 
   @override
@@ -55,8 +58,14 @@ class _KidsAdminScreenState extends State<KidsAdminScreen>
   }
 
   Future<void> _refreshAdminStatus() async {
-    final active = await _adminService.isAdminActive();
-    if (mounted) setState(() => _isAdminActive = active);
+    final active     = await _adminService.isAdminActive();
+    final filtering  = await _filterService.isFiltering();
+    if (mounted) {
+      setState(() {
+        _isAdminActive = active;
+        _isFiltering   = filtering;
+      });
+    }
   }
 
   Future<void> _onActivatePressed() async {
@@ -118,6 +127,10 @@ class _KidsAdminScreenState extends State<KidsAdminScreen>
 
                 // ── Statut admin ──────────────────────────────────────────
                 _AdminStatusCard(isActive: _isAdminActive),
+                const SizedBox(height: AppSpacing.md),
+
+                // ── Statut filtrage DNS (transparence légale) ─────────────
+                _FilterStatusCard(isFiltering: _isFiltering),
                 const SizedBox(height: AppSpacing.xl),
 
                 // ── Explication transparente (obligation légale) ──────────
@@ -304,6 +317,53 @@ class _AdminStatusCard extends StatelessWidget {
                     color: color,
                     fontWeight: FontWeight.w600,
                   ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Informe l'enfant que le filtrage DNS est actif — obligation de transparence.
+class _FilterStatusCard extends StatelessWidget {
+  const _FilterStatusCard({required this.isFiltering});
+
+  final bool isFiltering;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs    = Theme.of(context).colorScheme;
+    final tt    = Theme.of(context).textTheme;
+    final color = isFiltering ? AppColors.accentBlue : cs.onSurfaceVariant;
+
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.07),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withValues(alpha: 0.2)),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.shield_outlined, color: color, size: 20),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Filtrage de contenu',
+                  style: tt.labelMedium?.copyWith(color: cs.onSurface),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  isFiltering
+                      ? 'Actif — certains sites sont bloqués par ton parent.'
+                      : 'Désactivé',
+                  style: tt.bodySmall?.copyWith(color: color),
                 ),
               ],
             ),
