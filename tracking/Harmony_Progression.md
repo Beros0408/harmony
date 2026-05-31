@@ -7,12 +7,12 @@
 
 | Champ | Valeur |
 |---|---|
-| **Version actuelle** | **v2.4.4-sprint-A-pairing-parent** ⭐ |
-| **Phase en cours** | Sprint A — Appairage parent↔enfant (Phase 2 démarrée) |
-| **Avancement global** | **96 %** (mobile) · Backend **20 %** |
+| **Version actuelle** | **v2.7.0-sprint-B3-schedule** ⭐ |
+| **Phase en cours** | Phase 2 — Backend + Appairage + Contrôle parental à distance |
+| **Avancement global** | **97 %** (mobile) · Backend **65 %** |
 | **Date de début** | 23 mai 2026 |
 | **Date cible MVP** | J+16 semaines |
-| **Dernière mise à jour** | **29 mai 2026** |
+| **Dernière mise à jour** | **31 mai 2026** |
 
 ---
 
@@ -23,7 +23,7 @@
 | M1 Filtrage appels | 100 % |
 | M2 Listes (Blacklist) | 100 % |
 | M3 Messages (WhatsApp/SMS) | 100 % |
-| M4 Contrôle parental | 90 % |
+| M4 Contrôle parental | 98 % (appairage + verrouillage à distance + horaires) |
 | M5 Agenda | 100 % |
 | M6 Fitness | 80 % |
 | M7 Sécurité | 100 % |
@@ -31,8 +31,9 @@
 | M9 Méditation | 100 % |
 | Direction Artistique | 100 % |
 | Accessibilité (WCAG AA) | 80 % |
-| **Backend / Infrastructure** | **20 %** (Supabase connecté, pairing endpoint ✅) |
-| **Sprint A — Appairage parent↔enfant** | **50 %** (parent ✅, enfant Harmony Kids ⬜) |
+| **Backend / Infrastructure** | **65 %** (Supabase + 5 routeurs : pairing, commands, family, schedules, auth) |
+| **Sprint A — Appairage parent↔enfant** | **100 %** ✅ (bout en bout Pixel_7→Pixel_6 validé) |
+| **Sprint B — Contrôle temps d'écran** | **95 %** ✅ (B1+B2+B3 codés, vérif visuelle B3 à finir) |
 
 ---
 
@@ -43,7 +44,7 @@
 | **Phase 0** | Initialisation et architecture | 2 semaines | ✅ Terminée | 100 % | 23/05/2026 | 24/05/2026 |
 | **Phase 0+** | UI premium (Sprints A, B, C1, C2, C3, C4) | 1 semaine | ✅ Terminée | 100 % | 23/05/2026 | 24/05/2026 |
 | **Phase 1** | MVP — Cœur métier | 3-4 mois | ✅ Terminée | 100 % | 24/05/2026 | 25/05/2026 |
-| **Phase 2** | Intelligence et IA + Backend + Appairage | 2-3 mois | 🔄 En cours | 10 % | 29/05/2026 | — |
+| **Phase 2** | Backend + Appairage + Contrôle parental à distance | 2-3 mois | 🔄 En cours | 40 % | 29/05/2026 | — |
 | **Phase 3** | Fitness et performance | 2-3 mois | ⬜ À faire | 0 % | — | — |
 | **Phase 4** | Premium et écosystème | 2-3 mois | ⬜ À faire | 0 % | — | — |
 
@@ -379,7 +380,7 @@
 | Surconsommation batterie | < 8 % par jour | Sprint 4 | — | ⬜ Non démarré |
 | Taux de blocage appels indésirables | > 98 % | Sprint 5 | — | ⬜ Non démarré |
 | Taux de détection contournement | > 95 % | Phase 2 | — | ⬜ Non démarré |
-| Couverture tests unitaires | > 70 % | Phase 1 | ~80 % (**325 tests Flutter** + 13 Kotlin) | 🟢 OK |
+| Couverture tests unitaires | > 70 % | Phase 1 | ~80 % (**358 tests Flutter** + 13 Kotlin) | 🟢 OK |
 | Couverture tests intégration | > 60 % | Phase 2 | — | ⬜ Non démarré |
 | Issues `flutter analyze` | 0 | Continu | **80** (baseline Sprint 8 — lint warnings non-critiques) | 🟡 Baseline |
 | Tests CI/CD GitHub Actions | Vert | Continu | **Vert** | 🟢 OK |
@@ -441,6 +442,13 @@
 | **ADR-040** | 29/05/2026 | `ApiConfig.baseUrl` getter runtime (Platform.isAndroid + kDebugMode) | `String.fromEnvironment` est compile-time — impossible d'y injecter `Platform.isAndroid`. Source unique dans `ApiConfig` : prod (`--dart-define`), debug Android (`10.0.2.2`), desktop/iOS (`localhost`) | Sprint A |
 | **ADR-041** | 29/05/2026 | `CAST(:parent_id AS uuid)` au lieu de `:parent_id::uuid` dans `sqlalchemy.text()` | `::uuid` après un placeholder nommé empêche SQLAlchemy de détecter `:parent_id` (le `::` est ambigu pour le parseur text) → `CAST()` SQL standard résout l'ambiguïté | Backend |
 | **ADR-042** | 29/05/2026 | Check `canAddChildProfile` à la finalisation, pas à l'ouverture de l'écran d'appairage | L'écran génère uniquement un code ; le profil enfant n'est créé qu'à la finalisation (Sprint A+1 `PairingCubit.finalize`) — bloquer l'écran revient à bloquer une action inexistante | Sprint A |
+| **ADR-043** | 30/05/2026 | `DeviceAdminReceiver` + `DevicePolicyManager` via MethodChannel Kotlin pour le verrouillage | Aucun plugin Flutter fiable pour `lockNow()` — implémentation native directe via `DevicePolicyManager.lockNow()` ; politique `force-lock` déclarée dans `res/xml/device_admin.xml` | Sprint B1 |
+| **ADR-044** | 31/05/2026 | Polling 15 s côté enfant plutôt que WebSocket pour les commandes distantes | Simplicité + fiabilité réseau mobile intermittent ; WebSocket nécessiterait une connexion persistante avec reconnexion complexe ; 15 s acceptable pour le verrouillage parental | Sprint B2 |
+| **ADR-045** | 31/05/2026 | `child_id` retourné par `/redeem` et persisté dans `FlutterSecureStorage` | L'app enfant doit connaître son UUID Supabase pour le polling — `KidsStorage` avec clé `harmony_kids_child_id` évite de le re-fetcher à chaque démarrage | Sprint A+1 |
+| **ADR-046** | 31/05/2026 | `clock_timestamp()` au lieu de `now()` dans la requête SELECT de `/redeem` | `now()` = timestamp de début de transaction (stale avec connection pooling SQLAlchemy) — `clock_timestamp()` = horloge murale réelle, insensible au timestamp de transaction | Sprint A+1 |
+| **ADR-047** | 31/05/2026 | `code::text = :code` au lieu de `code = :code` dans SELECT `/redeem` | Ambiguïté de type asyncpg avec prepared statements — si la colonne `code` n'est pas strictement `text`, la comparaison échoue silencieusement ; le cast `::text` force la comparaison textuelle indépendamment du type réel | Sprint A+1 |
+| **ADR-048** | 31/05/2026 | `isInSchedule()` vérifie le **jour précédent** pour la partie "après minuit" d'une plage traversant minuit | Ex 21h→07h lundi : à 06h mardi, `now < end` ET `previousDay == lundi (1)` → dans la plage. Sans ce check, les plages de coucher (21h→07h) ne couvrent pas la partie matinale | Sprint B3 |
+| **ADR-049** | 31/05/2026 | `loadFromApi()` séparé de `load()` dans `ChildProfileCubit` | Préserve la compatibilité des tests existants qui mockent `IChildProfileRepository` — `load()` reste inchangé pour les tests unitaires ; `loadFromApi()` est la nouvelle entrée pour l'UI prod | v2.6.2 |
 
 ---
 
@@ -821,6 +829,155 @@ Implémenter la monétisation freemium : paywall RevenueCat, feature gating par 
 
 ---
 
+## Sprint A+1 — App enfant Harmony Kids ✅ TERMINÉ
+
+**Date :** 29–30 mai 2026 · **Tags :** `v2.5.0-sprint-A-kids` → `v2.5.2-cleanup`
+
+### Livraisons techniques
+
+**Backend :**
+- ✅ `POST /api/v1/pairing/redeem` — validation code, création profil `child` dans `profiles`, lien `family_links`, `is_used=true`
+- ✅ Réponse enrichie : `{ parent_name, child_name, child_id, linked: true }`
+- ✅ Fix critique : `clock_timestamp()` au lieu de `now()` (ADR-046) · `code::text = :code` (ADR-047)
+- ✅ Nettoyage code reçu : `re.sub(r"[^\d]", "", code)` — espaces et caractères parasites
+
+**App enfant `lib/main_kids.dart` :**
+- ✅ Point d'entrée allégé (pas d'AdMob/RevenueCat) · `HarmonyServices.init()` partagé
+- ✅ `KidsPairingScreen` — champ 6 chiffres `FilteringTextInputFormatter.digitsOnly`, `BlocConsumer` sauvegarde `child_id` dans `FlutterSecureStorage` (key `harmony_kids_child_id`)
+- ✅ `KidsPairingService` · `KidsPairingCubit` (Initial/Loading/Success/Error)
+- ✅ Écran succès : "Tu es maintenant lié à [parent_name]" + coche verte
+- ✅ Erreur 404/réseau avec message clair + réessayer
+- ✅ `KidsStorage` — persistance `child_id` pour redémarrage à froid
+- ✅ `main_kids.dart` : si `child_id` déjà stocké → `KidsAdminScreen` direct ; sinon `KidsPairingScreen`
+
+**Validation E2E :** code généré sur Pixel_7 → saisi sur Pixel_6 → "Téléphone lié !" + lien en base Supabase (Nora, `ee8625cd-...`)
+
+### Tests
+- ✅ 8 tests `KidsPairingCubit` (childId propagé, erreurs 404/réseau, reset, trim)
+- ✅ **333 tests verts** · **78 issues analyze**
+
+---
+
+## Sprint B1 — Mode administrateur d'appareil Android ✅ TERMINÉ
+
+**Date :** 30 mai 2026 · **Tag :** `v2.6.0-sprint-B1-lock`
+
+### Livraisons techniques
+
+**Android natif (Kotlin) :**
+- ✅ `HarmonyDeviceAdminReceiver.kt` — `DeviceAdminReceiver` avec `onEnabled/onDisabled/onDisableRequested`
+- ✅ `DeviceAdminPlugin.kt` — MethodChannel `"harmony/device_admin"` : `isAdminActive()`, `requestAdmin()`, `lockNow()`
+- ✅ `res/xml/device_admin.xml` — politique `<force-lock />`
+- ✅ `res/values/strings.xml` — libellé + description (obligation légale transparence)
+- ✅ `AndroidManifest.xml` — receiver avec `BIND_DEVICE_ADMIN` + `ACTION_DEVICE_ADMIN_ENABLED`
+- ✅ `MainActivity.kt` — canal enregistré
+
+**Flutter :**
+- ✅ `DeviceAdminService` — wrapper MethodChannel, guard `Platform.isAndroid`
+- ✅ `KidsAdminScreen` — statut "Mode protection : Activé / Non activé", bouton "Activer la protection", bouton "Verrouiller maintenant (test)", `WidgetsBindingObserver` pour refresh au retour de l'écran système
+- ✅ Accessible depuis le bouton "Configurer la protection" (écran succès de l'appairage)
+
+**Validation :** Pixel_6 se verrouille à la demande locale ✅
+
+### Tests
+- ✅ **333 tests verts** (stable) · **78 issues analyze**
+
+---
+
+## v2.6.2 — Vrais enfants appairés depuis Supabase ✅ TERMINÉ
+
+**Date :** 31 mai 2026 · **Tag :** `v2.6.2-real-children`
+
+### Livraisons
+
+**Backend :**
+- ✅ `GET /api/v1/family/children?parent_id=` — jointure `family_links ⋈ profiles`, tri alphabétique, `child_id` + `full_name` + `role` + `created_at`
+
+**Flutter parent :**
+- ✅ `FamilyApiService` — client Dio vers `/family/children` ; `_kParentId = 'dff545af-...'` marqué `TODO: remplacer par auth réelle`
+- ✅ `ChildProfileCubit.loadFromApi()` — charge depuis API, couleur avatar déterministe depuis UUID hash (palette 7 couleurs), fallback `ChildProfileLoaded(profiles: [])` si réseau absent
+- ✅ `ChildProfileRepository.init()` — ne seed plus Emma/Lucas ; schéma local vide par défaut
+- ✅ `ParentalScreen` — appelle `loadFromApi()` au lieu de `load()` ; état vide compact "Aucun enfant appairé"
+- ✅ `_ChildCard` — affiche le nom seul si `age == 0` (profils Supabase sans âge)
+- ✅ Bouton "Verrouiller le téléphone" utilise désormais le vrai `child_id` UUID
+
+**Données de test :** 3 enfants en base liés à `dff545af-...` : Bjunior, Boubou, Nora
+
+### Tests
+- ✅ **338 tests verts** · **78 issues analyze**
+
+---
+
+## Sprint B2 — Verrouillage à distance parent → enfant ✅ TERMINÉ
+
+**Date :** 31 mai 2026 · **Tag :** `v2.6.1-sprint-B2-remote-lock`
+
+### Livraisons techniques
+
+**Backend :**
+- ✅ Table `device_commands` (id, child_id, command, status, created_at, executed_at)
+- ✅ `POST /api/v1/commands/lock` — insère commande `pending`
+- ✅ `GET /api/v1/commands/pending?child_id=` — polling côté enfant
+- ✅ `POST /api/v1/commands/{id}/ack` — marque `executed`
+
+**App enfant :**
+- ✅ `CommandPollingService` — singleton, timer 15 s, `start(childId)` idempotent, `stop()` propre ; `_poll()` → fetch commandes pending → `lockNow()` → `ack`
+- ✅ Démarré au `KidsAdminScreen.initState()` ; continue en arrière-plan même si l'écran est dépilé
+- ✅ Démarré depuis `main_kids.dart` si déjà appairé (cold start)
+
+**App parent :**
+- ✅ `LockCommandService` — `POST /commands/lock` avec `child_id`
+- ✅ `_LockButton` (StatefulWidget) dans `ChildDetailScreen` — spinner + SnackBar "Demande de verrouillage envoyée" / erreur rouge
+
+**Validation :** Nora verrouillée à distance depuis l'écran parent ✅
+
+### Tests
+- ✅ 5 tests `CommandPollingService` (start/stop/idempotent/redémarrage)
+- ✅ **338 tests verts** · **78 issues analyze**
+
+---
+
+## Sprint B3 — Planification horaire du verrouillage ✅ CODÉ (vérif visuelle à finir)
+
+**Date :** 31 mai 2026 · **Tag :** `v2.7.0-sprint-B3-schedule`
+
+### Livraisons techniques
+
+**Backend :**
+- ✅ Table `lock_schedules` (id, child_id, label, start_time, end_time, days_of_week int[], active, created_at)
+- ✅ `POST /api/v1/schedules` — crée une plage (`days_of_week` via `CAST('{1,2}' AS int[])`)
+- ✅ `GET /api/v1/schedules?child_id=` — liste triée, heures formatées `HH:MM` via `to_char`
+- ✅ `DELETE /api/v1/schedules/{id}` — 404 si inexistant, 204 sinon
+
+**App enfant :**
+- ✅ `schedule_service.dart` — `LockSchedule` + `isInSchedule()` + `ScheduleService.getActiveSchedules()`
+- ✅ **Logique traversée de minuit :** si `start > end` (ex 21h→07h) : `now ≥ start` → vérifier **jour courant** ; `now < end` → vérifier **jour précédent** (cas après minuit, `1→7` pour dim→lun)
+- ✅ `CommandPollingService._poll()` étendu : appelle `_checkSchedules()` → verrouille si admin actif + plage active
+
+**App parent :**
+- ✅ `ScheduleApiService` — CRUD (`getSchedules`, `createSchedule`, `deleteSchedule`)
+- ✅ `SchedulesSection` StatefulWidget dans `ChildDetailScreen` — liste des plages + bouton "Ajouter" → bottom sheet avec TimePicker 24h + `FilterChip` jours + indicateur "plage traversant minuit" + save/delete
+
+### Tests
+- ✅ 20 tests `isInSchedule` : plages normales (bonne/mauvaise heure, bon/mauvais jour), traversée minuit (avant/après minuit, frontières exactes), transition dim→lun
+- ✅ **358 tests verts** · **78 issues analyze**
+
+### À finir
+- ⏸️ Vérification visuelle sur émulateur (interrompue — à reprendre)
+
+---
+
+## Dette technique
+
+| Dette | Priorité | Notes |
+|---|---|---|
+| Auth réelle JWT (inscription/connexion) | 🔴 Haute | `_kParentId` hardcodé dans `family_api_service.dart` et `FamilyApiService` → à remplacer par vrai user ID |
+| Profils enfants en doublon en base | 🟡 Moyenne | Essais successifs Sprint A → ménage à faire dans Supabase (`profiles` + `family_links`) |
+| Vérification visuelle B3 (horaires) | 🟡 Moyenne | `CommandPollingService._checkSchedules()` codé mais pas validé sur émulateur |
+| 3 écrans encore dark-mode forcé | 🟢 Basse | `child_detail`, `trip_history`, `sos_active` utilisent `AppColors.bgBase` hardcodé |
+
+---
+
 ## Blocages actifs
 
 > *Aucun blocage actif.*
@@ -831,7 +988,14 @@ Implémenter la monétisation freemium : paywall RevenueCat, feature gating par 
 
 | Version | Date | Phase | Description |
 |---|---|---|---|
-| **v2.4.4** | 29/05/2026 | **Sprint A** ⭐ | Tag fin de journée — backend Supabase opérationnel + appairage parent complet (AddChildPairingScreen testé émulateur) · 325 tests verts · 78 issues analyze |
+| **v2.7.0** | 31/05/2026 | **Sprint B3** ⭐ | Planification horaire du verrouillage — table `lock_schedules`, endpoints `/schedules` (POST/GET/DELETE), `isInSchedule()` avec traversée minuit, `SchedulesSection` parent, polling étendu · 358 tests verts · tag `v2.7.0-sprint-B3-schedule` |
+| **v2.6.2** | 31/05/2026 | **Vrais enfants** | Remplacement des enfants fictifs Emma/Lucas par les vrais enfants Supabase — `GET /family/children`, `loadFromApi()`, couleur avatar déterministe depuis UUID · 338 tests verts · tag `v2.6.2-real-children` |
+| **v2.6.1** | 31/05/2026 | **Sprint B2** ⭐ | Verrouillage à distance parent→enfant via polling — table `device_commands`, endpoints `/commands/lock /pending /{id}/ack`, `CommandPollingService`, `_LockButton` parent · validé sur Nora · tag `v2.6.1-sprint-B2-remote-lock` |
+| **v2.6.0** | 30/05/2026 | **Sprint B1** ⭐ | Mode administrateur d'appareil Android — `HarmonyDeviceAdminReceiver`, `DeviceAdminPlugin` MethodChannel, `KidsAdminScreen` · verrouillage local validé Pixel_6 · tag `v2.6.0-sprint-B1-lock` |
+| **v2.5.2** | 30/05/2026 | **Cleanup** | Retrait logs temporaires debug `/redeem` (diagnostic Sprint A+1 terminé) · tag `v2.5.2-cleanup` |
+| **v2.5.1** | 30/05/2026 | **Fix /redeem** | Correction 404 systématique : `clock_timestamp()`, `code::text = :code`, `re.sub` nettoyage code, logs diagnostic · tag `v2.5.1-fix-redeem` |
+| **v2.5.0** | 29/05/2026 | **Sprint A enfant** ⭐ | App enfant "Harmony Kids" — `main_kids.dart`, `KidsPairingScreen`, `KidsPairingService/Cubit`, backend `/redeem` + `child_id` · appairage bout en bout validé IRL · 333 tests verts · tag `v2.5.0-sprint-A-kids` |
+| **v2.4.4** | 29/05/2026 | **Sprint A parent** ⭐ | Tag fin de journée — backend Supabase opérationnel + appairage parent complet (AddChildPairingScreen testé émulateur) · 325 tests verts · 78 issues analyze |
 | **v2.4.3** | 29/05/2026 | **Fix SQL** | `CAST(:parent_id AS uuid)` — `::uuid` après placeholder confond le parseur `sqlalchemy.text()` (asyncpg reçoit syntaxe mixte `$N` + `:name`) |
 | **v2.4.2** | 29/05/2026 | **Fix réseau** | `ApiConfig.baseUrl` runtime : `10.0.2.2:8000` émulateur Android / `localhost:8000` sinon / `--dart-define` prod Vercel |
 | **v2.4.1** | 29/05/2026 | **Fix accès** | Mur premium déplacé de l'ouverture de l'écran d'appairage à la finalisation (`PairingCubit.finalize` Sprint A+1) |

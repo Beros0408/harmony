@@ -1,79 +1,22 @@
 # 🧭 Harmony — Instructions et Prompts par étape
 > Guide d'implémentation complet · À utiliser avec Claude Code ou tout agent IA
-> Mise à jour : **29 mai 2026** — v2.4.4-sprint-A-pairing-parent
+> Mise à jour : 24 mai 2026 après livraison Sprint 1
 
 ---
 
-## Dernière session — 29 mai 2026
-
-| Champ | Valeur |
-|---|---|
-| **Version livrée** | `v2.3.2` → `v2.4.4-sprint-A-pairing-parent` |
-| **Tests Flutter** | 325 / 325 ✅ (+5 PairingCubit) |
-| **flutter analyze** | 78 issues (baseline stable) |
-| **Push** | `origin main --tags` ✅ |
-
-### Ce qui a été fait
-
-**Corrections UI/UX :**
-- **v2.3.2** — Overflow boutons voicemail : `Row` → 3 `Expanded` + `TextOverflow.ellipsis`
-- **v2.3.3** — Cards enfants + `SafeZoneEditorScreen` theme-aware (`AppColors.bgSurface/bgBase` → `cs.surface`, `AppTypography.textTheme` static → `Theme.of(context).textTheme`)
-
-**Backend FastAPI + Supabase (Sprint 9) :**
-- Projet Supabase "harmony-backend" créé (West EU Ireland, gratuit) — 5 tables dont `pairing_codes`
-- `database: connected` validé via `/health`
-- `NullPool` + `statement_cache_size=0` pour compatibilité asyncpg + transaction pooler PgBouncer
-- `POST /api/v1/pairing/generate` opérationnel
-- Fix SQL : `CAST(:parent_id AS uuid)` (syntaxe `::uuid` confond le parseur `sqlalchemy.text()`)
-- Abandon Docker (erreur DISM 0x80240021) → Supabase + Vercel
-
-**Sprint A — appairage côté parent :**
-- `AddChildPairingScreen` : code 6 chiffres GeistMono, compte à rebours 10 min, copie presse-papier
-- `ApiConfig.baseUrl` runtime : `10.0.2.2:8000` émulateur Android / `localhost:8000` sinon
-- Mur premium déplacé à la finalisation (pas à l'ouverture de l'écran)
-- 5 tests `PairingCubit` avec stub service
-
-### Règles émergentes à retenir
-
-- Jamais `const TextStyle(color: AppColors.textMuted)` dans un widget partagé — dark-only (`#4A6080`). Utiliser `isDark ? AppColors.textMuted : const Color(0xFF757575)`.
-- `textMutedLight` est `#757575` (WCAG AA). Ne pas redescendre en dessous pour du texte fonctionnel en mode clair.
-- `String.fromEnvironment` est compile-time — ne JAMAIS y brancher `Platform.isAndroid`. Utiliser un getter runtime (`ApiConfig.baseUrl`).
-- Le `::uuid` dans `sqlalchemy.text()` confond le parseur de paramètres nommés. Toujours utiliser `CAST(:param AS uuid)`.
-- Le check `canAddChildProfile` appartient à la création du profil, pas à l'ouverture d'un écran de préparation.
-- `parent_id` UUID local (session token) est un placeholder — à remplacer par le vrai user ID backend quand l'auth JWT sera implémentée.
-
----
-
-## État actuel du projet (post-v2.4.4)
+## État actuel du projet (post-Sprint 1)
 
 | Élément | Valeur |
 |---|---|
-| **Version** | **v2.4.4-sprint-A-pairing-parent** ⭐ |
-| Dernier commit sur main | `c93eea5` (fix SQL pairing) |
-| Tag courant | `v2.4.4-sprint-A-pairing-parent` |
-| Tests Flutter verts | 325 / 325 |
-| Tests Kotlin JUnit verts | 13 / 13 |
-| Issues flutter analyze | 78 (baseline stable) |
+| **Version** | **1.0.0** — Alpha fonctionnelle ⭐ |
+| Dernier commit sur main | `47dbfe2` (Sprint 1) |
+| Tag courant | `v1.0.0-sprint-1` |
+| Tests Flutter verts | 65 / 65 |
+| Tests Kotlin JUnit verts | 5 / 5 |
+| Issues flutter analyze | 0 |
 | Langues supportées | FR · EN · ES · PT · IT (5) |
 | Thèmes supportés | System · Light · Dark |
 | **Latence filtrage Android** | **0 ms** (KPI < 200 ms) |
-| **Avancement global** | **96 %** mobile · Backend **20 %** |
-| **Backend** | FastAPI + Supabase connecté ✅ |
-| **Sprint A** | Parent ✅ · Enfant ⬜ |
-
----
-
-## Enseignements techniques — Session 29 mai 2026
-
-| Leçon | Règle |
-|---|---|
-| `String.fromEnvironment` est compile-time | Ne jamais y brancher `Platform.isAndroid` — créer un getter **runtime** (`ApiConfig.baseUrl`) avec `kDebugMode && Platform.isAndroid` |
-| Émulateur Android ≠ `localhost` | Depuis l'AVD, la machine hôte est `10.0.2.2`. Sur appareil physique : utiliser l'IP LAN ou `--dart-define` |
-| `::uuid` dans `sqlalchemy.text()` | Le `::` est ambigu pour le parseur de paramètres nommés → `:parent_id` non détecté, reste littéral. Toujours `CAST(:param AS uuid)` |
-| asyncpg + Supabase transaction pooler | PgBouncer (transaction mode) ne supporte pas les prepared statements : `NullPool` SQLAlchemy + `connect_args={"statement_cache_size": 0}` |
-| `parent_id` = session UUID local | UUID v4 généré localement par `AuthBloc`. À remplacer par vrai user ID backend quand `POST /auth/register` + JWT seront implémentés |
-| Feature gating et écrans de préparation | Le mur premium protège la **création** d'une ressource, pas l'écran qui prépare cette création. Vérifier au `finalize()`, pas au `push()` |
-| Test d'un service avec singleton statique | Constructeur public + classe de stub qui hérite du service (override sans toucher `HarmonyServices`) |
 
 ---
 
@@ -82,8 +25,8 @@
 ```
 Mobile         = Flutter 3.x (Dart) + bloc/cubit + go_router
 Android natif  = Kotlin + CallScreeningService API 29+
-Backend        = Python 3.12 + FastAPI + asyncpg (NullPool) — déployé sur Vercel
-BDD            = Supabase (PostgreSQL 16, West EU Ireland) — Redis 7 (optionnel dev)
+Backend        = Python 3.12 + FastAPI + asyncpg + Redis
+BDD            = PostgreSQL 16 + Redis 7
 Sécurité       = SQLCipher (local), TLS 1.3 (réseau), AES-256
 i18n           = flutter_localizations + intl 0.20.2 + ARB files
 IA             = TensorFlow Lite (à venir Phase 2)
@@ -292,4 +235,65 @@ Chaque sprint :
 
 ---
 
-*Mise à jour : 24 mai 2026 après livraison Sprint 1 (Android natif filtering).*
+---
+
+## Sessions 29–31 mai 2026 — Leçons techniques Sprint A + B
+
+### Supabase + asyncpg + SQLAlchemy
+
+| Leçon | Règle |
+|---|---|
+| `NullPool` obligatoire avec Supabase transaction pooler | Le PgBouncer de Supabase ne supporte pas les prepared statements — `NullPool` + `statement_cache_size=0` dans `connect_args` sont **les deux** nécessaires (cf. ADR-039) |
+| `CAST(:x AS uuid)` et non `:x::uuid` | `::uuid` dans une chaîne `sqlalchemy.text()` confond le parseur — `::` est ambigu entre l'opérateur PostgreSQL et le délimiteur de paramètre nommé SQLAlchemy (cf. ADR-041) |
+| `clock_timestamp()` et non `now()` pour les comparaisons de dates critiques | `now()` = timestamp de début de transaction → peut être stale avec connection pooling. `clock_timestamp()` = horloge murale réelle (cf. ADR-046) |
+| `code::text = :code` pour contourner l'ambiguïté de type asyncpg | Sans cast explicite, asyncpg peut inférer un type incorrect pour le paramètre si la colonne n'est pas strictement `text` — le cast `::text` garantit une comparaison textuelle (cf. ADR-047) |
+| Nettoyage code reçu : `re.sub(r"[^\d]", "", code)` | Espaces internes, NBSP, caractères Unicode "digit-like" peuvent passer `.strip()` sans être filtrés — regex plus robuste |
+| Logs temporaires de diagnostic : les retirer après confirmation | Toujours noter dans le commit que les logs sont temporaires (commentaire "LOG TEMPORAIRE — à retirer") ; cleanup en commit séparé avec tag |
+
+### Android DeviceAdminReceiver + DevicePolicyManager
+
+| Leçon | Règle |
+|---|---|
+| `DeviceAdminReceiver` doit être déclaré dans `AndroidManifest.xml` avec `android:permission="BIND_DEVICE_ADMIN"` et `<meta-data android:name="android.app.device_admin" android:resource="@xml/device_admin" />` | Sans ces deux déclarations, le système Android ne reconnaît pas le receiver et `isAdminActive()` retourne toujours `false` |
+| `requestAdmin()` est fire-and-forget — l'intent système est asynchrone | Ne jamais attendre un retour de `requestAdmin()` ; utiliser `WidgetsBindingObserver.didChangeAppLifecycleState(resumed)` pour rafraîchir l'état après retour dans l'app |
+| `res/xml/device_admin.xml` doit déclarer `<force-lock />` | Sans cette politique, `DevicePolicyManager.lockNow()` lance une `SecurityException` même si l'admin est actif |
+| `android:description` dans le receiver doit être une `@string/` resource | Android affiche cette description dans l'écran système de demande d'admin — les strings littérales ne sont pas acceptées dans ce contexte |
+
+### Polling 15 s côté enfant
+
+| Leçon | Règle |
+|---|---|
+| Singleton timer en Dart : `Timer.periodic` dans un singleton | Le singleton `CommandPollingService.instance` garantit qu'un seul timer tourne, même si l'écran est reconstruit plusieurs fois |
+| `start(childId)` idempotent | Vérifier `_running && _childId == childId` avant de démarrer — évite les doubles timers |
+| Le polling doit survivre au dépilage de l'écran | Ne pas appeler `stop()` dans `dispose()` de l'écran admin — le polling doit continuer en arrière-plan tant que l'app est vivante |
+| `try/catch` global dans `_poll()` | Réseau coupé, HarmonyServices non initialisé, etc. — ne jamais laisser une exception non capturée planter silencieusement un timer |
+
+### Gestion des enfants fictifs → réels
+
+| Leçon | Règle |
+|---|---|
+| `loadFromApi()` séparé de `load()` dans le cubit | Préserve la compatibilité des tests qui mockent `IChildProfileRepository` — les tests existants continuent d'utiliser `load()` sans modification |
+| `catch (_)` en fallback de `loadFromApi()` | `HarmonyServices.dioClient` est `late final` — avant `init()`, l'accès lance `LateInitializationError` (un `Error`, pas une `Exception`). `catch (_)` intercepte les deux |
+| `_EmptyChildrenCard` compacte (pas de grande carte) | Une carte trop haute pousse le contenu en bas de la `ListView` hors du viewport — les tests `find.text()` ne trouvent pas les textes hors du viewport lazy-rendered |
+| Couleur avatar déterministe depuis UUID | `palette[id.hashCode.abs() % palette.length]` — reproductible à chaque build, stable entre sessions |
+
+### Logique `isInSchedule` (plages traversant minuit)
+
+| Leçon | Règle |
+|---|---|
+| Deux cas distincts pour `start > end` (traversée minuit) | (1) `now >= start` → partie avant-minuit → vérifier **jour courant** ; (2) `now < end` → partie après-minuit → vérifier **jour précédent** (`currentDay == 1 ? 7 : currentDay - 1`) |
+| Utiliser `DateTime.now()` injectable via paramètre `{DateTime? now}` | Permet les tests déterministes sans dépendre de l'horloge système — `isInSchedule(schedule, now: DateTime(2026,5,4,22,0))` |
+| Tester les frontières exactes (`start` et `end`) | `start <= now` (dans) vs `start == now` (dans) vs `end <= now` (hors) — la frontière haute est exclusive (`< end`) |
+| Arrays PostgreSQL `int[]` via `CAST('{1,2,5}' AS int[])` | Avec `sqlalchemy.text()` + asyncpg, passer le tableau comme string `'{1,2,5}'` et caster en `int[]` côté SQL — asyncpg ne peut pas inférer le type array depuis un paramètre Python list sans type hint |
+
+### Tests et infrastructure
+
+| Leçon | Règle |
+|---|---|
+| `pumpAndSettle()` timeout sur `CircularProgressIndicator` | Préférer `pump()` + `pump()` (deux frames) pour les tests avec indicateurs de chargement — `pumpAndSettle()` attend indéfiniment si une animation boucle |
+| Tests de services stateless purs (ex `isInSchedule`) | Extraire la logique en fonction libre (pas méthode de classe) pour maximiser la testabilité sans mock |
+| APK enfant `--target=lib/main_kids.dart` | Spécifier le target Dart pour l'app enfant — sans ça, `flutter build apk` utilise `lib/main.dart` (app parent) |
+
+---
+
+*Mise à jour : 31 mai 2026 après livraison Sprints A + B1 + B2 + B3 (appairage + verrouillage + horaires).*

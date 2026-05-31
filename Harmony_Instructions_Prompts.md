@@ -235,4 +235,65 @@ Chaque sprint :
 
 ---
 
-*Mise à jour : 24 mai 2026 après livraison Sprint 1 (Android natif filtering).*
+---
+
+## Sessions 29–31 mai 2026 — Leçons techniques Sprint A + B
+
+### Supabase + asyncpg + SQLAlchemy
+
+| Leçon | Règle |
+|---|---|
+| `NullPool` obligatoire avec Supabase transaction pooler | Le PgBouncer de Supabase ne supporte pas les prepared statements — `NullPool` + `statement_cache_size=0` dans `connect_args` sont **les deux** nécessaires (cf. ADR-039) |
+| `CAST(:x AS uuid)` et non `:x::uuid` | `::uuid` dans une chaîne `sqlalchemy.text()` confond le parseur — `::` est ambigu entre l'opérateur PostgreSQL et le délimiteur de paramètre nommé SQLAlchemy (cf. ADR-041) |
+| `clock_timestamp()` et non `now()` pour les comparaisons de dates critiques | `now()` = timestamp de début de transaction → peut être stale avec connection pooling. `clock_timestamp()` = horloge murale réelle (cf. ADR-046) |
+| `code::text = :code` pour contourner l'ambiguïté de type asyncpg | Sans cast explicite, asyncpg peut inférer un type incorrect pour le paramètre si la colonne n'est pas strictement `text` — le cast `::text` garantit une comparaison textuelle (cf. ADR-047) |
+| Nettoyage code reçu : `re.sub(r"[^\d]", "", code)` | Espaces internes, NBSP, caractères Unicode "digit-like" peuvent passer `.strip()` sans être filtrés — regex plus robuste |
+| Logs temporaires de diagnostic : les retirer après confirmation | Toujours noter dans le commit que les logs sont temporaires (commentaire "LOG TEMPORAIRE — à retirer") ; cleanup en commit séparé avec tag |
+
+### Android DeviceAdminReceiver + DevicePolicyManager
+
+| Leçon | Règle |
+|---|---|
+| `DeviceAdminReceiver` doit être déclaré dans `AndroidManifest.xml` avec `android:permission="BIND_DEVICE_ADMIN"` et `<meta-data android:name="android.app.device_admin" android:resource="@xml/device_admin" />` | Sans ces deux déclarations, le système Android ne reconnaît pas le receiver et `isAdminActive()` retourne toujours `false` |
+| `requestAdmin()` est fire-and-forget — l'intent système est asynchrone | Ne jamais attendre un retour de `requestAdmin()` ; utiliser `WidgetsBindingObserver.didChangeAppLifecycleState(resumed)` pour rafraîchir l'état après retour dans l'app |
+| `res/xml/device_admin.xml` doit déclarer `<force-lock />` | Sans cette politique, `DevicePolicyManager.lockNow()` lance une `SecurityException` même si l'admin est actif |
+| `android:description` dans le receiver doit être une `@string/` resource | Android affiche cette description dans l'écran système de demande d'admin — les strings littérales ne sont pas acceptées dans ce contexte |
+
+### Polling 15 s côté enfant
+
+| Leçon | Règle |
+|---|---|
+| Singleton timer en Dart : `Timer.periodic` dans un singleton | Le singleton `CommandPollingService.instance` garantit qu'un seul timer tourne, même si l'écran est reconstruit plusieurs fois |
+| `start(childId)` idempotent | Vérifier `_running && _childId == childId` avant de démarrer — évite les doubles timers |
+| Le polling doit survivre au dépilage de l'écran | Ne pas appeler `stop()` dans `dispose()` de l'écran admin — le polling doit continuer en arrière-plan tant que l'app est vivante |
+| `try/catch` global dans `_poll()` | Réseau coupé, HarmonyServices non initialisé, etc. — ne jamais laisser une exception non capturée planter silencieusement un timer |
+
+### Gestion des enfants fictifs → réels
+
+| Leçon | Règle |
+|---|---|
+| `loadFromApi()` séparé de `load()` dans le cubit | Préserve la compatibilité des tests qui mockent `IChildProfileRepository` — les tests existants continuent d'utiliser `load()` sans modification |
+| `catch (_)` en fallback de `loadFromApi()` | `HarmonyServices.dioClient` est `late final` — avant `init()`, l'accès lance `LateInitializationError` (un `Error`, pas une `Exception`). `catch (_)` intercepte les deux |
+| `_EmptyChildrenCard` compacte (pas de grande carte) | Une carte trop haute pousse le contenu en bas de la `ListView` hors du viewport — les tests `find.text()` ne trouvent pas les textes hors du viewport lazy-rendered |
+| Couleur avatar déterministe depuis UUID | `palette[id.hashCode.abs() % palette.length]` — reproductible à chaque build, stable entre sessions |
+
+### Logique `isInSchedule` (plages traversant minuit)
+
+| Leçon | Règle |
+|---|---|
+| Deux cas distincts pour `start > end` (traversée minuit) | (1) `now >= start` → partie avant-minuit → vérifier **jour courant** ; (2) `now < end` → partie après-minuit → vérifier **jour précédent** (`currentDay == 1 ? 7 : currentDay - 1`) |
+| Utiliser `DateTime.now()` injectable via paramètre `{DateTime? now}` | Permet les tests déterministes sans dépendre de l'horloge système — `isInSchedule(schedule, now: DateTime(2026,5,4,22,0))` |
+| Tester les frontières exactes (`start` et `end`) | `start <= now` (dans) vs `start == now` (dans) vs `end <= now` (hors) — la frontière haute est exclusive (`< end`) |
+| Arrays PostgreSQL `int[]` via `CAST('{1,2,5}' AS int[])` | Avec `sqlalchemy.text()` + asyncpg, passer le tableau comme string `'{1,2,5}'` et caster en `int[]` côté SQL — asyncpg ne peut pas inférer le type array depuis un paramètre Python list sans type hint |
+
+### Tests et infrastructure
+
+| Leçon | Règle |
+|---|---|
+| `pumpAndSettle()` timeout sur `CircularProgressIndicator` | Préférer `pump()` + `pump()` (deux frames) pour les tests avec indicateurs de chargement — `pumpAndSettle()` attend indéfiniment si une animation boucle |
+| Tests de services stateless purs (ex `isInSchedule`) | Extraire la logique en fonction libre (pas méthode de classe) pour maximiser la testabilité sans mock |
+| APK enfant `--target=lib/main_kids.dart` | Spécifier le target Dart pour l'app enfant — sans ça, `flutter build apk` utilise `lib/main.dart` (app parent) |
+
+---
+
+*Mise à jour : 31 mai 2026 après livraison Sprints A + B1 + B2 + B3 (appairage + verrouillage + horaires).*

@@ -1,6 +1,6 @@
 # 🔄 Harmony — Fichier des itérations
 > Un sprint = 2 semaines (ou moins en mode rapide)
-> Mise à jour : **29 mai 2026** — v2.4.4-sprint-A-pairing-parent
+> Mise à jour : **31 mai 2026** — v2.7.0-sprint-B3-schedule
 
 ---
 
@@ -59,10 +59,17 @@
 | **Hotfix v2.3.2** | **UX** | **Overflow boutons voicemail (Rappeler/Marquer/Supprimer)** | **✅** | `v2.3.2-fix-voicemail-overflow` |
 | **Hotfix v2.3.3** | **Thème** | **Cards enfants + Nouvelle zone theme-aware (mode clair)** | **✅** | `v2.3.3-fix-theme-parental` |
 | **Sprint 9 / Backend** | **Phase 2** | **Backend FastAPI + Supabase opérationnel** ⭐ | **✅** | `c93eea5` |
-| **Sprint A — Parent** | **Phase 2** | **Appairage parent : génération code + écran + URL adaptative** 🔄 | **✅** | `eb40c6c` |
-| Sprint A — Enfant | Phase 2 | App enfant Harmony Kids (saisie code + confirmation) | ⬜ | — |
+| **Sprint A — Parent** | **Phase 2** | **Appairage parent : génération code + écran + URL adaptative** | **✅** | `eb40c6c` |
+| **Sprint A+1 — Enfant** | **Phase 2** | **App enfant Harmony Kids — saisie code + /redeem + child_id** ⭐ | **✅** | `v2.5.0-sprint-A-kids` |
+| **Fix /redeem** | **Phase 2** | **404 systématique corrigé (clock_timestamp, code::text, re.sub)** | **✅** | `v2.5.1-fix-redeem` |
+| **Cleanup** | **Phase 2** | **Retrait logs debug /redeem** | **✅** | `v2.5.2-cleanup` |
+| **Sprint B1** | **Phase 2** | **Mode admin appareil Android (DeviceAdminReceiver + lockNow)** ⭐ | **✅** | `v2.6.0-sprint-B1-lock` |
+| **Sprint B2** | **Phase 2** | **Verrouillage à distance parent→enfant (polling 15 s)** ⭐ | **✅** | `v2.6.1-sprint-B2-remote-lock` |
+| **v2.6.2 — Vrais enfants** | **Phase 2** | **Remplacement Emma/Lucas par enfants Supabase (GET /family/children)** | **✅** | `v2.6.2-real-children` |
+| **Sprint B3** | **Phase 2** | **Planification horaire verrouillage (lock_schedules, isInSchedule)** ⭐ | **✅** | `v2.7.0-sprint-B3-schedule` |
 | Sprint 10 | Phase 2 | IA spam TensorFlow Lite on-device | ⬜ | — |
 | Sprint 11 | Phase 2 | STT Voicemail + déploiement stores | ⬜ | — |
+| Auth JWT | Phase 2 | Inscription/connexion réelle — remplacer dff545af hardcodé | ⬜ | — |
 
 ---
 
@@ -645,8 +652,13 @@ Audit complet 5 écrans (Parental, Fitness, Settings, Contacts, Voicemail) — t
 | **Hotfixes v2.3.2+v2.3.3** | **4** | **4** | **100 %** |
 | **Sprint 9 Backend** | **15** | **15** | **100 %** |
 | **Sprint A — Parent** | **12** | **12** | **100 %** |
+| **Sprint A+1 — Enfant (Harmony Kids)** | **15** | **15** | **100 %** |
+| **Sprint B1 — Mode admin appareil** | **10** | **10** | **100 %** |
+| **v2.6.2 — Vrais enfants Supabase** | **8** | **8** | **100 %** |
+| **Sprint B2 — Verrouillage à distance** | **12** | **12** | **100 %** |
+| **Sprint B3 — Planification horaire** | **15** | **15** | **100 %** |
 
-**Vélocité moyenne 28 sprints : ~18.1 pts/sprint** · **100% complétion** · **325 tests verts · 16 tags majeurs**
+**Vélocité moyenne 34 sprints : ~18.4 pts/sprint** · **100% complétion** · **358 tests verts · 22 tags majeurs**
 
 ---
 
@@ -769,7 +781,150 @@ Permettre au parent de générer un code à 6 chiffres pour associer l'app enfan
 
 ---
 
-## Prochaine étape — Sprint A+1 (app enfant Harmony Kids)
+---
+
+### Sprint A+1 — App enfant Harmony Kids ⭐ TERMINÉ
+
+**Date :** 29–30 mai 2026 · **Tags :** `v2.5.0-sprint-A-kids` → `v2.5.2-cleanup`
+
+#### User stories réalisées
+
+| ID | Story | Statut |
+|---|---|---|
+| US-A+1-001 | `POST /api/v1/pairing/redeem` — validation code, création profil `child`, lien `family_links` | ✅ |
+| US-A+1-002 | `/redeem` retourne `child_id` UUID Supabase dans la réponse | ✅ |
+| US-A+1-003 | `main_kids.dart` — point d'entrée allégé (sans AdMob/RevenueCat) | ✅ |
+| US-A+1-004 | `KidsPairingScreen` — champ 6 chiffres, `BlocConsumer` sauvegarde `child_id` | ✅ |
+| US-A+1-005 | `KidsPairingService` + `KidsPairingCubit` (Initial/Loading/Success/Error) | ✅ |
+| US-A+1-006 | `KidsStorage` — persistance `child_id` dans `FlutterSecureStorage` | ✅ |
+| US-A+1-007 | Écran succès : "Tu es maintenant lié à [parent_name]" + coche verte | ✅ |
+| US-A+1-008 | Fix backend `/redeem` : `clock_timestamp()` + `code::text` + `re.sub` nettoyage | ✅ |
+| US-A+1-009 | Redémarrage à froid : si `child_id` stocké → `KidsAdminScreen` direct | ✅ |
+| US-A+1-010 | 8 tests `KidsPairingCubit` (childId, erreurs, reset, trim) | ✅ |
+
+#### Bilan
+
+| Métrique | Valeur |
+|---|---|
+| Tests Flutter | **333 verts** (+8 KidsPairingCubit) |
+| Issues flutter analyze | **78** (baseline) |
+| Validation E2E | ✅ Pixel_7 → Pixel_6 → "Téléphone lié !" → Supabase OK (Nora) |
+
+---
+
+### Sprint B1 — Mode administrateur d'appareil Android ⭐ TERMINÉ
+
+**Date :** 30 mai 2026 · **Tag :** `v2.6.0-sprint-B1-lock`
+
+#### User stories réalisées
+
+| ID | Story | Statut |
+|---|---|---|
+| US-B1-001 | `HarmonyDeviceAdminReceiver.kt` + `res/xml/device_admin.xml` (`force-lock`) | ✅ |
+| US-B1-002 | `DeviceAdminPlugin.kt` — MethodChannel `"harmony/device_admin"` : `isAdminActive / requestAdmin / lockNow` | ✅ |
+| US-B1-003 | `AndroidManifest.xml` — receiver `BIND_DEVICE_ADMIN` + `DEVICE_ADMIN_ENABLED` | ✅ |
+| US-B1-004 | `DeviceAdminService.dart` — wrapper Dart, guard `Platform.isAndroid` | ✅ |
+| US-B1-005 | `KidsAdminScreen` — statut admin, "Activer la protection", "Verrouiller maintenant (test)" | ✅ |
+| US-B1-006 | `WidgetsBindingObserver` — refresh statut admin au retour de l'écran système Android | ✅ |
+| US-B1-007 | Polling démarré depuis `KidsAdminScreen.initState()` si `child_id` connu | ✅ |
+
+#### Bilan
+
+| Métrique | Valeur |
+|---|---|
+| Tests Flutter | **333 verts** (stable) |
+| Issues flutter analyze | **78** (stable) |
+| Validation IRL | ✅ Pixel_6 se verrouille à la demande locale |
+
+---
+
+### v2.6.2 — Vrais enfants Supabase ✅ TERMINÉ
+
+**Date :** 31 mai 2026 · **Tag :** `v2.6.2-real-children`
+
+#### Changements clés
+
+- Backend : `GET /api/v1/family/children?parent_id=` (jointure `family_links ⋈ profiles`)
+- `FamilyApiService` + `ChildProfileCubit.loadFromApi()` (injectable, séparé de `load()` pour les tests)
+- Suppression seed Emma/Lucas de `ChildProfileRepository.init()`
+- `_ChildCard` : affiche nom seul si `age == 0` (profils Supabase)
+- État vide compact "Aucun enfant appairé pour le moment"
+- **338 tests verts** (vs 333 avant — +5 tests `CommandPollingService`)
+
+---
+
+### Sprint B2 — Verrouillage à distance parent→enfant ⭐ TERMINÉ
+
+**Date :** 31 mai 2026 · **Tag :** `v2.6.1-sprint-B2-remote-lock`
+
+#### User stories réalisées
+
+| ID | Story | Statut |
+|---|---|---|
+| US-B2-001 | Table `device_commands` (id, child_id, command, status, created_at, executed_at) | ✅ |
+| US-B2-002 | `POST /commands/lock` — insère commande `pending` | ✅ |
+| US-B2-003 | `GET /commands/pending?child_id=` — polling commandes en attente | ✅ |
+| US-B2-004 | `POST /commands/{id}/ack` — marque `executed` | ✅ |
+| US-B2-005 | `CommandPollingService` — singleton, timer 15 s, `start/stop` idempotents | ✅ |
+| US-B2-006 | `LockCommandService` (parent) — `POST /commands/lock` via Dio | ✅ |
+| US-B2-007 | `_LockButton` dans `ChildDetailScreen` — spinner + SnackBar feedback | ✅ |
+| US-B2-008 | `KidsStorage` + `child_id` propagé de `/redeem` → `KidsPairingSuccess` → stockage | ✅ |
+| US-B2-009 | 5 tests `CommandPollingService` (start/stop/idempotent) | ✅ |
+
+#### Bilan
+
+| Métrique | Valeur |
+|---|---|
+| Tests Flutter | **338 verts** (+5) |
+| Issues flutter analyze | **78** (stable) |
+| Validation IRL | ✅ Nora (Pixel_6) verrouillée à distance depuis l'app parent |
+
+---
+
+### Sprint B3 — Planification horaire du verrouillage ⭐ CODÉ (vérif visuelle à finir)
+
+**Date :** 31 mai 2026 · **Tag :** `v2.7.0-sprint-B3-schedule`
+
+#### User stories réalisées
+
+| ID | Story | Statut |
+|---|---|---|
+| US-B3-001 | Table `lock_schedules` (id, child_id, label, start_time, end_time, days_of_week int[], active) | ✅ |
+| US-B3-002 | `POST /schedules` — crée plage (`days_of_week` via `CAST('{1,2}' AS int[])`) | ✅ |
+| US-B3-003 | `GET /schedules?child_id=` — liste + heures `HH:MM` via `to_char` | ✅ |
+| US-B3-004 | `DELETE /schedules/{id}` | ✅ |
+| US-B3-005 | `isInSchedule()` — logique complète incluant traversée de minuit | ✅ |
+| US-B3-006 | `ScheduleService.getActiveSchedules()` | ✅ |
+| US-B3-007 | `CommandPollingService._checkSchedules()` — verrouillage auto si plage active + admin actif | ✅ |
+| US-B3-008 | `ScheduleApiService` (parent) — CRUD complet | ✅ |
+| US-B3-009 | `SchedulesSection` + `_ScheduleFormSheet` dans `ChildDetailScreen` | ✅ |
+| US-B3-010 | 20 tests `isInSchedule` (plages normales + traversée minuit + dim→lun) | ✅ |
+| US-B3-011 | Vérification visuelle sur émulateur | ⏸️ À finir |
+
+#### Logique traversée de minuit (ADR-048)
+
+```
+isInSchedule(schedule={start=21:00, end=07:00, days=[1]}, now=Mardi 06h) :
+  crossesMidnight = (1260 > 420) = true
+  nowMinutes = 360 < endMinutes = 420 → "après minuit"
+  previousDay = mardi(2) - 1 = lundi(1) → daysOfWeek.contains(1) = TRUE ✅
+
+isInSchedule(schedule={start=21:00, end=07:00, days=[1]}, now=Lundi 22h) :
+  crossesMidnight = true
+  nowMinutes = 1320 ≥ startMinutes = 1260 → "avant minuit"
+  currentDay = lundi(1) → daysOfWeek.contains(1) = TRUE ✅
+```
+
+#### Bilan
+
+| Métrique | Valeur |
+|---|---|
+| Tests Flutter | **358 verts** (+20) |
+| Issues flutter analyze | **78** (stable) |
+
+---
+
+## Prochaine étape — Auth JWT réelle
 
 **App enfant "Harmony Kids"** — côté enfant de l'appairage.
 
