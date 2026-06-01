@@ -56,7 +56,10 @@ class PairingCubit extends Cubit<PairingState> {
 
   Future<void> generate(String childName) async {
     final name = childName.trim();
-    if (name.isEmpty) return;
+    if (name.isEmpty) {
+      emit(const PairingError('Veuillez saisir le prénom de l’enfant.'));
+      return;
+    }
 
     emit(const PairingLoading());
     try {

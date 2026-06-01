@@ -35,10 +35,10 @@ void main() {
     });
 
     blocTest<PairingCubit, PairingState>(
-      'generate("") ne change pas l\'état',
+      'generate("") émet PairingError (prénom vide)',
       build: () => PairingCubit(service: _SuccessPairingService()),
       act: (c) => c.generate(''),
-      expect: () => <PairingState>[],
+      expect: () => [isA<PairingError>()],
     );
 
     blocTest<PairingCubit, PairingState>(

@@ -13,22 +13,22 @@ class PairingResult {
 }
 
 /// Appelle POST /api/v1/pairing/generate sur le backend FastAPI.
-/// Le parent_id est le token de session local (UUID v4 stocké dans SecureTokenStorage).
+/// parent_id doit être un UUID valide côté backend.
+/// TODO: remplacer par l'id du parent authentifié.
+const _kParentId = 'dff545af-49e3-4250-b214-fe29e8bfa18f';
+
 class PairingService {
   PairingService();
 
   static final PairingService instance = PairingService();
 
   Future<PairingResult> generatePairingCode(String childName) async {
-    final parentId =
-        await HarmonyServices.tokenStorage.getAccessToken() ?? 'local';
-
     final response = await HarmonyServices.dioClient.instance
         .post<Map<String, dynamic>>(
       '/api/v1/pairing/generate',
       data: {
         'child_name': childName.trim(),
-        'parent_id': parentId,
+        'parent_id': _kParentId,
       },
     );
 
