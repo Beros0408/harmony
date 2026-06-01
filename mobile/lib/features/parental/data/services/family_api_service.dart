@@ -1,7 +1,5 @@
 import '../../../../core/services/harmony_services.dart';
-
-// TODO : remplacer par l'id du parent authentifié (Sprint auth)
-const _kParentId = 'dff545af-49e3-4250-b214-fe29e8bfa18f';
+import '../../../../core/session/user_session.dart';
 
 class RemoteChild {
   const RemoteChild({required this.childId, required this.fullName});
@@ -10,16 +8,18 @@ class RemoteChild {
 }
 
 /// Appelle GET /api/v1/family/children pour récupérer les enfants appairés
-/// au parent courant depuis Supabase.
+/// au parent courant. Le parent_id provient de la session authentifiée.
 class FamilyApiService {
   FamilyApiService._();
   static final FamilyApiService instance = FamilyApiService._();
 
   Future<List<RemoteChild>> getChildren() async {
+    final parentId = UserSession.instance.parentId;
+    assert(parentId != null, 'FamilyApiService: parent non authentifié');
     final response = await HarmonyServices.dioClient.instance
         .get<List<dynamic>>(
       '/api/v1/family/children',
-      queryParameters: {'parent_id': _kParentId},
+      queryParameters: {'parent_id': parentId},
     );
 
     final list = response.data ?? [];

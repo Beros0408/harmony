@@ -3,6 +3,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'app.dart';
 import 'core/services/harmony_services.dart';
+import 'core/session/user_session.dart';
 import 'core/services/notification_service.dart';
 import 'core/services/subscription_service.dart';
 import 'features/call_filter/data/repositories/blacklist_repository.dart';
@@ -24,6 +25,10 @@ void main() async {
 
   // Sprint 5 — Services partagés (TokenStorage + DioClient avec intercepteur JWT)
   HarmonyServices.init();
+
+  // Sprint Auth — Restauration de session depuis le stockage sécurisé (pas de réseau).
+  // Doit être appelé après HarmonyServices.init() et avant runApp().
+  await UserSession.instance.tryRestoreFromStorage(HarmonyServices.tokenStorage);
 
   // Sprint 4 — Notifications + timezone (timezone init est dans NotificationService.init)
   await NotificationService.instance.init();

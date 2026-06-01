@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/session/user_session.dart';
+import '../../features/auth/presentation/screens/login_screen.dart';
+import '../../features/auth/presentation/screens/register_screen.dart';
 import '../../features/agenda/presentation/screens/agenda_screen.dart';
 import '../../features/agenda/presentation/screens/event_detail_screen.dart';
 import '../../features/agenda/presentation/screens/event_editor_screen.dart';
@@ -61,6 +64,24 @@ CustomTransitionPage<void> _slidePage({
 final GoRouter appRouter = GoRouter(
   initialLocation: RouteNames.splash,
   debugLogDiagnostics: false,
+  // Réévalue le redirect à chaque changement de UserSession (login / logout).
+  refreshListenable: UserSession.instance,
+  redirect: (context, state) {
+    final loc = state.matchedLocation;
+    final authenticated = UserSession.instance.isAuthenticated;
+    final openRoutes = <String>{RouteNames.login, RouteNames.register};
+
+    // Splash : laisse l'animation jouer, le bouton CTA gère la destination.
+    if (loc == RouteNames.splash) return null;
+
+    // Routes ouvertes (login/register) → dashboard si déjà connecté.
+    if (authenticated && openRoutes.contains(loc)) return RouteNames.dashboard;
+
+    // Toute autre route protégée → login si non connecté.
+    if (!authenticated && !openRoutes.contains(loc)) return RouteNames.login;
+
+    return null;
+  },
   errorBuilder: (context, state) => _ErrorScreen(error: state.error),
   routes: [
     GoRoute(
@@ -70,6 +91,15 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: RouteNames.auth,
       builder: (context, state) => const AuthScreen(),
+    ),
+    // ── Sprint Auth — Connexion / Inscription ─────────────────────────────
+    GoRoute(
+      path: RouteNames.login,
+      builder: (context, state) => const LoginScreen(),
+    ),
+    GoRoute(
+      path: RouteNames.register,
+      builder: (context, state) => const RegisterScreen(),
     ),
     GoRoute(
       path: RouteNames.dashboard,

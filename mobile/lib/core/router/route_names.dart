@@ -44,6 +44,10 @@ class RouteNames {
   // Hotfix v2.2.4 — Détail d'un message
   static const String messageDetail = '/message-detail';
 
+  // Sprint Auth — Connexion / Inscription parent
+  static const String login = '/login';
+  static const String register = '/register';
+
   // Dev only — design system showcase (non indexée en production)
   static const String devComponents = '/dev/components';
 }

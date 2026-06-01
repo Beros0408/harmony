@@ -1,4 +1,5 @@
 import '../../../../core/services/harmony_services.dart';
+import '../../../../core/session/user_session.dart';
 
 class PairingResult {
   const PairingResult({
@@ -13,22 +14,21 @@ class PairingResult {
 }
 
 /// Appelle POST /api/v1/pairing/generate sur le backend FastAPI.
-/// parent_id doit être un UUID valide côté backend.
-/// TODO: remplacer par l'id du parent authentifié.
-const _kParentId = 'dff545af-49e3-4250-b214-fe29e8bfa18f';
-
+/// Le parent_id provient de la session authentifiée ([UserSession.instance.parentId]).
 class PairingService {
   PairingService();
 
   static final PairingService instance = PairingService();
 
   Future<PairingResult> generatePairingCode(String childName) async {
+    final parentId = UserSession.instance.parentId;
+    assert(parentId != null, 'PairingService: parent non authentifié');
     final response = await HarmonyServices.dioClient.instance
         .post<Map<String, dynamic>>(
       '/api/v1/pairing/generate',
       data: {
         'child_name': childName.trim(),
-        'parent_id': _kParentId,
+        'parent_id': parentId,
       },
     );
 

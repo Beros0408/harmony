@@ -1,14 +1,12 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:uuid/uuid.dart';
 import '../../../../core/security/token_storage.dart';
+import '../../../../core/session/user_session.dart';
 import '../../domain/repositories/i_auth_repository.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
 
 // Nombre maximal de tentatives PIN avant verrouillage temporaire
 const int _maxAttempts = 5;
-
-const _uuid = Uuid();
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc({
@@ -136,8 +134,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     _failedAttempts = 0;
-    // Effacer le token de session à la déconnexion
     await _tokenStorage.clearAll();
+    // Efface la session serveur → GoRouter redirige vers /login
+    UserSession.instance.clear();
     final biometricAvailable = await _repository.isBiometricAvailable();
     final biometricEnabled = await _repository.isBiometricEnabled();
     emit(
@@ -148,10 +147,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
   }
 
-  /// Génère et sauvegarde un token de session local (UUID v4).
-  /// Remplacé par un vrai JWT backend dès que FastAPI est déployé.
-  Future<void> _saveSessionToken() async {
-    final sessionToken = _uuid.v4();
-    await _tokenStorage.saveAccessToken(sessionToken);
-  }
+  /// Le JWT est désormais géré par CredentialsAuthCubit — pas de token local à sauvegarder.
+  Future<void> _saveSessionToken() async {}
 }
