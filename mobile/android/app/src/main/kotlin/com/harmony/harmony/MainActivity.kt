@@ -1,6 +1,8 @@
 package com.harmony.harmony
 
 // local_auth nécessite FlutterFragmentActivity pour la biométrie
+import android.app.Activity
+import android.content.Intent
 import com.harmony.harmony.admin.DeviceAdminPlugin
 import com.harmony.harmony.channel.CallFilterMethodChannel
 import com.harmony.harmony.contacts.ContactsReaderPlugin
@@ -11,6 +13,9 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
 class MainActivity : FlutterFragmentActivity() {
+
+    // Référence conservée pour router onActivityResult vers le plugin VPN.
+    private var contentFilterPlugin: ContentFilterPlugin? = null
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -42,9 +47,34 @@ class MainActivity : FlutterFragmentActivity() {
         ).setMethodCallHandler(DeviceAdminPlugin(this))
 
         // Canal filtrage DNS familial — VPN local sans inspection de contenu (Sprint C)
+        // La référence est gardée pour capturer le résultat de la permission VPN dans onActivityResult.
+        val plugin = ContentFilterPlugin(this)
+        contentFilterPlugin = plugin
         MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
             ContentFilterPlugin.CHANNEL_NAME,
-        ).setMethodCallHandler(ContentFilterPlugin(this))
+        ).setMethodCallHandler(plugin)
+    }
+
+    /**
+     * Capture le résultat du dialog de permission VPN.
+     *
+     * Flux :
+     *   ContentFilterPlugin.handleStart()
+     *     → startActivityForResult(prepareIntent, VPN_REQUEST_CODE)
+     *     → [utilisateur accepte ou refuse]
+     *     → onActivityResult ici
+     *     → plugin.onVpnPermissionGranted() ou onVpnPermissionDenied()
+     *     → HarmonyDnsVpnService démarré (si accordé)
+     */
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == ContentFilterPlugin.VPN_REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                contentFilterPlugin?.onVpnPermissionGranted()
+            } else {
+                contentFilterPlugin?.onVpnPermissionDenied()
+            }
+        }
     }
 }
