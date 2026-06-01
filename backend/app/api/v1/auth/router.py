@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, text
 from datetime import datetime, timezone
 from jose import JWTError
 import structlog
@@ -78,7 +78,27 @@ async def register(payload: RegisterRequest, db: AsyncSession = Depends(get_db))
         role=payload.role,
     )
     db.add(user)
-    await db.flush()
+    await db.flush()  # génère user.id avant l'INSERT profiles
+
+    # Crée le profil applicatif dans public.profiles avec le MÊME id.
+    # Pairing (/pairing/generate, /pairing/redeem) et Family (/family/children)
+    # utilisent public.profiles comme référence — sans cette ligne, parent_id
+    # serait inconnu de ces tables et l'appairage échouerait.
+    await db.execute(
+        text(
+            """
+            INSERT INTO public.profiles (id, email, full_name, role)
+            VALUES (CAST(:id AS uuid), :email, :full_name, :role)
+            ON CONFLICT (id) DO NOTHING
+            """
+        ),
+        {
+            "id": str(user.id),
+            "email": user.email,
+            "full_name": user.full_name,
+            "role": user.role.value,
+        },
+    )
 
     logger.info("user_registered", user_id=str(user.id), role=user.role)
     return AuthResponse(
