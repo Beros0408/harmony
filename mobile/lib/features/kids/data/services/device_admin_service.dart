@@ -30,4 +30,11 @@ class DeviceAdminService {
     if (!Platform.isAndroid) return;
     await _channel.invokeMethod<void>('lockNow');
   }
+
+  /// Retire les droits administrateur d'appareil à Harmony Kids.
+  /// Appelle DevicePolicyManager.removeActiveAdmin() — immédiat, sans confirmation système.
+  Future<void> removeAdmin() async {
+    if (!Platform.isAndroid) return;
+    await _channel.invokeMethod<void>('removeAdmin');
+  }
 }

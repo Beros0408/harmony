@@ -39,6 +39,7 @@ class DeviceAdminPlugin(private val activity: Activity) : MethodChannel.MethodCa
             "isAdminActive" -> result.success(dpm.isAdminActive(adminComponent))
             "requestAdmin"  -> handleRequestAdmin(result)
             "lockNow"       -> handleLockNow(result)
+            "removeAdmin"   -> handleRemoveAdmin(result)
             else            -> result.notImplemented()
         }
     }
@@ -82,6 +83,25 @@ class DeviceAdminPlugin(private val activity: Activity) : MethodChannel.MethodCa
         } catch (e: SecurityException) {
             Log.e(TAG, "lockNow() échoué : ${e.message}")
             result.error("LOCK_FAILED", "Échec du verrouillage : ${e.message}", null)
+        }
+    }
+
+    /**
+     * Retire les droits administrateur d'appareil via DevicePolicyManager.removeActiveAdmin().
+     * Opération immédiate et sans confirmation système — utilisée lors du déliage approuvé.
+     */
+    private fun handleRemoveAdmin(result: MethodChannel.Result) {
+        try {
+            dpm.removeActiveAdmin(adminComponent)
+            Log.i(TAG, "Droits administrateur retirés via removeActiveAdmin()")
+            result.success(true)
+        } catch (e: SecurityException) {
+            Log.e(TAG, "removeActiveAdmin() échoué : ${e.message}")
+            result.error(
+                "REMOVE_ADMIN_FAILED",
+                "Impossible de retirer l'administrateur : ${e.message}",
+                null,
+            )
         }
     }
 }

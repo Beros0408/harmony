@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -9,6 +11,7 @@ import '../../../../core/constants/app_radius.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/router/route_names.dart';
+import '../../../../core/session/user_session.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/harmony_app_bar.dart';
 import '../../../../shared/widgets/harmony_badge.dart';
@@ -18,6 +21,7 @@ import '../../data/models/location_point.dart';
 import '../../data/models/security_score.dart';
 import '../../data/services/content_filter_api_service.dart';
 import '../../data/services/lock_command_service.dart';
+import '../../data/services/unlink_parent_service.dart';
 import '../../logic/child_profile_cubit.dart';
 import '../../logic/location_cubit.dart';
 import '../widgets/schedules_section.dart';
@@ -147,6 +151,10 @@ class _ChildDetailBody extends StatelessWidget {
 
         // Section filtrage de contenu (Sprint C)
         _ContentFilterSection(childId: profile.id),
+        const SizedBox(height: AppSpacing.xl),
+
+        // Section demandes de déliage (Sprint Délier)
+        _UnlinkRequestsSection(childId: profile.id),
         const SizedBox(height: AppSpacing.xxxl),
       ],
     );
@@ -422,6 +430,287 @@ class _ChildMap extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+// ─── Section demandes de déliage (Sprint Délier) ─────────────────────────────
+
+/// Polling toutes les 15 s côté parent pour détecter si l'enfant demande à délier son appareil.
+/// Affiche un dialog d'approbation dès qu'une demande en attente est détectée.
+class _UnlinkRequestsSection extends StatefulWidget {
+  const _UnlinkRequestsSection({required this.childId});
+  final String childId;
+
+  @override
+  State<_UnlinkRequestsSection> createState() => _UnlinkRequestsSectionState();
+}
+
+class _UnlinkRequestsSectionState extends State<_UnlinkRequestsSection> {
+  static const _pollInterval = Duration(seconds: 15);
+
+  final _service = UnlinkParentService.instance;
+  Timer? _timer;
+
+  List<UnlinkPendingItem> _pending = [];
+  bool _loading                    = true;
+  bool _dialogOpen                 = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _poll();
+    _timer = Timer.periodic(_pollInterval, (_) => _poll());
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _poll() async {
+    final parentId = UserSession.instance.parentId;
+    if (parentId == null) return;
+
+    try {
+      final items = await _service.getPendingRequests(parentId);
+      if (!mounted) return;
+
+      // Filtre uniquement les demandes concernant cet enfant
+      final forThisChild = items.where((r) => r.childId == widget.childId).toList();
+
+      setState(() {
+        _pending = forThisChild;
+        _loading  = false;
+      });
+
+      // Affiche le dialog dès qu'une demande arrive, une seule fois à la fois
+      if (forThisChild.isNotEmpty && !_dialogOpen) {
+        _showUnlinkDialog(forThisChild.first);
+      }
+    } catch (_) {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _showUnlinkDialog(UnlinkPendingItem request) async {
+    _dialogOpen = true;
+    final cs = Theme.of(context).colorScheme;
+
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: cs.surface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        icon: const Icon(Icons.link_off, size: 32, color: AppColors.accentAmber),
+        title: Text(
+          '${request.childName} demande à délier son appareil',
+          textAlign: TextAlign.center,
+          style: Theme.of(ctx).textTheme.titleMedium,
+        ),
+        content: Text(
+          'Si tu approuves, l\'appareil sera retiré du contrôle parental '
+          'et Harmony Kids sera désactivé sur ce téléphone.',
+          textAlign: TextAlign.center,
+          style: Theme.of(ctx).textTheme.bodySmall?.copyWith(
+                color: cs.onSurfaceVariant,
+              ),
+        ),
+        actionsAlignment: MainAxisAlignment.spaceEvenly,
+        actions: [
+          // Bouton Refuser
+          OutlinedButton.icon(
+            icon: const Icon(Icons.close),
+            label: const Text('Refuser'),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: AppColors.accentRed,
+              side: const BorderSide(color: AppColors.accentRed),
+            ),
+            onPressed: () {
+              Navigator.pop(ctx);
+              _handleReject(request);
+            },
+          ),
+          // Bouton Approuver
+          FilledButton.icon(
+            icon: const Icon(Icons.check),
+            label: const Text('Approuver'),
+            style: FilledButton.styleFrom(
+              backgroundColor: AppColors.accentGreen,
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () {
+              Navigator.pop(ctx);
+              _handleApprove(request);
+            },
+          ),
+        ],
+      ),
+    );
+
+    _dialogOpen = false;
+  }
+
+  Future<void> _handleApprove(UnlinkPendingItem request) async {
+    final parentId = UserSession.instance.parentId;
+    if (parentId == null) return;
+    try {
+      await _service.approve(request.id, parentId);
+      if (!mounted) return;
+      setState(() => _pending.removeWhere((r) => r.id == request.id));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Déliage de ${request.childName} approuvé.'),
+          backgroundColor: AppColors.accentGreen,
+          duration: const Duration(seconds: 4),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erreur lors de l\'approbation : $e'),
+          backgroundColor: AppColors.accentRed,
+          duration: const Duration(seconds: 4),
+        ),
+      );
+    }
+  }
+
+  Future<void> _handleReject(UnlinkPendingItem request) async {
+    final parentId = UserSession.instance.parentId;
+    if (parentId == null) return;
+    try {
+      await _service.reject(request.id, parentId);
+      if (!mounted) return;
+      setState(() => _pending.removeWhere((r) => r.id == request.id));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Demande de déliage de ${request.childName} refusée.'),
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erreur lors du refus : $e'),
+          backgroundColor: AppColors.accentRed,
+          duration: const Duration(seconds: 4),
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
+
+    // Aucune demande en attente : section invisible (pas de bruit inutile dans l'UI)
+    if (_loading || _pending.isEmpty) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'DÉLIAGE EN ATTENTE',
+          style: tt.labelSmall?.copyWith(
+            color: cs.onSurfaceVariant,
+            letterSpacing: 1.2,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        for (final req in _pending)
+          _UnlinkPendingCard(
+            request: req,
+            onApprove: () => _handleApprove(req),
+            onReject: () => _handleReject(req),
+          ),
+      ],
+    );
+  }
+}
+
+/// Carte affichée pour chaque demande de déliage en attente dans la liste parent.
+class _UnlinkPendingCard extends StatelessWidget {
+  const _UnlinkPendingCard({
+    required this.request,
+    required this.onApprove,
+    required this.onReject,
+  });
+
+  final UnlinkPendingItem request;
+  final VoidCallback onApprove;
+  final VoidCallback onReject;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: AppColors.accentAmber.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.accentAmber.withValues(alpha: 0.35)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.link_off, color: AppColors.accentAmber, size: 18),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: Text(
+                  '${request.childName} demande à délier son appareil',
+                  style: tt.labelMedium?.copyWith(
+                    color: cs.onSurface,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.md),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: onReject,
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.accentRed,
+                    side: const BorderSide(color: AppColors.accentRed),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: const Text('Refuser'),
+                ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: FilledButton(
+                  onPressed: onApprove,
+                  style: FilledButton.styleFrom(
+                    backgroundColor: AppColors.accentGreen,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: const Text('Approuver'),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

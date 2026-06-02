@@ -6,6 +6,7 @@ import '../../../../core/services/harmony_services.dart';
 import 'content_filter_service.dart';
 import 'device_admin_service.dart';
 import 'schedule_service.dart';
+import 'unlink_request_service.dart';
 
 /// Représentation d'une commande reçue du backend.
 class DeviceCommand {
@@ -29,6 +30,15 @@ class CommandPollingService {
   String? _childId;
   bool _running = false;
 
+  /// Dernier statut de déliage connu — évite de refirer le callback à chaque tick.
+  String _lastUnlinkStatus = 'none';
+
+  /// Rappelé avec le request_id quand le parent approuve le déliage.
+  void Function(String requestId)? onUnlinkApproved;
+
+  /// Rappelé quand le parent refuse le déliage.
+  void Function()? onUnlinkRejected;
+
   bool get isRunning => _running;
 
   /// Démarre le polling pour [childId]. Idempotent : si déjà démarré pour le
@@ -38,6 +48,7 @@ class CommandPollingService {
     stop(); // arrête proprement avant de redémarrer si le child_id change
     _childId = childId;
     _running = true;
+    _lastUnlinkStatus = 'none';
     // Premier poll immédiat, puis toutes les 15 s
     _poll();
     _timer = Timer.periodic(_pollInterval, (_) => _poll());
@@ -50,6 +61,12 @@ class CommandPollingService {
     _timer = null;
     _running = false;
     debugPrint('[CommandPollingService] polling arrêté');
+  }
+
+  /// Détache les callbacks de déliage — à appeler dans dispose() de l'écran.
+  void clearUnlinkCallbacks() {
+    onUnlinkApproved = null;
+    onUnlinkRejected = null;
   }
 
   Future<void> _poll() async {
@@ -68,6 +85,9 @@ class CommandPollingService {
 
       // Sprint C : synchroniser l'état du VPN DNS avec le backend
       await _checkContentFilter(childId);
+
+      // Sprint Délier : détecter une approbation ou un refus parent
+      await _checkUnlinkStatus(childId);
     } catch (e) {
       // Ne jamais planter l'app en cas d'erreur réseau — simple log
       debugPrint('[CommandPollingService] erreur poll: $e');
@@ -147,6 +167,30 @@ class CommandPollingService {
       }
     } catch (e) {
       debugPrint('[CommandPollingService] erreur checkContentFilter: $e');
+    }
+  }
+
+  /// Vérifie si le parent a approuvé ou refusé la demande de déliage.
+  /// Ne déclenche le callback qu'une seule fois par changement de statut.
+  Future<void> _checkUnlinkStatus(String childId) async {
+    try {
+      final result = await UnlinkRequestService.instance.getStatus(childId);
+      final newStatus = result.status;
+
+      // Ne réagit que si le statut a changé depuis le dernier tick
+      if (newStatus == _lastUnlinkStatus) return;
+      _lastUnlinkStatus = newStatus;
+
+      if (newStatus == 'approved' && result.requestId != null) {
+        debugPrint('[CommandPollingService] déliage approuvé, requestId=${result.requestId}');
+        onUnlinkApproved?.call(result.requestId!);
+      } else if (newStatus == 'rejected') {
+        debugPrint('[CommandPollingService] déliage refusé');
+        onUnlinkRejected?.call();
+      }
+    } catch (e) {
+      // Erreur réseau sur /unlink/status — pas bloquant, on réessaie au prochain tick
+      debugPrint('[CommandPollingService] erreur checkUnlinkStatus: $e');
     }
   }
 
