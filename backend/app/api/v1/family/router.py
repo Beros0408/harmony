@@ -19,6 +19,10 @@ class ChildItem(BaseModel):
     created_at: datetime
 
 
+class ChildStatusResponse(BaseModel):
+    linked: bool
+
+
 @router.get(
     "/children",
     response_model=list[ChildItem],
@@ -61,4 +65,35 @@ async def get_children(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Erreur lors de la récupération des enfants.",
+        ) from exc
+
+
+@router.get(
+    "/child-status/{child_id}",
+    response_model=ChildStatusResponse,
+    summary="Vérifie si un child_id est encore rattaché à une famille (family_links)",
+)
+async def get_child_status(
+    child_id: str,
+    db: AsyncSession = Depends(get_db),
+) -> ChildStatusResponse:
+    try:
+        result = await db.execute(
+            text(
+                """
+                SELECT 1
+                FROM public.family_links
+                WHERE child_id = CAST(:child_id AS uuid)
+                LIMIT 1
+                """
+            ),
+            {"child_id": child_id},
+        )
+        linked = result.fetchone() is not None
+        return ChildStatusResponse(linked=linked)
+    except Exception as exc:
+        logger.error("get_child_status_error", error=str(exc), child_id=child_id)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Erreur lors de la vérification du lien.",
         ) from exc

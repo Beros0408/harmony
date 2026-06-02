@@ -6,6 +6,7 @@ import '../../../core/constants/app_spacing.dart';
 import '../data/services/command_polling_service.dart';
 import '../data/services/content_filter_service.dart';
 import '../data/services/device_admin_service.dart';
+import '../data/services/kids_link_verification_service.dart';
 import '../data/services/kids_storage.dart';
 import '../data/services/unlink_request_service.dart';
 import 'kids_pairing_screen.dart';
@@ -71,7 +72,50 @@ class _KidsAdminScreenState extends State<KidsAdminScreen>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       _refreshAdminStatus();
+      _verifyLinkOnResume();
     }
+  }
+
+  // ── Vérification du lien serveur (protection appairage fantôme) ──────────
+
+  /// Vérifie au retour au premier plan que le lien est toujours actif.
+  /// Si le serveur répond "non lié", nettoie l'état local et navigue vers
+  /// l'écran d'appairage. En cas d'erreur réseau, ne fait rien.
+  Future<void> _verifyLinkOnResume() async {
+    // Ne pas vérifier si un déliage est déjà en cours via la procédure normale
+    if (_unlinkState == _UnlinkState.approved) return;
+    final childId = widget.childId;
+    if (childId == null) return;
+
+    try {
+      final linked =
+          await KidsLinkVerificationService.instance.isLinked(childId);
+      if (!linked && mounted) {
+        await _clearLocalAndReturnToPairing();
+      }
+    } catch (_) {
+      // Réseau injoignable → conserver l'état, réessayer à la prochaine reprise
+    }
+  }
+
+  /// Nettoie l'état local (admin, polling, stockage) et navigue vers l'appairage.
+  /// Appelé quand le serveur confirme que le lien n'existe plus.
+  Future<void> _clearLocalAndReturnToPairing() async {
+    CommandPollingService.instance.stop();
+    CommandPollingService.instance.clearUnlinkCallbacks();
+    try {
+      await _adminService.removeAdmin();
+    } catch (_) {
+      // Le retrait admin peut échouer si non actif — non bloquant
+    }
+    try {
+      await KidsStorage.instance.clearChildId();
+    } catch (_) {}
+    if (!mounted) return;
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute<void>(builder: (_) => const KidsPairingScreen()),
+      (_) => false,
+    );
   }
 
   // ── Statut admin + filtre ─────────────────────────────────────────────────

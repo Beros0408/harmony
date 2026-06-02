@@ -1,9 +1,11 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'core/security/secure_storage.dart';
 import 'core/services/harmony_services.dart';
 import 'core/theme/theme_cubit.dart';
+import 'features/kids/data/services/kids_link_verification_service.dart';
 import 'features/kids/data/services/kids_storage.dart';
 import 'features/kids/presentation/kids_admin_screen.dart';
 import 'features/kids/presentation/kids_pairing_screen.dart';
@@ -18,8 +20,27 @@ void main() async {
   HarmonyServices.init();
 
   // Si l'enfant est déjà appairé (child_id en stockage sécurisé),
-  // on va directement à l'écran admin + polling ; sinon, écran d'appairage.
-  final storedChildId = await KidsStorage.instance.getChildId();
+  // on vérifie d'abord que le lien existe encore côté serveur.
+  String? storedChildId = await KidsStorage.instance.getChildId();
+
+  if (storedChildId != null) {
+    try {
+      final linked =
+          await KidsLinkVerificationService.instance.isLinked(storedChildId);
+      if (!linked) {
+        // Lien supprimé côté serveur → nettoyage local, retour à l'appairage
+        await KidsStorage.instance.clearChildId();
+        storedChildId = null;
+      }
+    } on DioException catch (e) {
+      // Serveur injoignable (pas de réseau, timeout…) → conserver l'état local.
+      // "Réseau indisponible" ≠ "lien supprimé" : on ne délie jamais par erreur.
+      debugPrint('[main_kids] vérif lien: réseau KO (${e.type}), état conservé');
+    } catch (e) {
+      // Erreur inattendue → conserver l'état par précaution
+      debugPrint('[main_kids] vérif lien: erreur inattendue, état conservé ($e)');
+    }
+  }
 
   runApp(HarmonyKidsApp(initialChildId: storedChildId));
 }
