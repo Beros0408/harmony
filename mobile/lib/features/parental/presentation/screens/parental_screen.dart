@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_radius.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/router/route_names.dart';
+import '../../../../core/session/user_session.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/harmony_app_bar.dart';
 import '../../../../shared/widgets/harmony_badge.dart';
@@ -19,6 +21,7 @@ import '../../data/models/child_profile.dart';
 import '../../data/models/location_point.dart';
 import '../../data/models/safe_zone.dart';
 import '../../data/models/security_score.dart';
+import '../../data/services/unlink_parent_service.dart';
 import '../../logic/child_profile_cubit.dart';
 import '../../logic/location_cubit.dart';
 import '../../logic/safe_zone_cubit.dart';
@@ -34,6 +37,12 @@ class ParentalScreen extends StatefulWidget {
 class _ParentalScreenState extends State<ParentalScreen> {
   final _mapController = MapController();
 
+  // ── Polling demandes de déliage ───────────────────────────────────────────
+  Timer? _unlinkPollTimer;
+
+  /// Empêche l'ouverture de plusieurs dialogs simultanés pour la même demande.
+  bool _dialogOpen = false;
+
   @override
   void initState() {
     super.initState();
@@ -42,7 +51,155 @@ class _ParentalScreenState extends State<ParentalScreen> {
       // Charge les vrais enfants depuis Supabase (Sprint B2+)
       context.read<ChildProfileCubit>().loadFromApi();
       context.read<SafeZoneCubit>().load();
+
+      // Premier poll immédiat pour détecter les demandes de déliage dès l'ouverture
+      _pollUnlinkRequests();
     });
+
+    // Polling toutes les 15 s tant que l'écran est actif
+    _unlinkPollTimer = Timer.periodic(
+      const Duration(seconds: 15),
+      (_) => _pollUnlinkRequests(),
+    );
+  }
+
+  @override
+  void dispose() {
+    _unlinkPollTimer?.cancel();
+    super.dispose();
+  }
+
+  // ── Logique de polling ────────────────────────────────────────────────────
+
+  /// Interroge GET /api/v1/unlink/pending et affiche un dialog pour la première
+  /// demande en attente. Ne fait rien si un dialog est déjà ouvert.
+  Future<void> _pollUnlinkRequests() async {
+    if (!mounted || _dialogOpen) return;
+    final parentId = UserSession.instance.parentId;
+    if (parentId == null) return;
+
+    try {
+      final requests =
+          await UnlinkParentService.instance.getPendingRequests(parentId);
+      if (!mounted || _dialogOpen || requests.isEmpty) return;
+      // Traite une demande à la fois : la suivante sera présentée au prochain tick
+      await _showUnlinkDialog(requests.first);
+    } catch (_) {
+      // Erreur réseau silencieuse : pas de snackbar sur les erreurs de polling,
+      // on réessaie au prochain tick pour ne pas spammer l'UI.
+    }
+  }
+
+  /// Affiche le dialog d'approbation/refus pour [item].
+  /// Retourne après que le parent ait pris sa décision.
+  Future<void> _showUnlinkDialog(UnlinkPendingItem item) async {
+    _dialogOpen = true;
+
+    final approved = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) {
+        final cs = Theme.of(ctx).colorScheme;
+        return AlertDialog(
+          backgroundColor: cs.surface,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          icon: const Icon(Icons.link_off, size: 32, color: AppColors.accentAmber),
+          title: const Text(
+            'Demande de déliage',
+            textAlign: TextAlign.center,
+          ),
+          content: Text(
+            '${item.childName} demande à retirer cet appareil du contrôle parental. '
+            'Acceptes-tu ?',
+            textAlign: TextAlign.center,
+            style: Theme.of(ctx).textTheme.bodyMedium?.copyWith(
+                  color: cs.onSurfaceVariant,
+                ),
+          ),
+          actionsAlignment: MainAxisAlignment.spaceEvenly,
+          actions: [
+            OutlinedButton.icon(
+              icon: const Icon(Icons.close, size: 18),
+              label: const Text('Refuser'),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.accentRed,
+                side: const BorderSide(color: AppColors.accentRed),
+              ),
+              onPressed: () => Navigator.pop(ctx, false),
+            ),
+            FilledButton.icon(
+              icon: const Icon(Icons.check, size: 18),
+              label: const Text('Approuver'),
+              style: FilledButton.styleFrom(
+                backgroundColor: AppColors.accentGreen,
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () => Navigator.pop(ctx, true),
+            ),
+          ],
+        );
+      },
+    );
+
+    _dialogOpen = false;
+    if (!mounted) return;
+
+    if (approved == true) {
+      await _handleApprove(item);
+    } else {
+      await _handleReject(item);
+    }
+  }
+
+  Future<void> _handleApprove(UnlinkPendingItem item) async {
+    final parentId = UserSession.instance.parentId;
+    if (parentId == null || !mounted) return;
+    try {
+      await UnlinkParentService.instance.approve(item.id, parentId);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Déliage de ${item.childName} approuvé.'),
+          backgroundColor: AppColors.accentGreen,
+          duration: const Duration(seconds: 4),
+        ),
+      );
+      // Rafraîchit la liste : l'enfant délié disparaîtra au prochain chargement
+      context.read<ChildProfileCubit>().loadFromApi();
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Erreur lors de l\'approbation. Réessaie.'),
+          backgroundColor: AppColors.accentRed,
+          duration: Duration(seconds: 4),
+        ),
+      );
+    }
+  }
+
+  Future<void> _handleReject(UnlinkPendingItem item) async {
+    final parentId = UserSession.instance.parentId;
+    if (parentId == null || !mounted) return;
+    try {
+      await UnlinkParentService.instance.reject(item.id, parentId);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Demande de ${item.childName} refusée.'),
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Erreur lors du refus. Réessaie.'),
+          backgroundColor: AppColors.accentRed,
+          duration: Duration(seconds: 4),
+        ),
+      );
+    }
   }
 
   @override
