@@ -7,6 +7,7 @@ import com.harmony.harmony.admin.DeviceAdminPlugin
 import com.harmony.harmony.channel.CallFilterMethodChannel
 import com.harmony.harmony.contacts.ContactsReaderPlugin
 import com.harmony.harmony.messages.MessagesFilterPlugin
+import com.harmony.harmony.usage.ScreenTimeBlockingPlugin
 import com.harmony.harmony.usage.UsageStatsPlugin
 import com.harmony.harmony.vpn.ContentFilterPlugin
 import io.flutter.embedding.android.FlutterFragmentActivity
@@ -52,6 +53,12 @@ class MainActivity : FlutterFragmentActivity() {
             flutterEngine.dartExecutor.binaryMessenger,
             UsageStatsPlugin.CHANNEL_NAME,
         ).setMethodCallHandler(UsageStatsPlugin(this))
+
+        // Canal blocage bienveillant temps d'écran — accessibilité + mise à jour liste bloquée (Sprint 5C)
+        MethodChannel(
+            flutterEngine.dartExecutor.binaryMessenger,
+            ScreenTimeBlockingPlugin.CHANNEL_NAME,
+        ).setMethodCallHandler(ScreenTimeBlockingPlugin(this))
 
         // Canal filtrage DNS familial — VPN local sans inspection de contenu (Sprint C)
         // La référence est gardée pour capturer le résultat de la permission VPN dans onActivityResult.

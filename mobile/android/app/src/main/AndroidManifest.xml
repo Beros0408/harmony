@@ -113,6 +113,20 @@
             </intent-filter>
         </service>
 
+        <!-- Service d'accessibilité — détecte l'app au premier plan pour le blocage temps d'écran (Sprint 5C) -->
+        <service
+            android:name=".usage.HarmonyScreenTimeService"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
+            android:exported="true"
+            android:label="@string/accessibility_service_label">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/harmony_accessibility_service" />
+        </service>
+
         <!-- DeviceAdminReceiver — permet à Harmony Kids de verrouiller l'écran (Sprint B1) -->
         <receiver
             android:name=".admin.HarmonyDeviceAdminReceiver"

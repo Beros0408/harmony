@@ -7,6 +7,7 @@ import 'core/services/harmony_services.dart';
 import 'core/theme/theme_cubit.dart';
 import 'features/kids/data/services/kids_link_verification_service.dart';
 import 'features/kids/data/services/kids_storage.dart';
+import 'features/kids/data/services/screen_time_blocking_service.dart';
 import 'features/kids/data/services/screen_time_limits_fetch_service.dart';
 import 'features/kids/data/services/screen_time_upload_service.dart';
 import 'features/kids/presentation/kids_admin_screen.dart';
@@ -48,8 +49,9 @@ void main() async {
   // (lance immédiatement + timer 30 min). Silencieux si permission absente.
   if (storedChildId != null) {
     ScreenTimeUploadService.instance.start();
-    // Polling des limites toutes les 5 min (préparation sprint 5C — blocage).
+    // Polling des limites toutes les 5 min + push de la liste de blocage toutes les 30 s.
     ScreenTimeLimitsFetchService.instance.start();
+    ScreenTimeBlockingService.instance.start();
   }
 
   runApp(HarmonyKidsApp(initialChildId: storedChildId));
