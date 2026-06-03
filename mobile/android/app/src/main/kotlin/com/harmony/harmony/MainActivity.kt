@@ -7,6 +7,7 @@ import com.harmony.harmony.admin.DeviceAdminPlugin
 import com.harmony.harmony.channel.CallFilterMethodChannel
 import com.harmony.harmony.contacts.ContactsReaderPlugin
 import com.harmony.harmony.messages.MessagesFilterPlugin
+import com.harmony.harmony.usage.UsageStatsPlugin
 import com.harmony.harmony.vpn.ContentFilterPlugin
 import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -45,6 +46,12 @@ class MainActivity : FlutterFragmentActivity() {
             flutterEngine.dartExecutor.binaryMessenger,
             DeviceAdminPlugin.CHANNEL_NAME,
         ).setMethodCallHandler(DeviceAdminPlugin(this))
+
+        // Canal temps d'écran — lecture UsageStatsManager + permission PACKAGE_USAGE_STATS (Sprint 5A)
+        MethodChannel(
+            flutterEngine.dartExecutor.binaryMessenger,
+            UsageStatsPlugin.CHANNEL_NAME,
+        ).setMethodCallHandler(UsageStatsPlugin(this))
 
         // Canal filtrage DNS familial — VPN local sans inspection de contenu (Sprint C)
         // La référence est gardée pour capturer le résultat de la permission VPN dans onActivityResult.

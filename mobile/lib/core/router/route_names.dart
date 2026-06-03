@@ -48,6 +48,9 @@ class RouteNames {
   static const String login = '/login';
   static const String register = '/register';
 
+  // Sprint 5A — Temps d'écran parent
+  static const String screenTimeSummary = '/parental/child/:id/screen-time';
+
   // Dev only — design system showcase (non indexée en production)
   static const String devComponents = '/dev/components';
 }

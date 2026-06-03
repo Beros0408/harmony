@@ -8,8 +8,11 @@ import '../data/services/content_filter_service.dart';
 import '../data/services/device_admin_service.dart';
 import '../data/services/kids_link_verification_service.dart';
 import '../data/services/kids_storage.dart';
+import '../data/services/screen_time_upload_service.dart';
 import '../data/services/unlink_request_service.dart';
+import '../data/services/usage_stats_service.dart';
 import 'kids_pairing_screen.dart';
+import 'screen_time_permission_screen.dart';
 
 /// États possibles d'une demande de déliage côté enfant.
 enum _UnlinkState { none, pending, approved, rejected }
@@ -33,9 +36,10 @@ class _KidsAdminScreenState extends State<KidsAdminScreen>
   final _adminService  = DeviceAdminService.instance;
   final _filterService = ContentFilterService.instance;
 
-  bool _isAdminActive   = false;
-  bool _isFiltering     = false;
-  bool _loading         = false;
+  bool _isAdminActive      = false;
+  bool _isFiltering        = false;
+  bool _loading            = false;
+  bool _screenTimeGranted  = false;
   String? _errorMessage;
 
   // ── État déliage ──────────────────────────────────────────────────────────
@@ -47,6 +51,7 @@ class _KidsAdminScreenState extends State<KidsAdminScreen>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _refreshAdminStatus();
+    _refreshScreenTimePermission();
 
     if (widget.childId != null) {
       // Démarre le polling des commandes + plannings + filtrage + déliage
@@ -72,7 +77,18 @@ class _KidsAdminScreenState extends State<KidsAdminScreen>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       _refreshAdminStatus();
+      _refreshScreenTimePermission();
       _verifyLinkOnResume();
+    }
+  }
+
+  Future<void> _refreshScreenTimePermission() async {
+    final granted = await UsageStatsService.instance.isPermissionGranted();
+    if (!mounted) return;
+    setState(() => _screenTimeGranted = granted);
+    // Lance la remontée si la permission vient d'être accordée
+    if (granted && widget.childId != null) {
+      ScreenTimeUploadService.instance.start();
     }
   }
 
@@ -403,6 +419,21 @@ class _KidsAdminScreenState extends State<KidsAdminScreen>
 
                 const SizedBox(height: AppSpacing.xxxl),
 
+                // ── Section temps d'écran ─────────────────────────────────
+                _ScreenTimeSection(
+                  granted: _screenTimeGranted,
+                  onTap: () async {
+                    await Navigator.of(context).push<void>(
+                      MaterialPageRoute<void>(
+                        builder: (_) => const ScreenTimePermissionScreen(),
+                      ),
+                    );
+                    _refreshScreenTimePermission();
+                  },
+                ),
+
+                const SizedBox(height: AppSpacing.xxxl),
+
                 // ── Section déliage ───────────────────────────────────────
                 _UnlinkSection(
                   unlinkState: _unlinkState,
@@ -414,6 +445,73 @@ class _KidsAdminScreenState extends State<KidsAdminScreen>
                 const SizedBox(height: AppSpacing.xxxl),
               ],
             ),
+    );
+  }
+}
+
+// ─── Section temps d'écran ───────────────────────────────────────────────────
+
+class _ScreenTimeSection extends StatelessWidget {
+  const _ScreenTimeSection({required this.granted, required this.onTap});
+  final bool granted;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
+    final color  = granted ? AppColors.accentGreen : AppColors.accentAmber;
+    final icon   = granted ? Icons.check_circle_outline : Icons.bar_chart_rounded;
+    final status = granted ? 'Suivi actif' : 'À activer';
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'TEMPS D\'ÉCRAN',
+          style: tt.labelSmall?.copyWith(
+            color: cs.onSurfaceVariant,
+            letterSpacing: 1.2,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: color.withValues(alpha: 0.3)),
+            ),
+            child: Row(
+              children: [
+                Icon(icon, color: color, size: 28),
+                const SizedBox(width: AppSpacing.md),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Mesure du temps d\'écran',
+                        style: tt.labelLarge?.copyWith(color: cs.onSurface),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        status,
+                        style: tt.bodySmall?.copyWith(color: color),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(Icons.chevron_right, color: cs.onSurfaceVariant),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

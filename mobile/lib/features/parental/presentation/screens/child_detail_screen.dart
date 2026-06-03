@@ -129,11 +129,26 @@ class _ChildDetailBody extends StatelessWidget {
         _ChildMap(childId: profile.id, avatarColor: profile.avatarColor),
         const SizedBox(height: AppSpacing.lg),
 
-        // Bouton historique
+        // Bouton historique de trajet
         OutlinedButton.icon(
           onPressed: () => context.push('${RouteNames.childDetail}/${profile.id}/history'),
           icon: const Icon(Icons.route),
           label: Text(l10n.childDetailTitle),
+          style: OutlinedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+            shape: const RoundedRectangleBorder(borderRadius: AppRadius.lgRadius),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.md),
+
+        // Bouton Temps d'écran (Sprint 5A)
+        OutlinedButton.icon(
+          onPressed: () => context.push(
+            '${RouteNames.childDetail}/${profile.id}/screen-time'
+            '?name=${Uri.encodeComponent(profile.name)}',
+          ),
+          icon: const Icon(Icons.bar_chart_rounded),
+          label: const Text('Temps d\'écran'),
           style: OutlinedButton.styleFrom(
             padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
             shape: const RoundedRectangleBorder(borderRadius: AppRadius.lgRadius),

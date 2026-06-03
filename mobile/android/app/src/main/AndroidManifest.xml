@@ -1,4 +1,5 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Permissions téléphonie -->
     <uses-permission android:name="android.permission.CALL_PHONE" />
@@ -42,6 +43,12 @@
 
     <!-- VPN DNS filtrant familial (Sprint C) -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+
+    <!-- Temps d'écran : lecture de l'usage applicatif via UsageStatsManager (Sprint 5A) -->
+    <!-- Permission spéciale : non accordée à l'installation, l'utilisateur doit l'activer manuellement -->
+    <uses-permission
+        android:name="android.permission.PACKAGE_USAGE_STATS"
+        tools:ignore="ProtectedPermissions" />
 
     <application
         android:label="Harmony"

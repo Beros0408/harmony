@@ -7,6 +7,7 @@ import 'core/services/harmony_services.dart';
 import 'core/theme/theme_cubit.dart';
 import 'features/kids/data/services/kids_link_verification_service.dart';
 import 'features/kids/data/services/kids_storage.dart';
+import 'features/kids/data/services/screen_time_upload_service.dart';
 import 'features/kids/presentation/kids_admin_screen.dart';
 import 'features/kids/presentation/kids_pairing_screen.dart';
 import 'shared/theme/harmony_theme.dart';
@@ -40,6 +41,12 @@ void main() async {
       // Erreur inattendue → conserver l'état par précaution
       debugPrint('[main_kids] vérif lien: erreur inattendue, état conservé ($e)');
     }
+  }
+
+  // Démarre la remontée du temps d'écran si la permission est déjà accordée
+  // (lance immédiatement + timer 30 min). Silencieux si permission absente.
+  if (storedChildId != null) {
+    ScreenTimeUploadService.instance.start();
   }
 
   runApp(HarmonyKidsApp(initialChildId: storedChildId));
