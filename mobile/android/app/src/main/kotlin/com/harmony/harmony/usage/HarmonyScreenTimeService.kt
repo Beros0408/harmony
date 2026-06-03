@@ -176,7 +176,7 @@ class HarmonyScreenTimeService : AccessibilityService() {
             textSize = 15f
             setTextColor(textMuted)
             gravity = Gravity.CENTER
-            lineSpacingMultiplier = 1.5f
+            setLineSpacing(0f, 1.5f)
             setPadding(dp(8), 0, dp(8), dp(56))
         })
 
