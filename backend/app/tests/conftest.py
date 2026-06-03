@@ -43,8 +43,45 @@ async def setup_database():
                 ON public.screen_time_usage (child_id, usage_date)
             """
         ))
+        # table limites hors ORM — DDL explicite (Sprint 5B)
+        await conn.execute(text(
+            """
+            CREATE TABLE IF NOT EXISTS public.screen_time_limits (
+                id            uuid        DEFAULT gen_random_uuid() PRIMARY KEY,
+                child_id      uuid        NOT NULL,
+                scope         text        NOT NULL CHECK (scope IN ('global', 'app')),
+                package_name  text,
+                limit_seconds integer     NOT NULL CHECK (limit_seconds >= 0),
+                created_at    timestamptz DEFAULT now(),
+                updated_at    timestamptz DEFAULT now()
+            )
+            """
+        ))
+        await conn.execute(text(
+            """
+            CREATE INDEX IF NOT EXISTS idx_screen_time_limits_child
+                ON public.screen_time_limits (child_id)
+            """
+        ))
+        # Index unique partiel — une seule limite globale par enfant
+        await conn.execute(text(
+            """
+            CREATE UNIQUE INDEX IF NOT EXISTS uq_screen_time_limits_global
+                ON public.screen_time_limits (child_id)
+                WHERE scope = 'global'
+            """
+        ))
+        # Index unique partiel — une seule limite par (enfant, app)
+        await conn.execute(text(
+            """
+            CREATE UNIQUE INDEX IF NOT EXISTS uq_screen_time_limits_app
+                ON public.screen_time_limits (child_id, package_name)
+                WHERE scope = 'app'
+            """
+        ))
     yield
     async with test_engine.begin() as conn:
+        await conn.execute(text("DROP TABLE IF EXISTS public.screen_time_limits"))
         await conn.execute(text("DROP TABLE IF EXISTS public.screen_time_usage"))
         await conn.run_sync(Base.metadata.drop_all)
 

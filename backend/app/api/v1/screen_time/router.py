@@ -4,7 +4,7 @@ from uuid import UUID
 
 import structlog
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator, model_validator
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -56,6 +56,57 @@ class SummaryResponse(BaseModel):
     total_seconds: int
     top_apps: list[AppSummary]
     total_by_category: dict[str, int]
+
+
+# ─── Schémas — limites ────────────────────────────────────────────────────────
+
+class LimitRequest(BaseModel):
+    child_id: UUID
+    scope: str
+    package_name: Optional[str] = None
+    limit_seconds: int
+
+    @field_validator("scope")
+    @classmethod
+    def validate_scope(cls, v: str) -> str:
+        if v not in ("global", "app"):
+            raise ValueError("scope doit être 'global' ou 'app'")
+        return v
+
+    @field_validator("limit_seconds")
+    @classmethod
+    def validate_limit_non_negative(cls, v: int) -> int:
+        if v < 0:
+            raise ValueError("limit_seconds doit être >= 0")
+        return v
+
+    @model_validator(mode="after")
+    def validate_package_name_required_for_app(self) -> "LimitRequest":
+        if self.scope == "app" and not self.package_name:
+            raise ValueError("package_name est requis quand scope='app'")
+        return self
+
+
+class LimitRecord(BaseModel):
+    id: str
+    child_id: str
+    scope: str
+    package_name: Optional[str]
+    limit_seconds: int
+    created_at: datetime.datetime
+    updated_at: datetime.datetime
+
+
+# ─── Schémas — statut ─────────────────────────────────────────────────────────
+
+class LimitStatusItem(BaseModel):
+    id: str
+    scope: str
+    package_name: Optional[str]
+    limit_seconds: int
+    used_seconds: int
+    remaining_seconds: int
+    exceeded: bool
 
 
 # ─── Endpoints ───────────────────────────────────────────────────────────────
@@ -251,4 +302,256 @@ async def get_usage_summary(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Erreur lors du résumé du temps d'écran.",
+        ) from exc
+
+
+# ─── Endpoints — limites ──────────────────────────────────────────────────────
+
+@router.put(
+    "/limits",
+    response_model=LimitRecord,
+    status_code=status.HTTP_200_OK,
+    summary="Définit ou met à jour une limite de temps d'écran (upsert)",
+)
+async def put_limit(
+    payload: LimitRequest,
+    db: AsyncSession = Depends(get_db),
+) -> LimitRecord:
+    """
+    Upsert selon le scope :
+      - 'global' : une seule limite par enfant (clé = child_id).
+      - 'app'    : une limite par (child_id, package_name).
+    Le package_name est ignoré/forcé à NULL pour le scope 'global'.
+    """
+    try:
+        now = datetime.datetime.now(datetime.timezone.utc)
+
+        if payload.scope == "global":
+            result = await db.execute(
+                text(
+                    """
+                    INSERT INTO public.screen_time_limits
+                        (child_id, scope, package_name, limit_seconds, updated_at)
+                    VALUES (CAST(:child_id AS uuid), 'global', NULL, :limit_seconds, :updated_at)
+                    ON CONFLICT (child_id) WHERE scope = 'global' DO UPDATE
+                        SET limit_seconds = EXCLUDED.limit_seconds,
+                            updated_at    = EXCLUDED.updated_at
+                    RETURNING id::text, child_id::text, scope, package_name,
+                              limit_seconds, created_at, updated_at
+                    """
+                ),
+                {
+                    "child_id": str(payload.child_id),
+                    "limit_seconds": payload.limit_seconds,
+                    "updated_at": now,
+                },
+            )
+        else:  # scope == 'app'
+            result = await db.execute(
+                text(
+                    """
+                    INSERT INTO public.screen_time_limits
+                        (child_id, scope, package_name, limit_seconds, updated_at)
+                    VALUES (CAST(:child_id AS uuid), 'app', :package_name, :limit_seconds, :updated_at)
+                    ON CONFLICT (child_id, package_name) WHERE scope = 'app' DO UPDATE
+                        SET limit_seconds = EXCLUDED.limit_seconds,
+                            updated_at    = EXCLUDED.updated_at
+                    RETURNING id::text, child_id::text, scope, package_name,
+                              limit_seconds, created_at, updated_at
+                    """
+                ),
+                {
+                    "child_id": str(payload.child_id),
+                    "package_name": payload.package_name,
+                    "limit_seconds": payload.limit_seconds,
+                    "updated_at": now,
+                },
+            )
+
+        row = result.fetchone()
+        logger.info(
+            "screen_time_limit_upserted",
+            child_id=str(payload.child_id),
+            scope=payload.scope,
+        )
+        return LimitRecord(
+            id=row[0],
+            child_id=row[1],
+            scope=row[2],
+            package_name=row[3],
+            limit_seconds=row[4],
+            created_at=row[5],
+            updated_at=row[6],
+        )
+    except Exception as exc:
+        logger.error("screen_time_limit_put_error", error=str(exc))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Erreur lors de la mise à jour de la limite.",
+        ) from exc
+
+
+@router.get(
+    "/limits/{child_id}",
+    response_model=list[LimitRecord],
+    summary="Retourne toutes les limites d'un enfant (globale + par app)",
+)
+async def get_limits(
+    child_id: str,
+    db: AsyncSession = Depends(get_db),
+) -> list[LimitRecord]:
+    """
+    Retourne la limite globale (scope='global') et toutes les limites par app
+    (scope='app') définies pour cet enfant. Utilisé par l'app enfant et le parent.
+    """
+    try:
+        result = await db.execute(
+            text(
+                """
+                SELECT id::text, child_id::text, scope, package_name,
+                       limit_seconds, created_at, updated_at
+                FROM public.screen_time_limits
+                WHERE child_id = CAST(:child_id AS uuid)
+                ORDER BY scope DESC, package_name
+                """
+            ),
+            {"child_id": child_id},
+        )
+        rows = result.fetchall()
+        return [
+            LimitRecord(
+                id=row[0],
+                child_id=row[1],
+                scope=row[2],
+                package_name=row[3],
+                limit_seconds=row[4],
+                created_at=row[5],
+                updated_at=row[6],
+            )
+            for row in rows
+        ]
+    except Exception as exc:
+        logger.error("screen_time_limits_get_error", error=str(exc), child_id=child_id)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Erreur lors de la lecture des limites.",
+        ) from exc
+
+
+@router.delete(
+    "/limits/{limit_id}",
+    status_code=status.HTTP_200_OK,
+    summary="Supprime une limite de temps d'écran",
+)
+async def delete_limit(
+    limit_id: str,
+    db: AsyncSession = Depends(get_db),
+) -> dict[str, bool]:
+    try:
+        result = await db.execute(
+            text(
+                """
+                DELETE FROM public.screen_time_limits
+                WHERE id = CAST(:limit_id AS uuid)
+                RETURNING id
+                """
+            ),
+            {"limit_id": limit_id},
+        )
+        if result.fetchone() is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Limite introuvable.",
+            )
+        logger.info("screen_time_limit_deleted", limit_id=limit_id)
+        return {"deleted": True}
+    except HTTPException:
+        raise
+    except Exception as exc:
+        logger.error("screen_time_limit_delete_error", error=str(exc), limit_id=limit_id)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Erreur lors de la suppression de la limite.",
+        ) from exc
+
+
+# ─── Endpoint — statut croisé usage × limites ────────────────────────────────
+
+@router.get(
+    "/status/{child_id}",
+    response_model=list[LimitStatusItem],
+    summary="Croise l'usage du jour avec les limites : remaining_seconds et exceeded",
+)
+async def get_status(
+    child_id: str,
+    date: Optional[datetime.date] = Query(default=None),
+    db: AsyncSession = Depends(get_db),
+) -> list[LimitStatusItem]:
+    """
+    Retourne, pour chaque limite définie sur cet enfant, le cumul d'usage correspondant
+    sur la journée [date] (défaut = aujourd'hui), le temps restant et le dépassement.
+    Préfigure le blocage natif du Sprint 5C.
+    """
+    try:
+        target_date = date or datetime.date.today()
+
+        result = await db.execute(
+            text(
+                """
+                WITH daily_total AS (
+                    SELECT COALESCE(SUM(duration_seconds), 0) AS total
+                    FROM public.screen_time_usage
+                    WHERE child_id = CAST(:child_id AS uuid)
+                      AND usage_date = :usage_date
+                ),
+                app_usage AS (
+                    SELECT package_name, SUM(duration_seconds) AS duration
+                    FROM public.screen_time_usage
+                    WHERE child_id = CAST(:child_id AS uuid)
+                      AND usage_date = :usage_date
+                    GROUP BY package_name
+                )
+                SELECT
+                    l.id::text,
+                    l.scope,
+                    l.package_name,
+                    l.limit_seconds,
+                    CASE
+                        WHEN l.scope = 'global'
+                            THEN (SELECT total FROM daily_total)
+                        ELSE COALESCE(au.duration, 0)
+                    END AS used_seconds
+                FROM public.screen_time_limits l
+                LEFT JOIN app_usage au
+                    ON l.scope = 'app' AND au.package_name = l.package_name
+                WHERE l.child_id = CAST(:child_id AS uuid)
+                ORDER BY l.scope DESC, l.package_name
+                """
+            ),
+            {"child_id": child_id, "usage_date": target_date},
+        )
+        rows = result.fetchall()
+
+        items = []
+        for row in rows:
+            limit_s = row[3]
+            used_s  = int(row[4])
+            remaining = max(0, limit_s - used_s)
+            items.append(
+                LimitStatusItem(
+                    id=row[0],
+                    scope=row[1],
+                    package_name=row[2],
+                    limit_seconds=limit_s,
+                    used_seconds=used_s,
+                    remaining_seconds=remaining,
+                    exceeded=used_s >= limit_s,
+                )
+            )
+        return items
+    except Exception as exc:
+        logger.error("screen_time_status_error", error=str(exc), child_id=child_id)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Erreur lors du calcul du statut.",
         ) from exc
