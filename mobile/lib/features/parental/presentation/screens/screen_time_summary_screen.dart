@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
+import '../../../../core/router/route_names.dart';
 import '../../../../shared/widgets/harmony_app_bar.dart';
 import '../../data/services/screen_time_summary_service.dart';
 
@@ -58,6 +60,16 @@ class _ScreenTimeSummaryScreenState extends State<ScreenTimeSummaryScreen> {
     return Scaffold(
       backgroundColor: AppColors.bgBase,
       appBar: HarmonyAppBar(title: title),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => context.push(
+          '${RouteNames.childDetail}/${widget.childId}/screen-time/limits'
+          '${widget.childName != null ? '?name=${Uri.encodeComponent(widget.childName!)}' : ''}',
+        ),
+        backgroundColor: AppColors.accentBlue,
+        foregroundColor: AppColors.white,
+        icon: const Icon(Icons.timer_outlined),
+        label: const Text('Gérer les limites'),
+      ),
       body: RefreshIndicator(
         onRefresh: _load,
         color: AppColors.accentBlue,

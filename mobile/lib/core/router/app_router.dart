@@ -15,6 +15,7 @@ import '../../features/dashboard/presentation/screens/dashboard_screen.dart';
 import '../../features/fitness/presentation/screens/fitness_screen.dart';
 import '../../features/parental/presentation/screens/child_detail_screen.dart';
 import '../../features/parental/presentation/screens/screen_time_summary_screen.dart';
+import '../../features/parental/presentation/screens/screen_time_limits_screen.dart';
 import '../../features/parental/presentation/screens/child_settings_screen.dart';
 import '../../features/parental/presentation/screens/add_child_pairing_screen.dart';
 import '../../features/parental/presentation/screens/parental_screen.dart';
@@ -244,6 +245,17 @@ final GoRouter appRouter = GoRouter(
       pageBuilder: (context, state) => _slidePage(
         key: state.pageKey,
         child: ScreenTimeSummaryScreen(
+          childId: state.pathParameters['id']!,
+          childName: state.uri.queryParameters['name'],
+        ),
+      ),
+    ),
+    // ── Sprint 5B — Limites de temps d'écran ─────────────────────────────
+    GoRoute(
+      path: '${RouteNames.childDetail}/:id/screen-time/limits',
+      pageBuilder: (context, state) => _slidePage(
+        key: state.pageKey,
+        child: ScreenTimeLimitsScreen(
           childId: state.pathParameters['id']!,
           childName: state.uri.queryParameters['name'],
         ),
