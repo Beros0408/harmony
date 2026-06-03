@@ -71,9 +71,7 @@ class ScreenTimeLimitsService {
   Future<List<ScreenTimeLimit>> getLimits(String childId) async {
     final response = await HarmonyServices.dioClient.instance
         .get<dynamic>('/api/v1/screen-time/limits/$childId');
-    return (response.data as List<dynamic>)
-        .map((e) => ScreenTimeLimit.fromJson(e as Map<String, dynamic>))
-        .toList();
+    return parseLimitsBody(response.data);
   }
 
   Future<ScreenTimeLimit> setLimit({
@@ -109,7 +107,25 @@ class ScreenTimeLimitsService {
       '/api/v1/screen-time/status/$childId',
       queryParameters: {'date': dateStr},
     );
-    return (response.data as List<dynamic>)
+    return parseStatusBody(response.data);
+  }
+
+  // ─── Parsing (extraits pour la testabilité) ──────────────────────────────
+
+  // Dio peut retourner null pour response.data quand le backend renvoie 200 + "[]"
+  // (liste vide) sur certaines versions/configs. On traite null et non-List comme
+  // un succès à zéro élément plutôt que de lancer une TypeError.
+
+  List<ScreenTimeLimit> parseLimitsBody(dynamic data) {
+    if (data == null || data is! List) return [];
+    return (data as List<dynamic>)
+        .map((e) => ScreenTimeLimit.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  List<ScreenTimeStatusEntry> parseStatusBody(dynamic data) {
+    if (data == null || data is! List) return [];
+    return (data as List<dynamic>)
         .map((e) => ScreenTimeStatusEntry.fromJson(e as Map<String, dynamic>))
         .toList();
   }

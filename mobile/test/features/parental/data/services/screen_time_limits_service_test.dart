@@ -286,6 +286,81 @@ void main() {
     });
   });
 
+  // ── Régression : 200 + [] décodé en null par Dio ──────────────────────────
+  // Bug : le cast (response.data as List) levait TypeError quand Dio retournait
+  // null pour un body "[]". Fix : parseLimitsBody / parseStatusBody guèrent null.
+
+  group('parseLimitsBody (fix bug 200+[])', () {
+    test('retourne [] quand data est null (Dio decode [] en null)', () {
+      final svc = ScreenTimeLimitsService();
+      expect(svc.parseLimitsBody(null), isEmpty);
+    });
+
+    test('retourne [] quand data est une liste JSON vide', () {
+      final svc = ScreenTimeLimitsService();
+      expect(svc.parseLimitsBody(<dynamic>[]), isEmpty);
+    });
+
+    test('retourne [] quand data est un mauvais type (String)', () {
+      final svc = ScreenTimeLimitsService();
+      expect(svc.parseLimitsBody('[]'), isEmpty);
+    });
+
+    test('parse correctement une liste non vide', () {
+      final svc = ScreenTimeLimitsService();
+      final data = <dynamic>[
+        {
+          'id': _limitId,
+          'child_id': _childId,
+          'scope': 'global',
+          'limit_seconds': 7200,
+          'package_name': null,
+          'app_label': null,
+        }
+      ];
+      final limits = svc.parseLimitsBody(data);
+      expect(limits, hasLength(1));
+      expect(limits.first.scope, equals('global'));
+      expect(limits.first.limitSeconds, equals(7200));
+    });
+  });
+
+  group('parseStatusBody (fix bug 200+[])', () {
+    test('retourne [] quand data est null', () {
+      final svc = ScreenTimeLimitsService();
+      expect(svc.parseStatusBody(null), isEmpty);
+    });
+
+    test('retourne [] quand data est une liste JSON vide', () {
+      final svc = ScreenTimeLimitsService();
+      expect(svc.parseStatusBody(<dynamic>[]), isEmpty);
+    });
+
+    test('retourne [] quand data est un mauvais type', () {
+      final svc = ScreenTimeLimitsService();
+      expect(svc.parseStatusBody(42), isEmpty);
+    });
+
+    test('parse correctement un statut non dépassé', () {
+      final svc = ScreenTimeLimitsService();
+      final data = <dynamic>[
+        {
+          'scope': 'global',
+          'limit_seconds': 7200,
+          'used_seconds': 3600,
+          'remaining_seconds': 3600,
+          'exceeded': false,
+          'package_name': null,
+          'app_label': null,
+        }
+      ];
+      final entries = svc.parseStatusBody(data);
+      expect(entries, hasLength(1));
+      expect(entries.first.exceeded, isFalse);
+      expect(entries.first.remainingSeconds, equals(3600));
+    });
+  });
+
   group('ScreenTimeLimit.fromJson', () {
     test('désérialise une limite globale complète', () {
       final json = {
