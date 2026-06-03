@@ -1,6 +1,7 @@
 import pytest
 import pytest_asyncio
 from httpx import AsyncClient, ASGITransport
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 from sqlalchemy.pool import NullPool
 
@@ -19,8 +20,32 @@ TestSessionLocal = async_sessionmaker(
 async def setup_database():
     async with test_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+        # table hors ORM — DDL explicite
+        await conn.execute(text(
+            """
+            CREATE TABLE IF NOT EXISTS public.screen_time_usage (
+                id              uuid        DEFAULT gen_random_uuid() PRIMARY KEY,
+                child_id        uuid        NOT NULL,
+                package_name    text        NOT NULL,
+                app_label       text,
+                category        text,
+                duration_seconds integer    NOT NULL DEFAULT 0,
+                usage_date      date        NOT NULL,
+                created_at      timestamptz DEFAULT now(),
+                updated_at      timestamptz DEFAULT now(),
+                UNIQUE (child_id, package_name, usage_date)
+            )
+            """
+        ))
+        await conn.execute(text(
+            """
+            CREATE INDEX IF NOT EXISTS idx_screen_time_child_date
+                ON public.screen_time_usage (child_id, usage_date)
+            """
+        ))
     yield
     async with test_engine.begin() as conn:
+        await conn.execute(text("DROP TABLE IF EXISTS public.screen_time_usage"))
         await conn.run_sync(Base.metadata.drop_all)
 
 
