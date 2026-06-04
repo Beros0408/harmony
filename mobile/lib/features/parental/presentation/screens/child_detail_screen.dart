@@ -9,7 +9,6 @@ import 'package:latlong2/latlong.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_radius.dart';
 import '../../../../core/constants/app_spacing.dart';
-import '../../../../core/constants/app_typography.dart';
 import '../../../../core/router/route_names.dart';
 import '../../../../core/session/user_session.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -35,7 +34,6 @@ class ChildDetailScreen extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: AppColors.bgBase,
       appBar: HarmonyAppBar(
         title: l10n.childDetailTitle,
         actions: [
@@ -96,7 +94,7 @@ class _ChildDetailBody extends StatelessWidget {
                 child: Center(
                   child: Text(
                     profile.name[0].toUpperCase(),
-                    style: AppTypography.textTheme.headlineMedium?.copyWith(
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       color: profile.avatarColor,
                       fontWeight: FontWeight.w700,
                     ),
@@ -110,7 +108,7 @@ class _ChildDetailBody extends StatelessWidget {
                   children: [
                     Text(
                       l10n.familyChildAge(profile.name, profile.age),
-                      style: AppTypography.textTheme.titleMedium,
+                      style: Theme.of(context).textTheme.titleMedium,
                     ),
                     const SizedBox(height: AppSpacing.xs),
                     HarmonyBadge(
