@@ -79,8 +79,29 @@ async def setup_database():
                 WHERE scope = 'app'
             """
         ))
+        # table bonus hors ORM — DDL explicite (Sprint 5D-2)
+        await conn.execute(text(
+            """
+            CREATE TABLE IF NOT EXISTS public.screen_time_bonus (
+                id            uuid        DEFAULT gen_random_uuid() PRIMARY KEY,
+                child_id      uuid        NOT NULL,
+                bonus_date    date        NOT NULL,
+                bonus_seconds integer     NOT NULL DEFAULT 0 CHECK (bonus_seconds >= 0),
+                created_at    timestamptz DEFAULT now(),
+                updated_at    timestamptz DEFAULT now(),
+                CONSTRAINT uq_screen_time_bonus_child_date UNIQUE (child_id, bonus_date)
+            )
+            """
+        ))
+        await conn.execute(text(
+            """
+            CREATE INDEX IF NOT EXISTS idx_screen_time_bonus_child
+                ON public.screen_time_bonus (child_id)
+            """
+        ))
     yield
     async with test_engine.begin() as conn:
+        await conn.execute(text("DROP TABLE IF EXISTS public.screen_time_bonus"))
         await conn.execute(text("DROP TABLE IF EXISTS public.screen_time_limits"))
         await conn.execute(text("DROP TABLE IF EXISTS public.screen_time_usage"))
         await conn.run_sync(Base.metadata.drop_all)

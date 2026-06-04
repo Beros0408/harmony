@@ -97,6 +97,27 @@ class LimitRecord(BaseModel):
     updated_at: datetime.datetime
 
 
+# ─── Schémas — bonus ─────────────────────────────────────────────────────────
+
+class BonusRequest(BaseModel):
+    child_id: UUID
+    bonus_date: datetime.date
+    bonus_seconds: int
+
+    @field_validator("bonus_seconds")
+    @classmethod
+    def validate_bonus_non_negative(cls, v: int) -> int:
+        if v < 0:
+            raise ValueError("bonus_seconds doit être >= 0")
+        return v
+
+
+class BonusResponse(BaseModel):
+    child_id: str
+    bonus_date: datetime.date
+    bonus_seconds: int
+
+
 # ─── Schémas — statut ─────────────────────────────────────────────────────────
 
 class LimitStatusItem(BaseModel):
@@ -104,6 +125,7 @@ class LimitStatusItem(BaseModel):
     scope: str
     package_name: Optional[str]
     limit_seconds: int
+    bonus_seconds: int
     used_seconds: int
     remaining_seconds: int
     exceeded: bool
@@ -475,7 +497,111 @@ async def delete_limit(
         ) from exc
 
 
-# ─── Endpoint — statut croisé usage × limites ────────────────────────────────
+# ─── Endpoints — bonus ────────────────────────────────────────────────────────
+
+@router.put(
+    "/bonus",
+    response_model=BonusResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Octroie ou ajuste le temps bonus du jour pour un enfant (upsert)",
+)
+async def put_bonus(
+    payload: BonusRequest,
+    db: AsyncSession = Depends(get_db),
+) -> BonusResponse:
+    """
+    Upsert sur (child_id, bonus_date) : un seul bonus par enfant par jour.
+    Le parent peut ajuster le bonus du jour ou le remettre à 0 (bonus_seconds=0).
+    Le bonus s'applique uniquement à la limite de scope 'global'.
+    """
+    try:
+        now = datetime.datetime.now(datetime.timezone.utc)
+        result = await db.execute(
+            text(
+                """
+                INSERT INTO public.screen_time_bonus
+                    (child_id, bonus_date, bonus_seconds, updated_at)
+                VALUES (CAST(:child_id AS uuid), :bonus_date, :bonus_seconds, :updated_at)
+                ON CONFLICT (child_id, bonus_date) DO UPDATE
+                    SET bonus_seconds = EXCLUDED.bonus_seconds,
+                        updated_at    = EXCLUDED.updated_at
+                RETURNING child_id::text, bonus_date, bonus_seconds
+                """
+            ),
+            {
+                "child_id": str(payload.child_id),
+                "bonus_date": payload.bonus_date,
+                "bonus_seconds": payload.bonus_seconds,
+                "updated_at": now,
+            },
+        )
+        row = result.fetchone()
+        logger.info(
+            "screen_time_bonus_upserted",
+            child_id=str(payload.child_id),
+            bonus_seconds=payload.bonus_seconds,
+        )
+        return BonusResponse(
+            child_id=row[0],
+            bonus_date=row[1],
+            bonus_seconds=row[2],
+        )
+    except Exception as exc:
+        logger.error("screen_time_bonus_put_error", error=str(exc))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Erreur lors de l'enregistrement du bonus.",
+        ) from exc
+
+
+@router.get(
+    "/bonus/{child_id}",
+    response_model=BonusResponse,
+    summary="Retourne le bonus de temps d'écran du jour pour un enfant (0 si aucun)",
+)
+async def get_bonus(
+    child_id: str,
+    date: Optional[datetime.date] = Query(default=None),
+    db: AsyncSession = Depends(get_db),
+) -> BonusResponse:
+    """
+    Retourne le bonus défini pour la date donnée (défaut = aujourd'hui).
+    Retourne bonus_seconds=0 si aucun bonus n'a été accordé pour ce jour.
+    """
+    try:
+        target_date = date or datetime.date.today()
+        result = await db.execute(
+            text(
+                """
+                SELECT child_id::text, bonus_date, bonus_seconds
+                FROM public.screen_time_bonus
+                WHERE child_id = CAST(:child_id AS uuid)
+                  AND bonus_date = :bonus_date
+                """
+            ),
+            {"child_id": child_id, "bonus_date": target_date},
+        )
+        row = result.fetchone()
+        if row is None:
+            return BonusResponse(
+                child_id=child_id,
+                bonus_date=target_date,
+                bonus_seconds=0,
+            )
+        return BonusResponse(
+            child_id=row[0],
+            bonus_date=row[1],
+            bonus_seconds=row[2],
+        )
+    except Exception as exc:
+        logger.error("screen_time_bonus_get_error", error=str(exc), child_id=child_id)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Erreur lors de la lecture du bonus.",
+        ) from exc
+
+
+# ─── Endpoint — statut croisé usage × limites (+ bonus global) ───────────────
 
 @router.get(
     "/status/{child_id}",
@@ -490,10 +616,27 @@ async def get_status(
     """
     Retourne, pour chaque limite définie sur cet enfant, le cumul d'usage correspondant
     sur la journée [date] (défaut = aujourd'hui), le temps restant et le dépassement.
-    Préfigure le blocage natif du Sprint 5C.
+    Pour la limite globale, le bonus du jour est intégré dans le calcul :
+      remaining = limit_seconds + bonus_seconds - used_seconds
+    Les limites par app ne sont pas affectées par le bonus.
     """
     try:
         target_date = date or datetime.date.today()
+
+        # Bonus du jour — s'applique uniquement au scope 'global'
+        bonus_res = await db.execute(
+            text(
+                """
+                SELECT COALESCE(bonus_seconds, 0)
+                FROM public.screen_time_bonus
+                WHERE child_id = CAST(:child_id AS uuid)
+                  AND bonus_date = :usage_date
+                """
+            ),
+            {"child_id": child_id, "usage_date": target_date},
+        )
+        bonus_row = bonus_res.fetchone()
+        global_bonus: int = int(bonus_row[0]) if bonus_row else 0
 
         result = await db.execute(
             text(
@@ -534,18 +677,23 @@ async def get_status(
 
         items = []
         for row in rows:
-            limit_s = row[3]
-            used_s  = int(row[4])
-            remaining = max(0, limit_s - used_s)
+            limit_s   = row[3]
+            used_s    = int(row[4])
+            scope     = row[1]
+            # Le bonus ne s'applique qu'au quota global
+            bonus     = global_bonus if scope == "global" else 0
+            effective = limit_s + bonus
+            remaining = max(0, effective - used_s)
             items.append(
                 LimitStatusItem(
                     id=row[0],
-                    scope=row[1],
+                    scope=scope,
                     package_name=row[2],
                     limit_seconds=limit_s,
+                    bonus_seconds=bonus,
                     used_seconds=used_s,
                     remaining_seconds=remaining,
-                    exceeded=used_s >= limit_s,
+                    exceeded=used_s >= effective,
                 )
             )
         return items

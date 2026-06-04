@@ -29,6 +29,7 @@ class _ScreenTimeLimitsScreenState extends State<ScreenTimeLimitsScreen> {
 
   List<ScreenTimeLimit>? _limits;
   List<ScreenTimeStatusEntry>? _statusEntries;
+  ScreenTimeBonusEntry? _bonus;
   bool _loading = true;
   String? _error;
   bool _saving = false;
@@ -60,6 +61,7 @@ class _ScreenTimeLimitsScreenState extends State<ScreenTimeLimitsScreen> {
     try {
       final limitsF = _svc.getLimits(widget.childId);
       final statusF = _svc.getStatus(widget.childId);
+      final bonusF  = _svc.getBonus(widget.childId);
       final limits = await limitsF;
       List<ScreenTimeStatusEntry> status;
       try {
@@ -68,10 +70,17 @@ class _ScreenTimeLimitsScreenState extends State<ScreenTimeLimitsScreen> {
         // Pas d'usage pour aujourd'hui → statut indisponible, on continue
         status = [];
       }
+      ScreenTimeBonusEntry? bonus;
+      try {
+        bonus = await bonusF;
+      } catch (_) {
+        // Bonus indisponible → on continue sans bonus
+      }
       if (mounted) {
         setState(() {
           _limits = limits;
           _statusEntries = status;
+          _bonus = bonus;
         });
       }
     } catch (e) {
@@ -116,6 +125,32 @@ class _ScreenTimeLimitsScreenState extends State<ScreenTimeLimitsScreen> {
       await _load();
       final name = appLabel ?? packageName.split('.').last;
       if (mounted) _showSuccess('Limite enregistrée pour $name');
+    } catch (e) {
+      if (mounted) _showError('Erreur : $e');
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  /// Accorde ou ajuste le bonus du jour (en secondes absolues).
+  Future<void> _saveBonus(int bonusSeconds) async {
+    setState(() => _saving = true);
+    try {
+      final today = DateTime.now();
+      final dateStr =
+          '${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
+      await _svc.setBonus(
+        childId: widget.childId,
+        bonusDate: dateStr,
+        bonusSeconds: bonusSeconds,
+      );
+      await _load();
+      if (mounted) {
+        final msg = bonusSeconds == 0
+            ? 'Bonus remis à zéro'
+            : 'Bonus accordé : +${_formatDuration(bonusSeconds)}';
+        _showSuccess(msg);
+      }
     } catch (e) {
       if (mounted) _showError('Erreur : $e');
     } finally {
@@ -190,6 +225,31 @@ class _ScreenTimeLimitsScreenState extends State<ScreenTimeLimitsScreen> {
     );
   }
 
+  /// Ouvre le bottom sheet de temps bonus.
+  Future<void> _showBonusSheet() async {
+    final currentBonus = _bonus?.bonusSeconds ?? 0;
+    await showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: AppColors.bgSurface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => _BonusSheet(
+        currentBonusSeconds: currentBonus,
+        onGrant: (increment) async {
+          Navigator.of(context).pop();
+          await _saveBonus(currentBonus + increment);
+        },
+        onReset: currentBonus > 0
+            ? () async {
+                Navigator.of(context).pop();
+                await _saveBonus(0);
+              }
+            : null,
+      ),
+    );
+  }
+
   void _showSuccess(String msg) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -256,12 +316,14 @@ class _ScreenTimeLimitsScreenState extends State<ScreenTimeLimitsScreen> {
           status: _globalLimit != null
               ? _statusFor('global', null)
               : null,
+          bonusSeconds: _bonus?.bonusSeconds ?? 0,
           onSet: () async {
             final seconds =
                 await _pickDuration(initialSeconds: _globalLimit?.limitSeconds ?? 3600);
             if (seconds != null) await _saveGlobalLimit(seconds);
           },
           onDelete: _globalLimit != null ? () => _deleteLimit(_globalLimit!) : null,
+          onGrantBonus: _globalLimit != null ? _showBonusSheet : null,
         ),
         const SizedBox(height: AppSpacing.xl),
         Row(
@@ -323,12 +385,16 @@ class _GlobalQuotaCard extends StatelessWidget {
     required this.status,
     required this.onSet,
     this.onDelete,
+    this.bonusSeconds = 0,
+    this.onGrantBonus,
   });
 
   final ScreenTimeLimit? limit;
   final ScreenTimeStatusEntry? status;
+  final int bonusSeconds;
   final VoidCallback onSet;
   final VoidCallback? onDelete;
+  final VoidCallback? onGrantBonus;
 
   @override
   Widget build(BuildContext context) {
@@ -408,6 +474,65 @@ class _GlobalQuotaCard extends StatelessWidget {
                   const SizedBox(height: AppSpacing.sm),
                   _UsageBar(status: status!),
                 ],
+                const SizedBox(height: AppSpacing.md),
+                // ─── Bonus du jour ────────────────────────────────────────
+                if (bonusSeconds > 0)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.sm,
+                            vertical: 3,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.accentGreen.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: AppColors.accentGreen.withValues(alpha: 0.4),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.add_circle_outline,
+                                size: 14,
+                                color: AppColors.accentGreen,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                'Bonus aujourd\'hui : +${_formatDuration(bonusSeconds)}',
+                                style: tt.bodySmall?.copyWith(
+                                  color: AppColors.accentGreen,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: onGrantBonus,
+                    icon: const Icon(Icons.more_time_outlined, size: 16),
+                    label: Text(
+                      bonusSeconds > 0
+                          ? 'Modifier le temps bonus'
+                          : 'Accorder du temps bonus',
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.accentGreen,
+                      side: const BorderSide(color: AppColors.accentGreen),
+                      padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+                      textStyle: tt.bodySmall?.copyWith(fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ),
               ],
             ),
     );
@@ -510,13 +635,15 @@ class _UsageBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
-    final ratio = status.limitSeconds > 0
-        ? (status.usedSeconds / status.limitSeconds).clamp(0.0, 1.0)
+    // Pour la limite globale, le bonus est inclus dans le quota effectif
+    final effectiveLimit = status.limitSeconds + status.bonusSeconds;
+    final ratio = effectiveLimit > 0
+        ? (status.usedSeconds / effectiveLimit).clamp(0.0, 1.0)
         : 0.0;
     final color = status.exceeded ? AppColors.accentRed : AppColors.accentGreen;
     final label = status.exceeded
         ? 'Dépassé · ${_formatDuration(status.usedSeconds)} utilisées'
-        : '${_formatDuration(status.usedSeconds)} / ${_formatDuration(status.limitSeconds)}';
+        : '${_formatDuration(status.usedSeconds)} / ${_formatDuration(effectiveLimit)}';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -649,6 +776,113 @@ class _AppPickerSheet extends StatelessWidget {
             ),
           const SizedBox(height: AppSpacing.lg),
         ],
+      ),
+    );
+  }
+}
+
+// ─── Bonus sheet ─────────────────────────────────────────────────────────────
+
+class _BonusSheet extends StatelessWidget {
+  const _BonusSheet({
+    required this.currentBonusSeconds,
+    required this.onGrant,
+    this.onReset,
+  });
+
+  final int currentBonusSeconds;
+  final ValueChanged<int> onGrant;
+  final VoidCallback? onReset;
+
+  static const List<({int seconds, String label})> _presets = [
+    (seconds: 900,  label: '+15 min'),
+    (seconds: 1800, label: '+30 min'),
+    (seconds: 3600, label: '+1 h'),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg,
+          vertical: AppSpacing.lg,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppColors.borderStrong,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            Text(
+              'Temps bonus pour aujourd\'hui',
+              style: tt.titleMedium?.copyWith(color: AppColors.textPrimary),
+            ),
+            if (currentBonusSeconds > 0) ...[
+              const SizedBox(height: AppSpacing.xs),
+              Text(
+                'Bonus actuel : +${_formatDuration(currentBonusSeconds)}',
+                style: tt.bodySmall?.copyWith(color: AppColors.accentGreen),
+              ),
+            ],
+            const SizedBox(height: AppSpacing.lg),
+            Text(
+              'Ajouter au quota d\'aujourd\'hui :',
+              style: tt.bodySmall?.copyWith(color: AppColors.textSecondary),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            Row(
+              children: _presets
+                  .map(
+                    (p) => Padding(
+                      padding: const EdgeInsets.only(right: AppSpacing.sm),
+                      child: FilledButton(
+                        onPressed: () => onGrant(p.seconds),
+                        style: FilledButton.styleFrom(
+                          backgroundColor: AppColors.accentGreen,
+                          foregroundColor: AppColors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.md,
+                            vertical: AppSpacing.sm,
+                          ),
+                        ),
+                        child: Text(
+                          p.label,
+                          style: tt.bodySmall?.copyWith(
+                            color: AppColors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                  .toList(),
+            ),
+            if (onReset != null) ...[
+              const SizedBox(height: AppSpacing.md),
+              TextButton.icon(
+                onPressed: onReset,
+                icon: const Icon(Icons.cancel_outlined, size: 16),
+                label: const Text('Remettre le bonus à zéro'),
+                style: TextButton.styleFrom(
+                  foregroundColor: AppColors.accentRed,
+                  padding: EdgeInsets.zero,
+                ),
+              ),
+            ],
+            const SizedBox(height: AppSpacing.sm),
+          ],
+        ),
       ),
     );
   }

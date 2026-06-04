@@ -93,6 +93,32 @@ class _StubGetStatus extends ScreenTimeLimitsService {
       result;
 }
 
+class _StubGetBonus extends ScreenTimeLimitsService {
+  final ScreenTimeBonusEntry result;
+  _StubGetBonus(this.result);
+
+  @override
+  Future<ScreenTimeBonusEntry> getBonus(String childId, {DateTime? date}) async => result;
+}
+
+class _StubSetBonus extends ScreenTimeLimitsService {
+  ScreenTimeBonusEntry? lastResult;
+
+  @override
+  Future<ScreenTimeBonusEntry> setBonus({
+    required String childId,
+    required String bonusDate,
+    required int bonusSeconds,
+  }) async {
+    lastResult = ScreenTimeBonusEntry(
+      childId: childId,
+      bonusDate: bonusDate,
+      bonusSeconds: bonusSeconds,
+    );
+    return lastResult!;
+  }
+}
+
 class _NetworkErrorService extends ScreenTimeLimitsService {
   @override
   Future<List<ScreenTimeLimit>> getLimits(String childId) async {
@@ -130,6 +156,26 @@ class _NetworkErrorService extends ScreenTimeLimitsService {
   }) async {
     throw DioException(
       requestOptions: RequestOptions(path: '/api/v1/screen-time/status/$childId'),
+      type: DioExceptionType.connectionError,
+    );
+  }
+
+  @override
+  Future<ScreenTimeBonusEntry> getBonus(String childId, {DateTime? date}) async {
+    throw DioException(
+      requestOptions: RequestOptions(path: '/api/v1/screen-time/bonus/$childId'),
+      type: DioExceptionType.connectionError,
+    );
+  }
+
+  @override
+  Future<ScreenTimeBonusEntry> setBonus({
+    required String childId,
+    required String bonusDate,
+    required int bonusSeconds,
+  }) async {
+    throw DioException(
+      requestOptions: RequestOptions(path: '/api/v1/screen-time/bonus'),
       type: DioExceptionType.connectionError,
     );
   }
@@ -409,6 +455,7 @@ void main() {
       expect(status.usedSeconds, equals(3600));
       expect(status.remainingSeconds, equals(3600));
       expect(status.exceeded, isFalse);
+      expect(status.bonusSeconds, equals(0));
     });
 
     test('désérialise correctement un statut dépassé', () {
@@ -425,6 +472,112 @@ void main() {
       expect(status.exceeded, isTrue);
       expect(status.remainingSeconds, equals(0));
       expect(status.packageName, equals('com.tiktok.android'));
+    });
+
+    test('désérialise bonus_seconds quand présent dans le JSON', () {
+      final json = {
+        'scope': 'global',
+        'limit_seconds': 7200,
+        'bonus_seconds': 1800,
+        'used_seconds': 5000,
+        'remaining_seconds': 4000,
+        'exceeded': false,
+        'package_name': null,
+        'app_label': null,
+      };
+      final status = ScreenTimeStatusEntry.fromJson(json);
+      expect(status.bonusSeconds, equals(1800));
+      expect(status.remainingSeconds, equals(4000));
+    });
+
+    test('bonus_seconds absent → 0 par défaut (rétrocompatibilité)', () {
+      final json = {
+        'scope': 'global',
+        'limit_seconds': 7200,
+        'used_seconds': 3600,
+        'remaining_seconds': 3600,
+        'exceeded': false,
+        'package_name': null,
+        'app_label': null,
+        // pas de 'bonus_seconds'
+      };
+      final status = ScreenTimeStatusEntry.fromJson(json);
+      expect(status.bonusSeconds, equals(0));
+    });
+  });
+
+  // ─── ScreenTimeBonusEntry ────────────────────────────────────────────────────
+
+  group('ScreenTimeBonusEntry.fromJson', () {
+    test('désérialise un bonus complet', () {
+      final json = {
+        'child_id': _childId,
+        'bonus_date': '2026-06-03',
+        'bonus_seconds': 1800,
+      };
+      final bonus = ScreenTimeBonusEntry.fromJson(json);
+      expect(bonus.childId, equals(_childId));
+      expect(bonus.bonusDate, equals('2026-06-03'));
+      expect(bonus.bonusSeconds, equals(1800));
+    });
+
+    test('bonus_seconds=0 valide (remise à zéro)', () {
+      final json = {
+        'child_id': _childId,
+        'bonus_date': '2026-06-03',
+        'bonus_seconds': 0,
+      };
+      final bonus = ScreenTimeBonusEntry.fromJson(json);
+      expect(bonus.bonusSeconds, equals(0));
+    });
+  });
+
+  // ─── getBonus / setBonus ─────────────────────────────────────────────────────
+
+  group('getBonus', () {
+    test('retourne le bonus du jour', () async {
+      final expected = const ScreenTimeBonusEntry(
+        childId: _childId,
+        bonusDate: '2026-06-03',
+        bonusSeconds: 1800,
+      );
+      final svc = _StubGetBonus(expected);
+      final bonus = await svc.getBonus(_childId);
+      expect(bonus.bonusSeconds, equals(1800));
+      expect(bonus.childId, equals(_childId));
+    });
+
+    test('propage DioException sur erreur réseau', () {
+      final svc = _NetworkErrorService();
+      expect(
+        () => svc.getBonus(_childId),
+        throwsA(isA<DioException>()),
+      );
+    });
+  });
+
+  group('setBonus', () {
+    test('transmet les bons paramètres', () async {
+      final svc = _StubSetBonus();
+      await svc.setBonus(
+        childId: _childId,
+        bonusDate: '2026-06-03',
+        bonusSeconds: 1800,
+      );
+      expect(svc.lastResult?.bonusSeconds, equals(1800));
+      expect(svc.lastResult?.bonusDate, equals('2026-06-03'));
+    });
+
+    test('propage DioException sur erreur réseau', () {
+      final svc = _NetworkErrorService();
+      expect(
+        () => svc.setBonus(
+          childId: _childId,
+          bonusDate: '2026-06-03',
+          bonusSeconds: 900,
+        ),
+        throwsA(isA<DioException>()),
+      );
     });
   });
 }
