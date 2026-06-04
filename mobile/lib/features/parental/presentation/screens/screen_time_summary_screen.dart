@@ -5,6 +5,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/router/route_names.dart';
+import '../../../../core/utils/app_category_mapper.dart';
 import '../../../../shared/widgets/harmony_app_bar.dart';
 import '../../data/services/screen_time_summary_service.dart';
 
@@ -233,7 +234,7 @@ class _AppRow extends StatelessWidget {
                     ),
                     if (app.category != null)
                       Text(
-                        app.category!,
+                        AppCategoryMapper.categoryLabel(app.category),
                         style: tt.bodySmall?.copyWith(color: AppColors.textMuted),
                       ),
                   ],
@@ -286,6 +287,7 @@ class _CategoriesCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;
     final sorted = totalByCategory.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
@@ -293,35 +295,48 @@ class _CategoriesCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
-        color: AppColors.bgSurface,
+        color: cs.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.borderDefault),
+        border: Border.all(color: cs.outline),
       ),
       child: Column(
-        children: sorted
-            .map(
-              (e) => Padding(
-                padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        e.key,
-                        style: tt.bodySmall?.copyWith(color: AppColors.textSecondary),
-                      ),
-                    ),
-                    Text(
-                      _formatDuration(e.value),
-                      style: tt.bodySmall?.copyWith(
-                        color: AppColors.textPrimary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
+        children: sorted.map((e) {
+          final accent = AppCategoryMapper.categoryAccent(e.key);
+          final icon   = AppCategoryMapper.categoryIcon(e.key);
+          final label  = AppCategoryMapper.categoryLabel(e.key);
+
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+            child: Row(
+              children: [
+                // Pastille colorée + icône
+                Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: accent.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(icon, size: 16, color: accent),
                 ),
-              ),
-            )
-            .toList(),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: Text(
+                    label,
+                    style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+                  ),
+                ),
+                Text(
+                  _formatDuration(e.value),
+                  style: tt.bodySmall?.copyWith(
+                    color: cs.onSurface,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }).toList(),
       ),
     );
   }
