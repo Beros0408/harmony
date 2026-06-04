@@ -10,6 +10,7 @@ import 'features/kids/data/services/kids_storage.dart';
 import 'features/kids/data/services/screen_time_blocking_service.dart';
 import 'features/kids/data/services/screen_time_limits_fetch_service.dart';
 import 'features/kids/data/services/screen_time_upload_service.dart';
+import 'features/kids/data/services/screen_time_warning_service.dart';
 import 'features/kids/presentation/kids_admin_screen.dart';
 import 'features/kids/presentation/kids_pairing_screen.dart';
 import 'shared/theme/harmony_theme.dart';
@@ -52,6 +53,9 @@ void main() async {
     // Polling des limites toutes les 5 min + push de la liste de blocage toutes les 30 s.
     ScreenTimeLimitsFetchService.instance.start();
     ScreenTimeBlockingService.instance.start();
+    // Sprint 5D-1 : avertissements progressifs 10/5/1 min avant le blocage.
+    await ScreenTimeWarningService.instance.init();
+    ScreenTimeWarningService.instance.start();
   }
 
   runApp(HarmonyKidsApp(initialChildId: storedChildId));
