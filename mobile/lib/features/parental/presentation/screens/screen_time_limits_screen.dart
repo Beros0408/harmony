@@ -34,8 +34,15 @@ class _ScreenTimeLimitsScreenState extends State<ScreenTimeLimitsScreen> {
   String? _error;
   bool _saving = false;
 
-  ScreenTimeLimit? get _globalLimit =>
-      _limits?.where((l) => l.scope == 'global').firstOrNull;
+  // Quotas globaux différenciés par type de jour (Sprint 5D-5)
+  ScreenTimeLimit? get _globalAllLimit =>
+      _limits?.where((l) => l.scope == 'global' && l.dayType == 'all').firstOrNull;
+  ScreenTimeLimit? get _globalWeekdayLimit =>
+      _limits?.where((l) => l.scope == 'global' && l.dayType == 'weekday').firstOrNull;
+  ScreenTimeLimit? get _globalWeekendLimit =>
+      _limits?.where((l) => l.scope == 'global' && l.dayType == 'weekend').firstOrNull;
+  bool get _hasAnyGlobalLimit =>
+      _globalAllLimit != null || _globalWeekdayLimit != null || _globalWeekendLimit != null;
 
   List<ScreenTimeLimit> get _appLimits =>
       _limits?.where((l) => l.scope == 'app').toList() ?? [];
@@ -46,6 +53,9 @@ class _ScreenTimeLimitsScreenState extends State<ScreenTimeLimitsScreen> {
       return s.scope == 'app' && s.packageName == packageName;
     }).firstOrNull;
   }
+
+  // Statut global applicable aujourd'hui (le backend ne renvoie qu'un seul global)
+  ScreenTimeStatusEntry? get _globalApplicableStatus => _statusFor('global', null);
 
   @override
   void initState() {
@@ -92,13 +102,14 @@ class _ScreenTimeLimitsScreenState extends State<ScreenTimeLimitsScreen> {
 
   // ─── Actions ───────────────────────────────────────────────────────────────
 
-  Future<void> _saveGlobalLimit(int limitSeconds) async {
+  Future<void> _saveGlobalLimit(int limitSeconds, {String dayType = 'all'}) async {
     setState(() => _saving = true);
     try {
       await _svc.setLimit(
         childId: widget.childId,
         scope: 'global',
         limitSeconds: limitSeconds,
+        dayType: dayType,
       );
       await _load();
       if (mounted) _showSuccess('Quota global enregistré');
@@ -163,7 +174,7 @@ class _ScreenTimeLimitsScreenState extends State<ScreenTimeLimitsScreen> {
       context: context,
       builder: (_) => _ConfirmDeleteDialog(
         label: limit.scope == 'global'
-            ? 'le quota global'
+            ? _globalLimitLabel(limit.dayType)
             : (limit.appLabel ?? limit.packageName?.split('.').last ?? 'cette app'),
       ),
     );
@@ -311,19 +322,25 @@ class _ScreenTimeLimitsScreenState extends State<ScreenTimeLimitsScreen> {
         const SizedBox(height: AppSpacing.md),
         _SectionLabel(label: 'QUOTA QUOTIDIEN GLOBAL'),
         const SizedBox(height: AppSpacing.sm),
-        _GlobalQuotaCard(
-          limit: _globalLimit,
-          status: _globalLimit != null
-              ? _statusFor('global', null)
-              : null,
+        _GlobalDayQuotasSection(
+          weekdayLimit: _globalWeekdayLimit,
+          weekendLimit: _globalWeekendLimit,
+          allLimit: _globalAllLimit,
+          applicableStatus: _globalApplicableStatus,
           bonusSeconds: _bonus?.bonusSeconds ?? 0,
-          onSet: () async {
-            final seconds =
-                await _pickDuration(initialSeconds: _globalLimit?.limitSeconds ?? 3600);
-            if (seconds != null) await _saveGlobalLimit(seconds);
+          onSetDayType: (dayType) async {
+            final existing = switch (dayType) {
+              'weekday' => _globalWeekdayLimit,
+              'weekend' => _globalWeekendLimit,
+              _ => _globalAllLimit,
+            };
+            final seconds = await _pickDuration(
+              initialSeconds: existing?.limitSeconds ?? 3600,
+            );
+            if (seconds != null) await _saveGlobalLimit(seconds, dayType: dayType);
           },
-          onDelete: _globalLimit != null ? () => _deleteLimit(_globalLimit!) : null,
-          onGrantBonus: _globalLimit != null ? _showBonusSheet : null,
+          onDelete: _deleteLimit,
+          onGrantBonus: _hasAnyGlobalLimit ? _showBonusSheet : null,
         ),
         const SizedBox(height: AppSpacing.xl),
         Row(
@@ -363,6 +380,14 @@ class _ScreenTimeLimitsScreenState extends State<ScreenTimeLimitsScreen> {
   }
 }
 
+// ─── Helper labels quotas globaux ─────────────────────────────────────────────
+
+String _globalLimitLabel(String dayType) => switch (dayType) {
+      'weekday' => 'le quota Semaine',
+      'weekend' => 'le quota Week-end',
+      _ => 'le quota par défaut (tous les jours)',
+    };
+
 // ─── Widgets internes ────────────────────────────────────────────────────────
 
 class _SectionLabel extends StatelessWidget {
@@ -379,26 +404,36 @@ class _SectionLabel extends StatelessWidget {
       );
 }
 
-class _GlobalQuotaCard extends StatelessWidget {
-  const _GlobalQuotaCard({
-    required this.limit,
-    required this.status,
-    required this.onSet,
-    this.onDelete,
-    this.bonusSeconds = 0,
+/// Section quota global différenciée Semaine / Week-end (Sprint 5D-5).
+/// Affiche jusqu'à trois types de quotas : weekday, weekend, et 'all' (défaut rétrocompat.).
+/// [applicableStatus] = statut du quota actuellement actif pour aujourd'hui.
+class _GlobalDayQuotasSection extends StatelessWidget {
+  const _GlobalDayQuotasSection({
+    this.weekdayLimit,
+    this.weekendLimit,
+    this.allLimit,
+    this.applicableStatus,
+    required this.bonusSeconds,
+    required this.onSetDayType,
+    required this.onDelete,
     this.onGrantBonus,
   });
 
-  final ScreenTimeLimit? limit;
-  final ScreenTimeStatusEntry? status;
+  final ScreenTimeLimit? weekdayLimit;
+  final ScreenTimeLimit? weekendLimit;
+  final ScreenTimeLimit? allLimit;
+  final ScreenTimeStatusEntry? applicableStatus;
   final int bonusSeconds;
-  final VoidCallback onSet;
-  final VoidCallback? onDelete;
+  // Appelé avec 'weekday', 'weekend' ou 'all'
+  final ValueChanged<String> onSetDayType;
+  final ValueChanged<ScreenTimeLimit> onDelete;
   final VoidCallback? onGrantBonus;
 
   @override
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
+    final hasNone = weekdayLimit == null && weekendLimit == null && allLimit == null;
+
     return Container(
       padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
@@ -406,135 +441,216 @@ class _GlobalQuotaCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.borderDefault),
       ),
-      child: limit == null
-          ? Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (hasNone) ...[
+            Row(
               children: [
-                Row(
-                  children: [
-                    const Icon(Icons.timer_off_outlined,
-                        size: 20, color: AppColors.textMuted),
-                    const SizedBox(width: AppSpacing.sm),
-                    Text(
-                      'Aucun quota global défini',
-                      style: tt.bodyMedium?.copyWith(color: AppColors.textSecondary),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: AppSpacing.md),
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton.icon(
-                    onPressed: onSet,
-                    icon: const Icon(Icons.add_alarm_outlined, size: 18),
-                    label: const Text('Définir un quota quotidien'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.accentBlue,
-                      side: const BorderSide(color: AppColors.accentBlue),
-                    ),
-                  ),
-                ),
-              ],
-            )
-          : Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    const Icon(Icons.timer_outlined,
-                        size: 20, color: AppColors.accentBlue),
-                    const SizedBox(width: AppSpacing.sm),
-                    Expanded(
-                      child: Text(
-                        _formatDuration(limit!.limitSeconds),
-                        style: tt.titleMedium?.copyWith(
-                          color: AppColors.textPrimary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: onSet,
-                      style: TextButton.styleFrom(
-                          foregroundColor: AppColors.accentBlue,
-                          padding: EdgeInsets.zero),
-                      child: const Text('Modifier'),
-                    ),
-                    const SizedBox(width: AppSpacing.xs),
-                    IconButton(
-                      onPressed: onDelete,
-                      icon: const Icon(Icons.delete_outline, size: 20),
-                      color: AppColors.accentRed,
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                    ),
-                  ],
-                ),
-                if (status != null) ...[
-                  const SizedBox(height: AppSpacing.sm),
-                  _UsageBar(status: status!),
-                ],
-                const SizedBox(height: AppSpacing.md),
-                // ─── Bonus du jour ────────────────────────────────────────
-                if (bonusSeconds > 0)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: AppSpacing.sm,
-                            vertical: 3,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.accentGreen.withValues(alpha: 0.12),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color: AppColors.accentGreen.withValues(alpha: 0.4),
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(
-                                Icons.add_circle_outline,
-                                size: 14,
-                                color: AppColors.accentGreen,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                'Bonus aujourd\'hui : +${_formatDuration(bonusSeconds)}',
-                                style: tt.bodySmall?.copyWith(
-                                  color: AppColors.accentGreen,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton.icon(
-                    onPressed: onGrantBonus,
-                    icon: const Icon(Icons.more_time_outlined, size: 16),
-                    label: Text(
-                      bonusSeconds > 0
-                          ? 'Modifier le temps bonus'
-                          : 'Accorder du temps bonus',
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.accentGreen,
-                      side: const BorderSide(color: AppColors.accentGreen),
-                      padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
-                      textStyle: tt.bodySmall?.copyWith(fontWeight: FontWeight.w600),
-                    ),
-                  ),
+                const Icon(Icons.timer_off_outlined, size: 20, color: AppColors.textMuted),
+                const SizedBox(width: AppSpacing.sm),
+                Text(
+                  'Aucun quota global défini',
+                  style: tt.bodyMedium?.copyWith(color: AppColors.textSecondary),
                 ),
               ],
             ),
+            const SizedBox(height: AppSpacing.md),
+          ],
+
+          // ─── Ligne Semaine ─────────────────────────────────────────────
+          _DayQuotaRow(
+            label: 'Semaine (Lun–Ven)',
+            icon: Icons.work_outline,
+            limit: weekdayLimit,
+            // Barre d'usage visible si le quota semaine est l'actif du jour
+            status: applicableStatus?.dayType == 'weekday' ? applicableStatus : null,
+            onSet: () => onSetDayType('weekday'),
+            onDelete: weekdayLimit != null ? () => onDelete(weekdayLimit!) : null,
+          ),
+          const SizedBox(height: AppSpacing.sm),
+
+          // ─── Ligne Week-end ────────────────────────────────────────────
+          _DayQuotaRow(
+            label: 'Week-end (Sam–Dim)',
+            icon: Icons.weekend_outlined,
+            limit: weekendLimit,
+            status: applicableStatus?.dayType == 'weekend' ? applicableStatus : null,
+            onSet: () => onSetDayType('weekend'),
+            onDelete: weekendLimit != null ? () => onDelete(weekendLimit!) : null,
+          ),
+
+          // ─── Quota 'all' rétrocompatible (affiché si présent) ─────────
+          if (allLimit != null) ...[
+            const SizedBox(height: AppSpacing.sm),
+            _DayQuotaRow(
+              label: 'Tous les jours (défaut)',
+              icon: Icons.timer_outlined,
+              limit: allLimit,
+              status: applicableStatus?.dayType == 'all' ? applicableStatus : null,
+              onSet: () => onSetDayType('all'),
+              onDelete: () => onDelete(allLimit!),
+              note: 'Appliqué si aucun quota Semaine/Week-end n\'est défini',
+            ),
+          ],
+
+          // ─── Bonus du jour ─────────────────────────────────────────────
+          if (onGrantBonus != null) ...[
+            const SizedBox(height: AppSpacing.md),
+            if (bonusSeconds > 0)
+              Padding(
+                padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.sm,
+                    vertical: 3,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.accentGreen.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: AppColors.accentGreen.withValues(alpha: 0.4),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.add_circle_outline,
+                          size: 14, color: AppColors.accentGreen),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Bonus aujourd\'hui : +${_formatDuration(bonusSeconds)}',
+                        style: tt.bodySmall?.copyWith(
+                          color: AppColors.accentGreen,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: onGrantBonus,
+                icon: const Icon(Icons.more_time_outlined, size: 16),
+                label: Text(
+                  bonusSeconds > 0 ? 'Modifier le temps bonus' : 'Accorder du temps bonus',
+                ),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.accentGreen,
+                  side: const BorderSide(color: AppColors.accentGreen),
+                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+                  textStyle: tt.bodySmall?.copyWith(fontWeight: FontWeight.w600),
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+/// Ligne représentant un quota global pour un type de jour donné.
+class _DayQuotaRow extends StatelessWidget {
+  const _DayQuotaRow({
+    required this.label,
+    required this.icon,
+    required this.onSet,
+    this.limit,
+    this.status,
+    this.onDelete,
+    this.note,
+  });
+
+  final String label;
+  final IconData icon;
+  final ScreenTimeLimit? limit;
+  final ScreenTimeStatusEntry? status;
+  final VoidCallback onSet;
+  final VoidCallback? onDelete;
+  // Note informative optionnelle (ex: "appliqué si aucun autre")
+  final String? note;
+
+  @override
+  Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
+
+    if (limit == null) {
+      return OutlinedButton.icon(
+        onPressed: onSet,
+        icon: const Icon(Icons.add_alarm_outlined, size: 16),
+        label: Text('Définir : $label'),
+        style: OutlinedButton.styleFrom(
+          foregroundColor: AppColors.accentBlue,
+          side: const BorderSide(color: AppColors.accentBlue),
+          minimumSize: const Size.fromHeight(40),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          textStyle: tt.bodySmall?.copyWith(fontWeight: FontWeight.w500),
+        ),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(icon, size: 18, color: AppColors.textSecondary),
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: tt.bodySmall?.copyWith(color: AppColors.textMuted),
+                  ),
+                  Text(
+                    _formatDuration(limit!.limitSeconds),
+                    style: tt.bodyMedium?.copyWith(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            TextButton(
+              onPressed: onSet,
+              style: TextButton.styleFrom(
+                foregroundColor: AppColors.accentBlue,
+                padding: EdgeInsets.zero,
+              ),
+              child: const Text('Modifier'),
+            ),
+            const SizedBox(width: AppSpacing.xs),
+            IconButton(
+              onPressed: onDelete,
+              icon: const Icon(Icons.delete_outline, size: 18),
+              color: AppColors.accentRed,
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
+            ),
+          ],
+        ),
+        if (status != null) ...[
+          const SizedBox(height: AppSpacing.xs),
+          _UsageBar(status: status!),
+        ],
+        if (note != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: Text(
+              note!,
+              style: tt.bodySmall?.copyWith(
+                color: AppColors.textMuted,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          ),
+      ],
     );
   }
 }

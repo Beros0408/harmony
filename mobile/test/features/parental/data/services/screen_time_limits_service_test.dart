@@ -68,6 +68,7 @@ class _StubSetLimit extends ScreenTimeLimitsService {
     required String scope,
     required int limitSeconds,
     String? packageName,
+    String dayType = 'all',
   }) async =>
       handler(childId, scope, limitSeconds, packageName);
 }
@@ -134,6 +135,7 @@ class _NetworkErrorService extends ScreenTimeLimitsService {
     required String scope,
     required int limitSeconds,
     String? packageName,
+    String dayType = 'all',
   }) async {
     throw DioException(
       requestOptions: RequestOptions(path: '/api/v1/screen-time/limits'),

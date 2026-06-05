@@ -10,6 +10,7 @@ class ScreenTimeLimit {
     required this.limitSeconds,
     this.packageName,
     this.appLabel,
+    this.dayType = 'all',
   });
 
   final String id;
@@ -19,6 +20,8 @@ class ScreenTimeLimit {
   final int limitSeconds;
   final String? packageName;
   final String? appLabel;
+  // 'all' | 'weekday' | 'weekend' — pour scope='global' uniquement (Sprint 5D-5)
+  final String dayType;
 
   factory ScreenTimeLimit.fromJson(Map<String, dynamic> j) => ScreenTimeLimit(
         id: j['id'] as String,
@@ -27,6 +30,7 @@ class ScreenTimeLimit {
         limitSeconds: (j['limit_seconds'] as num).toInt(),
         packageName: j['package_name'] as String?,
         appLabel: j['app_label'] as String?,
+        dayType: (j['day_type'] as String?) ?? 'all',
       );
 }
 
@@ -40,6 +44,7 @@ class ScreenTimeStatusEntry {
     this.packageName,
     this.appLabel,
     this.bonusSeconds = 0,
+    this.dayType = 'all',
   });
 
   final String scope;
@@ -51,6 +56,8 @@ class ScreenTimeStatusEntry {
   final bool exceeded;
   final String? packageName;
   final String? appLabel;
+  // Type de jour du quota globalement appliqué — 'all' | 'weekday' | 'weekend'
+  final String dayType;
 
   factory ScreenTimeStatusEntry.fromJson(Map<String, dynamic> j) =>
       ScreenTimeStatusEntry(
@@ -62,6 +69,7 @@ class ScreenTimeStatusEntry {
         exceeded: j['exceeded'] as bool,
         packageName: j['package_name'] as String?,
         appLabel: j['app_label'] as String?,
+        dayType: (j['day_type'] as String?) ?? 'all',
       );
 }
 
@@ -103,11 +111,14 @@ class ScreenTimeLimitsService {
     required String scope,
     required int limitSeconds,
     String? packageName,
+    // Utilisé uniquement pour scope='global' — 'all' | 'weekday' | 'weekend'
+    String dayType = 'all',
   }) async {
     final body = <String, dynamic>{
       'child_id': childId,
       'scope': scope,
       'limit_seconds': limitSeconds,
+      'day_type': dayType,
       if (packageName != null) 'package_name': packageName,
     };
     final response = await HarmonyServices.dioClient.instance

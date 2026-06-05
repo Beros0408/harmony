@@ -65,12 +65,22 @@ class LimitRequest(BaseModel):
     scope: str
     package_name: Optional[str] = None
     limit_seconds: int
+    # 'all' = tous les jours (défaut) ; 'weekday' = lun-ven ; 'weekend' = sam-dim
+    # Utilisé uniquement pour scope='global' — ignoré pour scope='app'
+    day_type: str = "all"
 
     @field_validator("scope")
     @classmethod
     def validate_scope(cls, v: str) -> str:
         if v not in ("global", "app"):
             raise ValueError("scope doit être 'global' ou 'app'")
+        return v
+
+    @field_validator("day_type")
+    @classmethod
+    def validate_day_type(cls, v: str) -> str:
+        if v not in ("all", "weekday", "weekend"):
+            raise ValueError("day_type doit être 'all', 'weekday' ou 'weekend'")
         return v
 
     @field_validator("limit_seconds")
@@ -92,6 +102,8 @@ class LimitRecord(BaseModel):
     child_id: str
     scope: str
     package_name: Optional[str]
+    # Type de jour pour les limites globales (Sprint 5D-5)
+    day_type: str
     limit_seconds: int
     created_at: datetime.datetime
     updated_at: datetime.datetime
@@ -124,6 +136,8 @@ class LimitStatusItem(BaseModel):
     id: str
     scope: str
     package_name: Optional[str]
+    # Type de jour effectivement appliqué — utile côté client pour savoir quel quota est actif
+    day_type: str
     limit_seconds: int
     bonus_seconds: int
     used_seconds: int
@@ -349,36 +363,38 @@ async def put_limit(
         now = datetime.datetime.now(datetime.timezone.utc)
 
         if payload.scope == "global":
+            # Upsert unique par (child_id, day_type) pour les limites globales (Sprint 5D-5)
             result = await db.execute(
                 text(
                     """
                     INSERT INTO public.screen_time_limits
-                        (child_id, scope, package_name, limit_seconds, updated_at)
-                    VALUES (CAST(:child_id AS uuid), 'global', NULL, :limit_seconds, :updated_at)
-                    ON CONFLICT (child_id) WHERE scope = 'global' DO UPDATE
+                        (child_id, scope, package_name, day_type, limit_seconds, updated_at)
+                    VALUES (CAST(:child_id AS uuid), 'global', NULL, :day_type, :limit_seconds, :updated_at)
+                    ON CONFLICT (child_id, day_type) WHERE scope = 'global' DO UPDATE
                         SET limit_seconds = EXCLUDED.limit_seconds,
                             updated_at    = EXCLUDED.updated_at
-                    RETURNING id::text, child_id::text, scope, package_name,
+                    RETURNING id::text, child_id::text, scope, package_name, day_type,
                               limit_seconds, created_at, updated_at
                     """
                 ),
                 {
                     "child_id": str(payload.child_id),
+                    "day_type": payload.day_type,
                     "limit_seconds": payload.limit_seconds,
                     "updated_at": now,
                 },
             )
-        else:  # scope == 'app'
+        else:  # scope == 'app' — day_type toujours 'all', non différencié
             result = await db.execute(
                 text(
                     """
                     INSERT INTO public.screen_time_limits
-                        (child_id, scope, package_name, limit_seconds, updated_at)
-                    VALUES (CAST(:child_id AS uuid), 'app', :package_name, :limit_seconds, :updated_at)
+                        (child_id, scope, package_name, day_type, limit_seconds, updated_at)
+                    VALUES (CAST(:child_id AS uuid), 'app', :package_name, 'all', :limit_seconds, :updated_at)
                     ON CONFLICT (child_id, package_name) WHERE scope = 'app' DO UPDATE
                         SET limit_seconds = EXCLUDED.limit_seconds,
                             updated_at    = EXCLUDED.updated_at
-                    RETURNING id::text, child_id::text, scope, package_name,
+                    RETURNING id::text, child_id::text, scope, package_name, day_type,
                               limit_seconds, created_at, updated_at
                     """
                 ),
@@ -395,15 +411,17 @@ async def put_limit(
             "screen_time_limit_upserted",
             child_id=str(payload.child_id),
             scope=payload.scope,
+            day_type=row[4],
         )
         return LimitRecord(
             id=row[0],
             child_id=row[1],
             scope=row[2],
             package_name=row[3],
-            limit_seconds=row[4],
-            created_at=row[5],
-            updated_at=row[6],
+            day_type=row[4],
+            limit_seconds=row[5],
+            created_at=row[6],
+            updated_at=row[7],
         )
     except Exception as exc:
         logger.error("screen_time_limit_put_error", error=str(exc))
@@ -430,11 +448,11 @@ async def get_limits(
         result = await db.execute(
             text(
                 """
-                SELECT id::text, child_id::text, scope, package_name,
+                SELECT id::text, child_id::text, scope, package_name, day_type,
                        limit_seconds, created_at, updated_at
                 FROM public.screen_time_limits
                 WHERE child_id = CAST(:child_id AS uuid)
-                ORDER BY scope DESC, package_name
+                ORDER BY scope DESC, day_type, package_name
                 """
             ),
             {"child_id": child_id},
@@ -446,9 +464,10 @@ async def get_limits(
                 child_id=row[1],
                 scope=row[2],
                 package_name=row[3],
-                limit_seconds=row[4],
-                created_at=row[5],
-                updated_at=row[6],
+                day_type=row[4],
+                limit_seconds=row[5],
+                created_at=row[6],
+                updated_at=row[7],
             )
             for row in rows
         ]
@@ -623,6 +642,11 @@ async def get_status(
     try:
         target_date = date or datetime.date.today()
 
+        # Détermine le type de jour pour sélectionner le bon quota global (Sprint 5D-5)
+        # weekday() : lundi=0 … vendredi=4 → semaine ; samedi=5, dimanche=6 → week-end
+        is_weekend = target_date.weekday() >= 5
+        preferred_day_type = "weekend" if is_weekend else "weekday"
+
         # Bonus du jour — s'applique uniquement au scope 'global'
         bonus_res = await db.execute(
             text(
@@ -638,6 +662,7 @@ async def get_status(
         bonus_row = bonus_res.fetchone()
         global_bonus: int = int(bonus_row[0]) if bonus_row else 0
 
+        # Récupère toutes les limites avec day_type
         result = await db.execute(
             text(
                 """
@@ -658,6 +683,7 @@ async def get_status(
                     l.id::text,
                     l.scope,
                     l.package_name,
+                    l.day_type,
                     l.limit_seconds,
                     CASE
                         WHEN l.scope = 'global'
@@ -668,18 +694,33 @@ async def get_status(
                 LEFT JOIN app_usage au
                     ON l.scope = 'app' AND au.package_name = l.package_name
                 WHERE l.child_id = CAST(:child_id AS uuid)
-                ORDER BY l.scope DESC, l.package_name
+                ORDER BY l.scope DESC, l.day_type, l.package_name
                 """
             ),
             {"child_id": child_id, "usage_date": target_date},
         )
         rows = result.fetchall()
 
+        # Sépare les limites globales des limites par app
+        global_rows = [r for r in rows if r[1] == "global"]
+        app_rows    = [r for r in rows if r[1] == "app"]
+
+        # Sélectionne la limite globale applicable :
+        # Priorité 1 : quota du type de jour exact (weekday ou weekend)
+        # Priorité 2 : quota 'all' (fallback rétrocompatible)
+        preferred_global = next((r for r in global_rows if r[3] == preferred_day_type), None)
+        fallback_global  = next((r for r in global_rows if r[3] == "all"), None)
+        applicable_global = preferred_global or fallback_global
+
+        active_rows = ([applicable_global] if applicable_global else []) + app_rows
+
         items = []
-        for row in rows:
-            limit_s   = row[3]
-            used_s    = int(row[4])
-            scope     = row[1]
+        for row in active_rows:
+            # row: (id::text, scope, package_name, day_type, limit_seconds, used_seconds)
+            limit_s  = row[4]
+            used_s   = int(row[5])
+            scope    = row[1]
+            day_type = row[3]
             # Le bonus ne s'applique qu'au quota global
             bonus     = global_bonus if scope == "global" else 0
             effective = limit_s + bonus
@@ -689,6 +730,7 @@ async def get_status(
                     id=row[0],
                     scope=scope,
                     package_name=row[2],
+                    day_type=day_type,
                     limit_seconds=limit_s,
                     bonus_seconds=bonus,
                     used_seconds=used_s,

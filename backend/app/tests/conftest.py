@@ -43,7 +43,7 @@ async def setup_database():
                 ON public.screen_time_usage (child_id, usage_date)
             """
         ))
-        # table limites hors ORM — DDL explicite (Sprint 5B)
+        # table limites hors ORM — DDL explicite (Sprint 5B + 5D-5)
         await conn.execute(text(
             """
             CREATE TABLE IF NOT EXISTS public.screen_time_limits (
@@ -51,6 +51,8 @@ async def setup_database():
                 child_id      uuid        NOT NULL,
                 scope         text        NOT NULL CHECK (scope IN ('global', 'app')),
                 package_name  text,
+                day_type      text        NOT NULL DEFAULT 'all'
+                                          CHECK (day_type IN ('all', 'weekday', 'weekend')),
                 limit_seconds integer     NOT NULL CHECK (limit_seconds >= 0),
                 created_at    timestamptz DEFAULT now(),
                 updated_at    timestamptz DEFAULT now()
@@ -63,11 +65,11 @@ async def setup_database():
                 ON public.screen_time_limits (child_id)
             """
         ))
-        # Index unique partiel — une seule limite globale par enfant
+        # Index unique partiel — un seul global par (enfant, day_type) — Sprint 5D-5
         await conn.execute(text(
             """
-            CREATE UNIQUE INDEX IF NOT EXISTS uq_screen_time_limits_global
-                ON public.screen_time_limits (child_id)
+            CREATE UNIQUE INDEX IF NOT EXISTS uq_screen_time_limits_global_day_type
+                ON public.screen_time_limits (child_id, day_type)
                 WHERE scope = 'global'
             """
         ))
