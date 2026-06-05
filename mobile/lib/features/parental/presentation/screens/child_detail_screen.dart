@@ -20,6 +20,7 @@ import '../../data/models/location_point.dart';
 import '../../data/models/security_score.dart';
 import '../../data/services/content_filter_api_service.dart';
 import '../../data/services/lock_command_service.dart';
+import '../../data/services/pause_command_service.dart';
 import '../../data/services/unlink_parent_service.dart';
 import '../../logic/child_profile_cubit.dart';
 import '../../logic/location_cubit.dart';
@@ -156,6 +157,10 @@ class _ChildDetailBody extends StatelessWidget {
 
         // Bouton verrouillage à distance (Sprint B2)
         _LockButton(childId: profile.id),
+        const SizedBox(height: AppSpacing.md),
+
+        // Bouton pause à distance (Sprint 5D-3)
+        _PauseButton(childId: profile.id),
         const SizedBox(height: AppSpacing.xl),
 
         // Section horaires de coucher (Sprint B3)
@@ -230,6 +235,80 @@ class _LockButtonState extends State<_LockButton> {
         shape: const RoundedRectangleBorder(borderRadius: AppRadius.lgRadius),
       ),
       onPressed: _sending ? null : _onLockPressed,
+    );
+  }
+}
+
+// ─── Bouton de pause à distance (Sprint 5D-3) ────────────────────────────────
+
+class _PauseButton extends StatefulWidget {
+  const _PauseButton({required this.childId});
+  final String childId;
+
+  @override
+  State<_PauseButton> createState() => _PauseButtonState();
+}
+
+class _PauseButtonState extends State<_PauseButton> {
+  bool _isPaused = false;
+  bool _sending  = false;
+
+  Future<void> _onToggle() async {
+    setState(() => _sending = true);
+    try {
+      if (_isPaused) {
+        await PauseCommandService.instance.sendResume(widget.childId);
+        if (!mounted) return;
+        setState(() => _isPaused = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Pause levée — l\'enfant peut reprendre.'),
+            duration: Duration(seconds: 3),
+          ),
+        );
+      } else {
+        await PauseCommandService.instance.sendPause(widget.childId);
+        if (!mounted) return;
+        setState(() => _isPaused = true);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Pause envoyée — l\'enfant verra l\'écran de pause.'),
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erreur : impossible d\'envoyer la commande ($e).'),
+          backgroundColor: AppColors.accentRed,
+          duration: const Duration(seconds: 4),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _sending = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FilledButton.icon(
+      icon: _sending
+          ? const SizedBox(
+              width: 18,
+              height: 18,
+              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+            )
+          : Icon(_isPaused ? Icons.play_arrow_rounded : Icons.pause_rounded),
+      label: Text(_isPaused ? 'Reprendre l\'écran' : 'Mettre en pause maintenant'),
+      style: FilledButton.styleFrom(
+        backgroundColor: _isPaused ? AppColors.accentGreen : AppColors.accentBlue,
+        foregroundColor: Colors.white,
+        minimumSize: const Size.fromHeight(48),
+        shape: const RoundedRectangleBorder(borderRadius: AppRadius.lgRadius),
+      ),
+      onPressed: _sending ? null : _onToggle,
     );
   }
 }

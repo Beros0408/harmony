@@ -6,6 +6,7 @@ import '../../../../core/services/harmony_services.dart';
 import 'content_filter_service.dart';
 import 'device_admin_service.dart';
 import 'schedule_service.dart';
+import 'screen_time_blocking_service.dart';
 import 'unlink_request_service.dart';
 
 /// Représentation d'une commande reçue du backend.
@@ -141,7 +142,16 @@ class CommandPollingService {
         // de rejouer indéfiniment une commande non exécutable.
         debugPrint('[CommandPollingService] lockNow échoué: $e');
       }
-      // Acquittement dans tous les cas
+      await _ackCommand(cmd.id);
+    } else if (cmd.command == 'screen_pause') {
+      // Pause distante parent — active l'overlay bienveillant immédiatement
+      await ScreenTimeBlockingService.instance.activateRemotePause();
+      debugPrint('[CommandPollingService] pause distante activée (commande ${cmd.id})');
+      await _ackCommand(cmd.id);
+    } else if (cmd.command == 'screen_resume') {
+      // Levée de pause distante parent
+      await ScreenTimeBlockingService.instance.deactivateRemotePause();
+      debugPrint('[CommandPollingService] pause distante levée (commande ${cmd.id})');
       await _ackCommand(cmd.id);
     }
   }

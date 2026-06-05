@@ -56,6 +56,12 @@ class HarmonyScreenTimeService : AccessibilityService() {
         // Mis à jour par ScreenTimeBlockingPlugin — @Volatile pour visibilité cross-thread
         @Volatile var blockedPackages: Set<String> = emptySet()
         @Volatile var isGlobalBlocked: Boolean = false
+
+        // Pause déclenchée à distance par le parent (Sprint 5D-3) — indépendante des quotas
+        @Volatile var isRemotelyPaused: Boolean = false
+
+        // Référence à l'instance active pour forcer une ré-évaluation immédiate
+        @Volatile var instance: HarmonyScreenTimeService? = null
     }
 
     private var overlayView: View? = null
@@ -69,6 +75,7 @@ class HarmonyScreenTimeService : AccessibilityService() {
             notificationTimeout = 100
         }
         serviceInfo = info
+        instance = this
         Log.i(TAG, "Service d'accessibilité connecté")
     }
 
@@ -81,6 +88,16 @@ class HarmonyScreenTimeService : AccessibilityService() {
         evaluatePackage(pkg)
     }
 
+    /**
+     * Force une ré-évaluation immédiate de l'app actuellement au premier plan.
+     * Appelé par [ScreenTimeBlockingPlugin] lors d'un changement de pause distante.
+     */
+    fun reevaluate() {
+        if (lastForegroundPkg.isNotEmpty()) {
+            evaluatePackage(lastForegroundPkg)
+        }
+    }
+
     /** Détermine si le package doit être bloqué et affiche/cache l'overlay en conséquence. */
     private fun evaluatePackage(pkg: String) {
         if (NEVER_BLOCK.contains(pkg)) {
@@ -89,11 +106,14 @@ class HarmonyScreenTimeService : AccessibilityService() {
         }
 
         val appLimitExceeded = blockedPackages.contains(pkg)
-        val shouldBlock = appLimitExceeded || isGlobalBlocked
+        val shouldBlock = appLimitExceeded || isGlobalBlocked || isRemotelyPaused
 
         if (shouldBlock) {
-            Log.d(TAG, "Blocage: $pkg (global=$isGlobalBlocked appLimit=$appLimitExceeded)")
-            showOverlay(isGlobal = isGlobalBlocked && !appLimitExceeded)
+            Log.d(TAG, "Blocage: $pkg (global=$isGlobalBlocked appLimit=$appLimitExceeded remotePause=$isRemotelyPaused)")
+            showOverlay(
+                isGlobal = isGlobalBlocked && !appLimitExceeded,
+                isRemotePause = isRemotelyPaused,
+            )
         } else {
             hideOverlay()
         }
@@ -101,10 +121,10 @@ class HarmonyScreenTimeService : AccessibilityService() {
 
     // ─── Overlay ──────────────────────────────────────────────────────────────
 
-    private fun showOverlay(isGlobal: Boolean) {
+    private fun showOverlay(isGlobal: Boolean, isRemotePause: Boolean = false) {
         if (overlayView != null) return // déjà affiché
         try {
-            val view = buildOverlayView(isGlobal)
+            val view = buildOverlayView(isGlobal, isRemotePause)
             val params = WindowManager.LayoutParams(
                 WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT,
@@ -133,8 +153,9 @@ class HarmonyScreenTimeService : AccessibilityService() {
     /**
      * Construit la vue overlay bienveillante (dark mode Harmony) sans layout XML.
      * Ton doux, pas punitif — encourage la pause plutôt que de sanctionner.
+     * [isRemotePause] = true quand déclenché par le parent (Sprint 5D-3).
      */
-    private fun buildOverlayView(isGlobal: Boolean): LinearLayout {
+    private fun buildOverlayView(isGlobal: Boolean, isRemotePause: Boolean = false): LinearLayout {
         val bgColor      = Color.parseColor("#0A0F1E") // AppColors.bgBase
         val textPrimary  = Color.parseColor("#E8EDF5") // AppColors.textPrimary
         val textMuted    = Color.parseColor("#8BA3C7") // AppColors.textSecondary
@@ -157,7 +178,7 @@ class HarmonyScreenTimeService : AccessibilityService() {
 
         // Titre principal
         root.addView(TextView(this).apply {
-            text = "C'est l'heure d'une pause"
+            text = if (isRemotePause) "Pause demandée par ton parent" else "C'est l'heure d'une pause"
             textSize = 20f
             setTextColor(textPrimary)
             gravity = Gravity.CENTER
@@ -165,11 +186,12 @@ class HarmonyScreenTimeService : AccessibilityService() {
             setPadding(0, dp(24), 0, dp(12))
         })
 
-        // Message explicatif selon le type de limite
-        val msg = if (isGlobal)
-            "Tu as atteint ton quota de temps d'écran pour aujourd'hui.\nReviens demain, bonne nuit ! 🌟"
-        else
-            "Tu as utilisé tout ton temps pour cette application aujourd'hui.\nEssaie autre chose !"
+        // Message selon le type de blocage
+        val msg = when {
+            isRemotePause -> "Ton parent t'a demandé de faire une pause.\nRelâche le téléphone un moment !"
+            isGlobal -> "Tu as atteint ton quota de temps d'écran pour aujourd'hui.\nReviens demain, bonne nuit ! 🌟"
+            else -> "Tu as utilisé tout ton temps pour cette application aujourd'hui.\nEssaie autre chose !"
+        }
 
         root.addView(TextView(this).apply {
             text = msg
@@ -206,6 +228,7 @@ class HarmonyScreenTimeService : AccessibilityService() {
     }
 
     override fun onDestroy() {
+        instance = null
         hideOverlay()
         Log.i(TAG, "Service détruit")
         super.onDestroy()

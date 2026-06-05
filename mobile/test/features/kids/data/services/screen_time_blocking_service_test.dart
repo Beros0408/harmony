@@ -183,4 +183,40 @@ void main() {
       );
     });
   });
+
+  // ─── Pause distante parent (Sprint 5D-3) ─────────────────────────────────
+
+  group('activateRemotePause / deactivateRemotePause', () {
+    test('isRemotelyPaused démarre à false', () {
+      final s = _TestBlockingService();
+      expect(s.isRemotelyPaused, isFalse);
+    });
+
+    test('activateRemotePause → isRemotelyPaused devient true', () async {
+      final s = _TestBlockingService();
+      // L'appel MethodChannel échoue silencieusement en test (MissingPluginException)
+      await s.activateRemotePause();
+      expect(s.isRemotelyPaused, isTrue);
+    });
+
+    test('deactivateRemotePause → isRemotelyPaused revient à false', () async {
+      final s = _TestBlockingService();
+      await s.activateRemotePause();
+      await s.deactivateRemotePause();
+      expect(s.isRemotelyPaused, isFalse);
+    });
+
+    test('plusieurs activations successives restent à true', () async {
+      final s = _TestBlockingService();
+      await s.activateRemotePause();
+      await s.activateRemotePause();
+      expect(s.isRemotelyPaused, isTrue);
+    });
+
+    test('deactivate sans activate préalable reste false', () async {
+      final s = _TestBlockingService();
+      await s.deactivateRemotePause();
+      expect(s.isRemotelyPaused, isFalse);
+    });
+  });
 }

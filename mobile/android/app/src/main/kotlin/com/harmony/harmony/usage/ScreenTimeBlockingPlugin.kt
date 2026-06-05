@@ -28,6 +28,7 @@ class ScreenTimeBlockingPlugin(private val context: Context) : MethodChannel.Met
             "isAccessibilityGranted"       -> result.success(isAccessibilityGranted())
             "requestAccessibilitySettings" -> handleOpenSettings(result)
             "updateBlockList"              -> handleUpdateBlockList(call, result)
+            "setRemotePause"               -> handleSetRemotePause(call, result)
             else                           -> result.notImplemented()
         }
     }
@@ -77,6 +78,21 @@ class ScreenTimeBlockingPlugin(private val context: Context) : MethodChannel.Met
             TAG,
             "updateBlockList: global=$globalBlocked packages=${packages.size} → $packages",
         )
+        result.success(null)
+    }
+
+    /**
+     * Active ou désactive la pause distante parent (Sprint 5D-3).
+     * Force une ré-évaluation immédiate de l'app en premier plan.
+     *
+     * Payload attendu : { "paused": Boolean }
+     */
+    private fun handleSetRemotePause(call: MethodCall, result: MethodChannel.Result) {
+        val paused = call.argument<Boolean>("paused") ?: false
+        HarmonyScreenTimeService.isRemotelyPaused = paused
+        // Applique immédiatement sans attendre le prochain changement d'app
+        HarmonyScreenTimeService.instance?.reevaluate()
+        Log.d(TAG, "setRemotePause: paused=$paused")
         result.success(null)
     }
 }

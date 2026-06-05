@@ -65,6 +65,11 @@ class ScreenTimeBlockingService {
 
   Timer? _timer;
 
+  // Pause activée à distance par le parent (Sprint 5D-3) — indépendante des quotas
+  bool _isRemotelyPaused = false;
+
+  bool get isRemotelyPaused => _isRemotelyPaused;
+
   /// Démarre le push périodique (toutes les 30 s).
   void start() {
     _pushBlockList();
@@ -79,6 +84,28 @@ class ScreenTimeBlockingService {
 
   /// Rafraîchissement explicite — appelé au retour au premier plan.
   Future<void> refresh() => _pushBlockList();
+
+  /// Active la pause à distance — notifie Kotlin pour affichage immédiat de l'overlay.
+  Future<void> activateRemotePause() async {
+    _isRemotelyPaused = true;
+    try {
+      await _channel.invokeMethod<void>('setRemotePause', {'paused': true});
+      debugPrint('[ScreenTimeBlockingService] pause distante activée');
+    } catch (e) {
+      debugPrint('[ScreenTimeBlockingService] setRemotePause(true) silencieux: $e');
+    }
+  }
+
+  /// Lève la pause à distance — retire l'overlay si aucun quota n'est dépassé.
+  Future<void> deactivateRemotePause() async {
+    _isRemotelyPaused = false;
+    try {
+      await _channel.invokeMethod<void>('setRemotePause', {'paused': false});
+      debugPrint('[ScreenTimeBlockingService] pause distante levée');
+    } catch (e) {
+      debugPrint('[ScreenTimeBlockingService] setRemotePause(false) silencieux: $e');
+    }
+  }
 
   // ─── Logique de décision (testable) ────────────────────────────────────────
 

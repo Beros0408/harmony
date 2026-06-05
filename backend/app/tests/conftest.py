@@ -99,8 +99,28 @@ async def setup_database():
                 ON public.screen_time_bonus (child_id)
             """
         ))
+        # table commandes appareil hors ORM (Sprint B2 + 5D-3)
+        await conn.execute(text(
+            """
+            CREATE TABLE IF NOT EXISTS public.device_commands (
+                id          uuid        DEFAULT gen_random_uuid() PRIMARY KEY,
+                child_id    uuid        NOT NULL,
+                command     text        NOT NULL,
+                status      text        NOT NULL DEFAULT 'pending',
+                created_at  timestamptz DEFAULT now(),
+                executed_at timestamptz
+            )
+            """
+        ))
+        await conn.execute(text(
+            """
+            CREATE INDEX IF NOT EXISTS idx_device_commands_child_status
+                ON public.device_commands (child_id, status)
+            """
+        ))
     yield
     async with test_engine.begin() as conn:
+        await conn.execute(text("DROP TABLE IF EXISTS public.device_commands"))
         await conn.execute(text("DROP TABLE IF EXISTS public.screen_time_bonus"))
         await conn.execute(text("DROP TABLE IF EXISTS public.screen_time_limits"))
         await conn.execute(text("DROP TABLE IF EXISTS public.screen_time_usage"))

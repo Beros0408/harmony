@@ -30,6 +30,31 @@ class AckResponse(BaseModel):
     acknowledged: bool
 
 
+# ─── Helper commun d'insertion ────────────────────────────────────────────────
+
+async def _insert_command(db: AsyncSession, child_id: UUID, command: str) -> str:
+    command_id = uuid4()
+    now = datetime.now(timezone.utc)
+    await db.execute(
+        text(
+            """
+            INSERT INTO public.device_commands
+                (id, child_id, command, status, created_at)
+            VALUES
+                (CAST(:id AS uuid), CAST(:child_id AS uuid), :command, :status, :created_at)
+            """
+        ),
+        {
+            "id": str(command_id),
+            "child_id": str(child_id),
+            "command": command,
+            "status": "pending",
+            "created_at": now,
+        },
+    )
+    return str(command_id)
+
+
 # ─── Endpoints ───────────────────────────────────────────────────────────────
 
 @router.post(
@@ -42,36 +67,56 @@ async def send_lock_command(
     db: AsyncSession = Depends(get_db),
 ) -> dict:
     try:
-        command_id = uuid4()
-        now = datetime.now(timezone.utc)
-
-        await db.execute(
-            text(
-                """
-                INSERT INTO public.device_commands
-                    (id, child_id, command, status, created_at)
-                VALUES
-                    (CAST(:id AS uuid), CAST(:child_id AS uuid), :command, :status, :created_at)
-                """
-            ),
-            {
-                "id": str(command_id),
-                "child_id": str(payload.child_id),
-                "command": "lock",
-                "status": "pending",
-                "created_at": now,
-            },
-        )
-
-        logger.info(
-            "lock_command_created",
-            command_id=str(command_id),
-            child_id=str(payload.child_id),
-        )
-        return {"command_id": str(command_id), "status": "pending"}
+        command_id = await _insert_command(db, payload.child_id, "lock")
+        logger.info("lock_command_created", command_id=command_id, child_id=str(payload.child_id))
+        return {"command_id": command_id, "status": "pending"}
 
     except Exception as exc:
         logger.error("lock_command_error", error=str(exc))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Erreur lors de la création de la commande.",
+        ) from exc
+
+
+@router.post(
+    "/screen-pause",
+    status_code=status.HTTP_201_CREATED,
+    summary="Déclenche une pause immédiate sur l'appareil enfant (indépendant des quotas)",
+)
+async def send_screen_pause(
+    payload: LockCommandRequest,
+    db: AsyncSession = Depends(get_db),
+) -> dict:
+    try:
+        command_id = await _insert_command(db, payload.child_id, "screen_pause")
+        logger.info("screen_pause_created", command_id=command_id, child_id=str(payload.child_id))
+        return {"command_id": command_id, "status": "pending"}
+
+    except Exception as exc:
+        logger.error("screen_pause_error", error=str(exc))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Erreur lors de la création de la commande.",
+        ) from exc
+
+
+@router.post(
+    "/screen-resume",
+    status_code=status.HTTP_201_CREATED,
+    summary="Lève la pause distante sur l'appareil enfant",
+)
+async def send_screen_resume(
+    payload: LockCommandRequest,
+    db: AsyncSession = Depends(get_db),
+) -> dict:
+    try:
+        command_id = await _insert_command(db, payload.child_id, "screen_resume")
+        logger.info("screen_resume_created", command_id=command_id, child_id=str(payload.child_id))
+        return {"command_id": command_id, "status": "pending"}
+
+    except Exception as exc:
+        logger.error("screen_resume_error", error=str(exc))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Erreur lors de la création de la commande.",
