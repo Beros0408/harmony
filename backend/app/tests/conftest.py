@@ -120,8 +120,45 @@ async def setup_database():
                 ON public.device_commands (child_id, status)
             """
         ))
+        # tables bien-être numérique (Module 6) — DDL miroir du schéma Supabase
+        await conn.execute(text(
+            """
+            CREATE TABLE IF NOT EXISTS public.wellbeing_signals (
+                id          uuid        DEFAULT gen_random_uuid() PRIMARY KEY,
+                child_id    uuid        NOT NULL,
+                signal_type text        NOT NULL,
+                severity    text        NOT NULL DEFAULT 'vigilance'
+                                        CHECK (severity IN ('info', 'vigilance', 'attention')),
+                source      text        NOT NULL DEFAULT 'screen_time',
+                details     jsonb,
+                signal_date date        NOT NULL,
+                created_at  timestamptz DEFAULT now(),
+                UNIQUE (child_id, signal_type, signal_date)
+            )
+            """
+        ))
+        await conn.execute(text(
+            """
+            CREATE TABLE IF NOT EXISTS public.wellbeing_alerts (
+                id          uuid        DEFAULT gen_random_uuid() PRIMARY KEY,
+                child_id    uuid        NOT NULL,
+                signal_id   uuid        NOT NULL,
+                title       text        NOT NULL,
+                message     text        NOT NULL,
+                severity    text        NOT NULL DEFAULT 'vigilance'
+                                        CHECK (severity IN ('info', 'vigilance', 'attention')),
+                status      text        NOT NULL DEFAULT 'sent'
+                                        CHECK (status IN ('sent', 'read', 'handled')),
+                created_at  timestamptz DEFAULT now(),
+                read_at     timestamptz
+            )
+            """
+        ))
     yield
     async with test_engine.begin() as conn:
+        # wellbeing_alerts avant wellbeing_signals (dépendance signal_id)
+        await conn.execute(text("DROP TABLE IF EXISTS public.wellbeing_alerts"))
+        await conn.execute(text("DROP TABLE IF EXISTS public.wellbeing_signals"))
         await conn.execute(text("DROP TABLE IF EXISTS public.device_commands"))
         await conn.execute(text("DROP TABLE IF EXISTS public.screen_time_bonus"))
         await conn.execute(text("DROP TABLE IF EXISTS public.screen_time_limits"))

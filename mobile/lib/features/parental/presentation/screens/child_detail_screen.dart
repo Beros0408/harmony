@@ -22,6 +22,7 @@ import '../../data/services/content_filter_api_service.dart';
 import '../../data/services/lock_command_service.dart';
 import '../../data/services/pause_command_service.dart';
 import '../../data/services/unlink_parent_service.dart';
+import '../../data/services/wellbeing_alert_service.dart';
 import '../../logic/child_profile_cubit.dart';
 import '../../logic/location_cubit.dart';
 import '../widgets/schedules_section.dart';
@@ -161,6 +162,10 @@ class _ChildDetailBody extends StatelessWidget {
 
         // Bouton pause à distance (Sprint 5D-3)
         _PauseButton(childId: profile.id),
+        const SizedBox(height: AppSpacing.xl),
+
+        // Section alertes bien-être numérique (Module 6)
+        _WellbeingSection(childId: profile.id),
         const SizedBox(height: AppSpacing.xl),
 
         // Section horaires de coucher (Sprint B3)
@@ -722,6 +727,373 @@ class _UnlinkRequestsSectionState extends State<_UnlinkRequestsSection> {
             onReject: () => _handleReject(req),
           ),
       ],
+    );
+  }
+}
+
+// ─── Section alertes bien-être numérique (Module 6) ─────────────────────────
+
+class _WellbeingSection extends StatefulWidget {
+  const _WellbeingSection({required this.childId});
+  final String childId;
+
+  @override
+  State<_WellbeingSection> createState() => _WellbeingSectionState();
+}
+
+class _WellbeingSectionState extends State<_WellbeingSection> {
+  final _service = WellbeingAlertService.instance;
+
+  List<WellbeingAlert> _alerts = [];
+  bool _loading  = true;
+  bool _hasError = false;
+  bool _showPast = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    if (mounted) setState(() { _loading = true; _hasError = false; });
+    try {
+      final alerts = await _service.getAlerts(widget.childId);
+      if (mounted) setState(() => _alerts = alerts);
+    } catch (_) {
+      if (mounted) setState(() => _hasError = true);
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  // Mise à jour optimiste : passage immédiat en 'read' localement, rollback si erreur réseau.
+  Future<void> _markRead(WellbeingAlert alert) async {
+    final idx = _alerts.indexWhere((a) => a.id == alert.id);
+    if (idx == -1) return;
+
+    setState(() {
+      _alerts = List.of(_alerts)
+        ..[idx] = WellbeingAlert(
+          id: alert.id,
+          childId: alert.childId,
+          signalId: alert.signalId,
+          title: alert.title,
+          message: alert.message,
+          severity: alert.severity,
+          status: 'read',
+          createdAt: alert.createdAt,
+          readAt: DateTime.now(),
+        );
+    });
+
+    try {
+      await _service.markRead(alert.id);
+    } catch (e) {
+      if (!mounted) return;
+      // Rollback : l'alerte redevient en attente
+      final revertIdx = _alerts.indexWhere((a) => a.id == alert.id);
+      if (revertIdx != -1) {
+        setState(() => _alerts = List.of(_alerts)..[revertIdx] = alert);
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erreur : impossible de marquer l\'alerte comme lue ($e).'),
+          backgroundColor: AppColors.accentRed,
+          duration: const Duration(seconds: 4),
+        ),
+      );
+    }
+  }
+
+  // Calcule la date relative en heure locale (created_at est déjà converti en local).
+  // Compare uniquement les parties date pour éviter le décalage de minuit en UTC.
+  String _relativeDate(DateTime dt) {
+    final now = DateTime.now();
+    final todayDate = DateTime(now.year, now.month, now.day);
+    final dtDate   = DateTime(dt.year, dt.month, dt.day);
+    final diff = todayDate.difference(dtDate).inDays;
+    if (diff <= 0) return "aujourd'hui";
+    if (diff == 1) return 'hier';
+    return 'il y a $diff jours';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
+
+    final pending = _alerts.where((a) => a.isPending).toList();
+    final past    = _alerts.where((a) => !a.isPending).toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'VIGILANCE NUMÉRIQUE',
+          style: tt.labelSmall?.copyWith(
+            color: cs.onSurfaceVariant,
+            letterSpacing: 1.2,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.sm),
+
+        if (_loading)
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: AppSpacing.lg),
+            child: Center(child: CircularProgressIndicator()),
+          )
+        else if (_hasError)
+          HarmonyCard(
+            padding: AppSpacing.md,
+            child: Row(
+              children: [
+                Icon(Icons.wifi_off_outlined, color: cs.onSurfaceVariant),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: Text(
+                    'Impossible de charger les alertes.',
+                    style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+                  ),
+                ),
+                TextButton(
+                  onPressed: _load,
+                  child: const Text('Réessayer'),
+                ),
+              ],
+            ),
+          )
+        else if (_alerts.isEmpty)
+          HarmonyCard(
+            padding: AppSpacing.md,
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.check_circle_outline,
+                  color: AppColors.accentGreen,
+                  size: 20,
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: Text(
+                    'Tout va bien — aucun signalement pour le moment.',
+                    style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+                  ),
+                ),
+              ],
+            ),
+          )
+        else ...[
+          // Alertes en attente d'action (status = 'sent')
+          for (final alert in pending)
+            _WellbeingAlertCard(
+              alert: alert,
+              relativeDate: _relativeDate(alert.createdAt),
+              onAcknowledge: () => _markRead(alert),
+            ),
+
+          // Aucune alerte en attente mais des passées → message rassurant
+          if (pending.isEmpty)
+            Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+              child: HarmonyCard(
+                padding: AppSpacing.md,
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.check_circle_outline,
+                      color: AppColors.accentGreen,
+                      size: 20,
+                    ),
+                    const SizedBox(width: AppSpacing.sm),
+                    Expanded(
+                      child: Text(
+                        'Aucune alerte en attente.',
+                        style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+          // Alertes déjà traitées (read / handled), repliées par défaut
+          if (past.isNotEmpty) ...[
+            TextButton.icon(
+              onPressed: () => setState(() => _showPast = !_showPast),
+              icon: Icon(
+                _showPast ? Icons.expand_less : Icons.expand_more,
+                size: 16,
+              ),
+              label: Text(
+                _showPast
+                    ? 'Masquer les alertes passées'
+                    : 'Voir les alertes passées (${past.length})',
+              ),
+              style: TextButton.styleFrom(
+                foregroundColor: cs.onSurfaceVariant,
+                textStyle: tt.bodySmall,
+                padding: EdgeInsets.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+            ),
+            AnimatedSize(
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeInOut,
+              child: _showPast
+                  ? Column(
+                      children: past
+                          .map(
+                            (a) => Opacity(
+                              opacity: 0.45,
+                              child: _WellbeingAlertCard(
+                                alert: a,
+                                relativeDate: _relativeDate(a.createdAt),
+                              ),
+                            ),
+                          )
+                          .toList(),
+                    )
+                  : const SizedBox.shrink(),
+            ),
+          ],
+        ],
+      ],
+    );
+  }
+}
+
+// ─── Carte d'alerte bien-être ─────────────────────────────────────────────────
+
+class _WellbeingAlertCard extends StatelessWidget {
+  const _WellbeingAlertCard({
+    required this.alert,
+    required this.relativeDate,
+    this.onAcknowledge,
+  });
+
+  final WellbeingAlert alert;
+  final String relativeDate;
+  // null pour les alertes passées (pas de bouton affiché)
+  final VoidCallback? onAcknowledge;
+
+  Color _accentColor() {
+    switch (alert.severity) {
+      case 'attention':
+        return AppColors.accentRed;
+      case 'info':
+        return AppColors.accentBlue;
+      default:
+        return AppColors.accentAmber; // 'vigilance'
+    }
+  }
+
+  IconData _severityIcon() {
+    switch (alert.severity) {
+      case 'attention':
+        return Icons.notification_important_outlined;
+      case 'info':
+        return Icons.info_outline;
+      default:
+        return Icons.warning_amber_outlined;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = _accentColor();
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+      decoration: BoxDecoration(
+        color: accent.withValues(alpha: 0.07),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: accent.withValues(alpha: 0.25)),
+      ),
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Bande colorée à gauche selon la sévérité
+            Container(
+              width: 4,
+              decoration: BoxDecoration(
+                color: accent,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(12),
+                  bottomLeft: Radius.circular(12),
+                ),
+              ),
+            ),
+            // Contenu de la carte
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.md),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // En-tête : icône + titre + date relative
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(_severityIcon(), color: accent, size: 16),
+                        const SizedBox(width: AppSpacing.xs),
+                        Expanded(
+                          child: Text(
+                            alert.title,
+                            style: tt.labelMedium?.copyWith(
+                              color: cs.onSurface,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: AppSpacing.xs),
+                        Text(
+                          relativeDate,
+                          style: tt.bodySmall?.copyWith(
+                            color: cs.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    // Message bienveillant du backend
+                    Text(
+                      alert.message,
+                      style: tt.bodySmall?.copyWith(
+                        color: cs.onSurfaceVariant,
+                        height: 1.5,
+                      ),
+                    ),
+                    // Bouton d'accusé de réception (alertes en attente uniquement)
+                    if (onAcknowledge != null) ...[
+                      const SizedBox(height: AppSpacing.xs),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                          onPressed: onAcknowledge,
+                          style: TextButton.styleFrom(
+                            foregroundColor: accent,
+                            textStyle: tt.labelSmall,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: AppSpacing.sm,
+                              vertical: AppSpacing.xs,
+                            ),
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          child: const Text("J'ai compris"),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
