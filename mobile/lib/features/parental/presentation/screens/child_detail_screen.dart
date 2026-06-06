@@ -26,6 +26,7 @@ import '../../data/services/fitness_summary_service.dart';
 import '../../data/services/wellbeing_alert_service.dart';
 import '../../logic/child_profile_cubit.dart';
 import '../../logic/location_cubit.dart';
+import '../widgets/privacy_section.dart';
 import '../widgets/schedules_section.dart';
 
 class ChildDetailScreen extends StatelessWidget {
@@ -183,6 +184,14 @@ class _ChildDetailBody extends StatelessWidget {
 
         // Section demandes de déliage (Sprint Délier)
         _UnlinkRequestsSection(childId: profile.id),
+        const SizedBox(height: AppSpacing.xl),
+
+        // Section confidentialité RGPD (Sprint S15)
+        PrivacySection(
+          childId: profile.id,
+          childName: profile.name,
+          onDeleted: () => context.pop(),
+        ),
         const SizedBox(height: AppSpacing.xxxl),
       ],
     );

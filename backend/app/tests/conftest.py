@@ -171,6 +171,63 @@ async def setup_database():
             )
             """
         ))
+        # tables RGPD (Sprint S15) — profils, liens famille, planning, filtrage, déliage
+        await conn.execute(text(
+            """
+            CREATE TABLE IF NOT EXISTS public.profiles (
+                id          uuid    DEFAULT gen_random_uuid() PRIMARY KEY,
+                role        text    NOT NULL DEFAULT 'parent',
+                full_name   text,
+                email       text,
+                created_at  timestamptz DEFAULT now()
+            )
+            """
+        ))
+        await conn.execute(text(
+            """
+            CREATE TABLE IF NOT EXISTS public.family_links (
+                parent_id   uuid    NOT NULL,
+                child_id    uuid    NOT NULL,
+                created_at  timestamptz DEFAULT now(),
+                PRIMARY KEY (parent_id, child_id)
+            )
+            """
+        ))
+        await conn.execute(text(
+            """
+            CREATE TABLE IF NOT EXISTS public.lock_schedules (
+                id           uuid    DEFAULT gen_random_uuid() PRIMARY KEY,
+                child_id     uuid    NOT NULL,
+                label        text    NOT NULL,
+                start_time   time    NOT NULL,
+                end_time     time    NOT NULL,
+                days_of_week integer[] NOT NULL DEFAULT '{}',
+                active       boolean NOT NULL DEFAULT true,
+                created_at   timestamptz DEFAULT now()
+            )
+            """
+        ))
+        await conn.execute(text(
+            """
+            CREATE TABLE IF NOT EXISTS public.content_filter (
+                child_id    uuid    PRIMARY KEY,
+                enabled     boolean NOT NULL DEFAULT false,
+                updated_at  timestamptz DEFAULT now()
+            )
+            """
+        ))
+        await conn.execute(text(
+            """
+            CREATE TABLE IF NOT EXISTS public.unlink_requests (
+                id          uuid    DEFAULT gen_random_uuid() PRIMARY KEY,
+                child_id    uuid    NOT NULL,
+                parent_id   uuid    NOT NULL,
+                status      text    NOT NULL DEFAULT 'pending',
+                created_at  timestamptz DEFAULT now(),
+                resolved_at timestamptz
+            )
+            """
+        ))
     yield
     async with test_engine.begin() as conn:
         await conn.execute(text("DROP TABLE IF EXISTS public.fitness_activity"))
@@ -181,6 +238,12 @@ async def setup_database():
         await conn.execute(text("DROP TABLE IF EXISTS public.screen_time_bonus"))
         await conn.execute(text("DROP TABLE IF EXISTS public.screen_time_limits"))
         await conn.execute(text("DROP TABLE IF EXISTS public.screen_time_usage"))
+        # tables RGPD (Sprint S15) — ordre : dépendants avant profiles
+        await conn.execute(text("DROP TABLE IF EXISTS public.unlink_requests"))
+        await conn.execute(text("DROP TABLE IF EXISTS public.content_filter"))
+        await conn.execute(text("DROP TABLE IF EXISTS public.lock_schedules"))
+        await conn.execute(text("DROP TABLE IF EXISTS public.family_links"))
+        await conn.execute(text("DROP TABLE IF EXISTS public.profiles"))
         await conn.run_sync(Base.metadata.drop_all)
 
 
