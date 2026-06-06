@@ -3,7 +3,7 @@ from typing import Any
 from uuid import UUID
 
 import structlog
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -29,13 +29,20 @@ def _row_to_dict(row) -> dict:
     return {k: _serialize(v) for k, v in row._mapping.items()}
 
 
-# ─── Schéma réponse DELETE ────────────────────────────────────────────────────
+# ─── Schémas réponse ─────────────────────────────────────────────────────────
 
 class DeleteResponse(BaseModel):
     deleted: bool
     child_id: str
     tables_touched: dict[str, int]
     export_reminder: str
+
+
+class PurgeResponse(BaseModel):
+    purged: bool
+    retention_days: int
+    cutoff_date: str
+    rows_deleted: dict[str, int]
 
 
 # ─── Endpoints ───────────────────────────────────────────────────────────────
@@ -192,4 +199,74 @@ async def delete_child_data(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Erreur lors de la suppression des données.",
+        ) from exc
+
+
+@router.post(
+    "/purge",
+    response_model=PurgeResponse,
+    summary="Purge les données historiques dépassant la durée de rétention (RGPD)",
+)
+async def purge_old_data(
+    retention_days: int = Query(default=90, ge=1, description="Durée de rétention en jours"),
+    child_id: str | None = Query(default=None, description="Si fourni, purge uniquement cet enfant"),
+    db: AsyncSession = Depends(get_db),
+) -> PurgeResponse:
+    """
+    Supprime les lignes historiques dont la date dépasse retention_days jours.
+    Tables concernées : screen_time_usage, fitness_activity, wellbeing_signals,
+    wellbeing_alerts, device_commands. Transaction atomique via get_db.
+    """
+    try:
+        cutoff = datetime.date.today() - datetime.timedelta(days=retention_days)
+
+        # (table, colonne_date) — littéraux codés en dur, jamais issus d'une entrée externe
+        _HISTORY_TABLES: list[tuple[str, str]] = [
+            ("screen_time_usage", "usage_date"),
+            ("fitness_activity",  "activity_date"),
+            ("wellbeing_signals", "signal_date"),
+            ("wellbeing_alerts",  "created_at"),
+            ("device_commands",   "created_at"),
+        ]
+
+        rows_deleted: dict[str, int] = {}
+
+        for table, date_col in _HISTORY_TABLES:
+            if child_id is not None:
+                sql = (
+                    f"DELETE FROM public.{table}"
+                    f" WHERE {date_col} < CAST(:cutoff AS date)"
+                    f" AND child_id = CAST(:child_id AS uuid)"
+                )
+                params: dict = {"cutoff": cutoff, "child_id": child_id}
+            else:
+                sql = (
+                    f"DELETE FROM public.{table}"
+                    f" WHERE {date_col} < CAST(:cutoff AS date)"
+                )
+                params = {"cutoff": cutoff}
+
+            r = await db.execute(text(sql), params)
+            rows_deleted[table] = r.rowcount
+
+        logger.info(
+            "privacy_purge_done",
+            retention_days=retention_days,
+            cutoff=cutoff.isoformat(),
+            child_id=child_id,
+            rows_deleted=rows_deleted,
+        )
+
+        return PurgeResponse(
+            purged=True,
+            retention_days=retention_days,
+            cutoff_date=cutoff.isoformat(),
+            rows_deleted=rows_deleted,
+        )
+
+    except Exception as exc:
+        logger.error("privacy_purge_error", error=str(exc), child_id=child_id)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Erreur lors de la purge des données.",
         ) from exc
