@@ -154,8 +154,26 @@ async def setup_database():
             )
             """
         ))
+        # table fitness (Sprint S12) — DDL miroir du schéma Supabase
+        await conn.execute(text(
+            """
+            CREATE TABLE IF NOT EXISTS public.fitness_activity (
+                id               uuid        DEFAULT gen_random_uuid() PRIMARY KEY,
+                child_id         uuid        NOT NULL,
+                activity_date    date        NOT NULL,
+                steps            integer     NOT NULL DEFAULT 0,
+                active_minutes   integer     NOT NULL DEFAULT 0,
+                distance_meters  integer     NOT NULL DEFAULT 0,
+                source           text        NOT NULL DEFAULT 'device',
+                created_at       timestamptz DEFAULT now(),
+                updated_at       timestamptz DEFAULT now(),
+                UNIQUE (child_id, activity_date)
+            )
+            """
+        ))
     yield
     async with test_engine.begin() as conn:
+        await conn.execute(text("DROP TABLE IF EXISTS public.fitness_activity"))
         # wellbeing_alerts avant wellbeing_signals (dépendance signal_id)
         await conn.execute(text("DROP TABLE IF EXISTS public.wellbeing_alerts"))
         await conn.execute(text("DROP TABLE IF EXISTS public.wellbeing_signals"))

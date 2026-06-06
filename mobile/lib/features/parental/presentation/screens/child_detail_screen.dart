@@ -22,6 +22,7 @@ import '../../data/services/content_filter_api_service.dart';
 import '../../data/services/lock_command_service.dart';
 import '../../data/services/pause_command_service.dart';
 import '../../data/services/unlink_parent_service.dart';
+import '../../data/services/fitness_summary_service.dart';
 import '../../data/services/wellbeing_alert_service.dart';
 import '../../logic/child_profile_cubit.dart';
 import '../../logic/location_cubit.dart';
@@ -166,6 +167,10 @@ class _ChildDetailBody extends StatelessWidget {
 
         // Section alertes bien-être numérique (Module 6)
         _WellbeingSection(childId: profile.id),
+        const SizedBox(height: AppSpacing.xl),
+
+        // Section activité physique (Sprint S12)
+        _FitnessSection(childId: profile.id),
         const SizedBox(height: AppSpacing.xl),
 
         // Section horaires de coucher (Sprint B3)
@@ -1094,6 +1099,280 @@ class _WellbeingAlertCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+// ─── Section activité physique (Sprint S12) ──────────────────────────────────
+
+class _FitnessSection extends StatefulWidget {
+  const _FitnessSection({required this.childId});
+  final String childId;
+
+  @override
+  State<_FitnessSection> createState() => _FitnessSectionState();
+}
+
+class _FitnessSectionState extends State<_FitnessSection> {
+  final _service = FitnessSummaryService.instance;
+
+  FitnessSummary? _summary;
+  bool _loading  = true;
+  bool _hasError = false;
+
+  static const int _goalSteps = 10000;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    if (mounted) setState(() { _loading = true; _hasError = false; });
+    try {
+      final summary = await _service.getSummary(widget.childId);
+      if (mounted) setState(() => _summary = summary);
+    } catch (_) {
+      if (mounted) setState(() => _hasError = true);
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  // Pas du jour = premier élément de days[] (trié DESC par le backend).
+  FitnessDay? get _today => _summary?.days.isNotEmpty == true ? _summary!.days.first : null;
+
+  String _formatDistance(int meters) {
+    if (meters >= 1000) {
+      final km = meters / 1000.0;
+      return '${km.toStringAsFixed(km < 10 ? 1 : 0)} km';
+    }
+    return '$meters m';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'ACTIVITÉ PHYSIQUE',
+          style: tt.labelSmall?.copyWith(
+            color: cs.onSurfaceVariant,
+            letterSpacing: 1.2,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.sm),
+
+        if (_loading)
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: AppSpacing.lg),
+            child: Center(child: CircularProgressIndicator()),
+          )
+        else if (_hasError)
+          HarmonyCard(
+            padding: AppSpacing.md,
+            child: Row(
+              children: [
+                Icon(Icons.wifi_off_outlined, color: cs.onSurfaceVariant),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: Text(
+                    'Impossible de charger l\'activité physique.',
+                    style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+                  ),
+                ),
+                TextButton(
+                  onPressed: _load,
+                  child: const Text('Réessayer'),
+                ),
+              ],
+            ),
+          )
+        else if (_summary == null || _summary!.days.isEmpty)
+          HarmonyCard(
+            padding: AppSpacing.md,
+            child: Row(
+              children: [
+                Icon(
+                  Icons.directions_walk_outlined,
+                  color: cs.onSurfaceVariant,
+                  size: 20,
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: Text(
+                    'Pas encore d\'activité enregistrée.',
+                    style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+                  ),
+                ),
+              ],
+            ),
+          )
+        else
+          _FitnessCard(
+            today: _today,
+            averageSteps: _summary!.averageStepsPerDay,
+            goalSteps: _goalSteps,
+            formatDistance: _formatDistance,
+          ),
+      ],
+    );
+  }
+}
+
+class _FitnessCard extends StatelessWidget {
+  const _FitnessCard({
+    required this.today,
+    required this.averageSteps,
+    required this.goalSteps,
+    required this.formatDistance,
+  });
+
+  final FitnessDay? today;
+  final double averageSteps;
+  final int goalSteps;
+  final String Function(int) formatDistance;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs   = Theme.of(context).colorScheme;
+    final tt   = Theme.of(context).textTheme;
+
+    final steps    = today?.steps ?? 0;
+    final minutes  = today?.activeMinutes ?? 0;
+    final distance = today?.distanceMeters ?? 0;
+
+    final progress    = (steps / goalSteps).clamp(0.0, 1.0);
+    final goalReached = steps >= goalSteps;
+    final barColor    = goalReached ? AppColors.accentGreen : AppColors.accentGreen;
+    final stepsColor  = goalReached ? AppColors.accentGreen : cs.onSurface;
+
+    return HarmonyCard(
+      padding: AppSpacing.md,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Ligne principale : icône + pas du jour
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.directions_run_rounded,
+                color: stepsColor,
+                size: 28,
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: Text(
+                  _formatSteps(steps),
+                  style: tt.headlineSmall?.copyWith(
+                    color: stepsColor,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              Text(
+                'Aujourd\'hui',
+                style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: AppSpacing.sm),
+
+          // Barre de progression vers l'objectif
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: LinearProgressIndicator(
+              value: progress,
+              minHeight: 6,
+              backgroundColor: barColor.withValues(alpha: 0.15),
+              valueColor: AlwaysStoppedAnimation<Color>(barColor),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.xs),
+
+          // Légende barre
+          if (goalReached)
+            Text(
+              'Objectif atteint — bravo pour cet effort ! 🎉',
+              style: tt.bodySmall?.copyWith(
+                color: AppColors.accentGreen,
+                fontWeight: FontWeight.w600,
+              ),
+            )
+          else
+            Text(
+              '${(progress * 100).toStringAsFixed(0)} % de l\'objectif '
+              '(${_formatSteps(goalSteps)} pas)',
+              style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+            ),
+
+          const SizedBox(height: AppSpacing.md),
+
+          // Métriques secondaires
+          Row(
+            children: [
+              _MetricChip(
+                icon: Icons.timer_outlined,
+                label: '$minutes min actives',
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              _MetricChip(
+                icon: Icons.place_outlined,
+                label: formatDistance(distance),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: _MetricChip(
+                  icon: Icons.show_chart_rounded,
+                  label: 'Moy. 7 j : ${_formatSteps(averageSteps.round())}',
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _formatSteps(int n) {
+    if (n >= 1000) {
+      final thousands = n ~/ 1000;
+      final remainder = n % 1000;
+      return remainder == 0
+          ? '$thousands 000 pas'
+          : '$thousands ${remainder.toString().padLeft(3, '0')} pas';
+    }
+    return '$n pas';
+  }
+}
+
+class _MetricChip extends StatelessWidget {
+  const _MetricChip({required this.icon, required this.label});
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 14, color: cs.onSurfaceVariant),
+        const SizedBox(width: 4),
+        Text(
+          label,
+          style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+        ),
+      ],
     );
   }
 }
