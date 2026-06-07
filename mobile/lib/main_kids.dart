@@ -12,6 +12,7 @@ import 'features/kids/data/services/screen_time_limits_fetch_service.dart';
 import 'features/kids/data/services/screen_time_upload_service.dart';
 import 'features/kids/data/services/screen_time_warning_service.dart';
 import 'features/kids/presentation/kids_admin_screen.dart';
+import 'features/kids/presentation/kids_onboarding_screen.dart';
 import 'features/kids/presentation/kids_pairing_screen.dart';
 import 'shared/theme/harmony_theme.dart';
 
@@ -26,6 +27,8 @@ void main() async {
   // Si l'enfant est déjà appairé (child_id en stockage sécurisé),
   // on vérifie d'abord que le lien existe encore côté serveur.
   String? storedChildId = await KidsStorage.instance.getChildId();
+  // Sprint S16 — lu avant runApp pour décider si l'onboarding enfant doit s'afficher.
+  final kidsOnboardingDone = await KidsStorage.instance.getKidsOnboardingDone();
 
   if (storedChildId != null) {
     try {
@@ -58,13 +61,24 @@ void main() async {
     ScreenTimeWarningService.instance.start();
   }
 
-  runApp(HarmonyKidsApp(initialChildId: storedChildId));
+  runApp(
+    HarmonyKidsApp(
+      initialChildId: storedChildId,
+      kidsOnboardingDone: kidsOnboardingDone,
+    ),
+  );
 }
 
 class HarmonyKidsApp extends StatelessWidget {
-  const HarmonyKidsApp({super.key, this.initialChildId});
+  const HarmonyKidsApp({
+    super.key,
+    this.initialChildId,
+    this.kidsOnboardingDone = false,
+  });
 
   final String? initialChildId;
+  // Sprint S16 — false = onboarding non encore vu, true = déjà complété.
+  final bool kidsOnboardingDone;
 
   @override
   Widget build(BuildContext context) {
@@ -77,9 +91,14 @@ class HarmonyKidsApp extends StatelessWidget {
           theme: HarmonyTheme.light(),
           darkTheme: HarmonyTheme.dark(),
           themeMode: themeMode,
-          // Si déjà appairé → admin screen ; sinon → pairing screen
+          // Gate onboarding enfant (Sprint S16) :
+          //   appairé + onboarding vu     → KidsAdminScreen (nominal)
+          //   appairé + onboarding absent → KidsOnboardingScreen (une seule fois)
+          //   non appairé                 → KidsPairingScreen
           home: initialChildId != null
-              ? KidsAdminScreen(childId: initialChildId)
+              ? (kidsOnboardingDone
+                  ? KidsAdminScreen(childId: initialChildId)
+                  : KidsOnboardingScreen(childId: initialChildId!))
               : const KidsPairingScreen(),
         ),
       ),

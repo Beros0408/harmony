@@ -7,6 +7,8 @@ class _TokenKeys {
   static const String userId = 'harmony_user_id';
   static const String userEmail = 'harmony_user_email';
   static const String userFullName = 'harmony_user_full_name';
+  // Sprint S16 — Onboarding
+  static const String onboardingDone = 'harmony_onboarding_done';
 }
 
 abstract interface class ITokenStorage {
@@ -21,6 +23,9 @@ abstract interface class ITokenStorage {
   Future<void> saveUserFullName(String name);
   Future<String?> getUserFullName();
   Future<void> clearAll();
+  // Sprint S16 — Onboarding
+  Future<void> saveOnboardingDone();
+  Future<bool> getOnboardingDone();
 }
 
 /// Stockage sécurisé des tokens JWT et du profil utilisateur via flutter_secure_storage.
@@ -74,4 +79,14 @@ class SecureTokenStorage implements ITokenStorage {
 
   @override
   Future<void> clearAll() => _storage.deleteAll();
+
+  @override
+  Future<void> saveOnboardingDone() =>
+      _storage.write(key: _TokenKeys.onboardingDone, value: 'true');
+
+  @override
+  Future<bool> getOnboardingDone() async {
+    final value = await _storage.read(key: _TokenKeys.onboardingDone);
+    return value == 'true';
+  }
 }

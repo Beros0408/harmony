@@ -228,6 +228,40 @@ async def setup_database():
             )
             """
         ))
+        # table consentements RGPD (Sprint S16)
+        await conn.execute(text(
+            """
+            CREATE TABLE IF NOT EXISTS public.consent_records (
+                id             uuid        DEFAULT gen_random_uuid() PRIMARY KEY,
+                parent_id      uuid        NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+                child_id       uuid        REFERENCES public.profiles(id) ON DELETE CASCADE,
+                consent_type   text        NOT NULL,
+                granted        boolean     NOT NULL DEFAULT true,
+                policy_version text        NOT NULL DEFAULT '1.0',
+                created_at     timestamptz DEFAULT now()
+            )
+            """
+        ))
+        await conn.execute(text(
+            """
+            CREATE INDEX IF NOT EXISTS idx_consent_parent
+                ON public.consent_records (parent_id)
+            """
+        ))
+        await conn.execute(text(
+            """
+            CREATE UNIQUE INDEX IF NOT EXISTS uq_consent_child
+                ON public.consent_records (parent_id, child_id, consent_type)
+                WHERE child_id IS NOT NULL
+            """
+        ))
+        await conn.execute(text(
+            """
+            CREATE UNIQUE INDEX IF NOT EXISTS uq_consent_global
+                ON public.consent_records (parent_id, consent_type)
+                WHERE child_id IS NULL
+            """
+        ))
     yield
     async with test_engine.begin() as conn:
         await conn.execute(text("DROP TABLE IF EXISTS public.fitness_activity"))
@@ -238,7 +272,8 @@ async def setup_database():
         await conn.execute(text("DROP TABLE IF EXISTS public.screen_time_bonus"))
         await conn.execute(text("DROP TABLE IF EXISTS public.screen_time_limits"))
         await conn.execute(text("DROP TABLE IF EXISTS public.screen_time_usage"))
-        # tables RGPD (Sprint S15) — ordre : dépendants avant profiles
+        # tables RGPD — ordre : dépendants avant profiles
+        await conn.execute(text("DROP TABLE IF EXISTS public.consent_records"))
         await conn.execute(text("DROP TABLE IF EXISTS public.unlink_requests"))
         await conn.execute(text("DROP TABLE IF EXISTS public.content_filter"))
         await conn.execute(text("DROP TABLE IF EXISTS public.lock_schedules"))

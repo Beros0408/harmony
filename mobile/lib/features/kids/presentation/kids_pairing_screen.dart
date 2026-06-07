@@ -6,7 +6,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../data/services/kids_storage.dart';
 import '../logic/kids_pairing_cubit.dart';
-import 'kids_admin_screen.dart';
+import 'kids_onboarding_screen.dart';
 
 class KidsPairingScreen extends StatefulWidget {
   const KidsPairingScreen({super.key});
@@ -292,7 +292,8 @@ class _KidsPairingScreenState extends State<KidsPairingScreen> {
             ),
             const SizedBox(height: AppSpacing.xl),
 
-            // Bouton vers la configuration du mode protection (Sprint B1 + B2)
+            // Sprint S16 — passe d'abord par l'onboarding enfant (une seule fois).
+            // KidsOnboardingScreen se termine en pushReplacement vers KidsAdminScreen.
             FilledButton.icon(
               icon: const Icon(Icons.shield_outlined),
               label: const Text('Configurer la protection'),
@@ -304,7 +305,8 @@ class _KidsPairingScreenState extends State<KidsPairingScreen> {
               ),
               onPressed: () => Navigator.of(context).push(
                 MaterialPageRoute<void>(
-                  builder: (_) => KidsAdminScreen(childId: state.childId),
+                  builder: (_) =>
+                      KidsOnboardingScreen(childId: state.childId),
                 ),
               ),
             ),

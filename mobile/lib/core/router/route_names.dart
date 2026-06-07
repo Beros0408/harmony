@@ -54,6 +54,9 @@ class RouteNames {
   // Sprint 5B — Limites de temps d'écran parent
   static const String screenTimeLimits = '/parental/child/:id/screen-time/limits';
 
+  // Sprint S16 — Onboarding parent (premier lancement)
+  static const String onboarding = '/onboarding';
+
   // Dev only — design system showcase (non indexée en production)
   static const String devComponents = '/dev/components';
 }

@@ -31,6 +31,7 @@ import '../../features/dev/presentation/screens/components_demo_screen.dart';
 import '../../features/meditation/presentation/screens/meditation_screen.dart';
 import '../../features/messages/data/models/captured_message.dart';
 import '../../features/messages/presentation/screens/message_detail_screen.dart';
+import '../../features/onboarding/presentation/screens/onboarding_screen.dart';
 import '../../features/splash/presentation/screens/splash_screen.dart';
 import '../../features/subscription/presentation/screens/paywall_screen.dart';
 import '../../features/subscription/presentation/screens/subscription_status_screen.dart';
@@ -76,6 +77,13 @@ final GoRouter appRouter = GoRouter(
     // Splash : laisse l'animation jouer, le bouton CTA gère la destination.
     if (loc == RouteNames.splash) return null;
 
+    // Sprint S16 — Gate onboarding : parent connecté sans consentement RGPD.
+    if (authenticated &&
+        !UserSession.instance.onboardingDone &&
+        loc != RouteNames.onboarding) {
+      return RouteNames.onboarding;
+    }
+
     // Routes ouvertes (login/register) → dashboard si déjà connecté.
     if (authenticated && openRoutes.contains(loc)) return RouteNames.dashboard;
 
@@ -93,6 +101,11 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: RouteNames.auth,
       builder: (context, state) => const AuthScreen(),
+    ),
+    // ── Sprint S16 — Onboarding parent ───────────────────────────────────
+    GoRoute(
+      path: RouteNames.onboarding,
+      builder: (context, state) => const OnboardingScreen(),
     ),
     // ── Sprint Auth — Connexion / Inscription ─────────────────────────────
     GoRoute(

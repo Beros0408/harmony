@@ -7,6 +7,8 @@ class KidsStorage {
   static final KidsStorage instance = KidsStorage._();
 
   static const _kChildId = 'harmony_kids_child_id';
+  // Sprint S16 — Onboarding enfant
+  static const _kOnboardingDone = 'harmony_kids_onboarding_done';
 
   final _storage = const FlutterSecureStorage();
 
@@ -16,4 +18,15 @@ class KidsStorage {
   Future<String?> getChildId() => _storage.read(key: _kChildId);
 
   Future<void> clearChildId() => _storage.delete(key: _kChildId);
+
+  Future<void> saveKidsOnboardingDone() =>
+      _storage.write(key: _kOnboardingDone, value: 'true');
+
+  Future<bool> getKidsOnboardingDone() async {
+    final value = await _storage.read(key: _kOnboardingDone);
+    return value == 'true';
+  }
+
+  Future<void> clearKidsOnboardingDone() =>
+      _storage.delete(key: _kOnboardingDone);
 }

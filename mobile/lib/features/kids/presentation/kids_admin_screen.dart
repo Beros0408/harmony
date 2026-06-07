@@ -137,6 +137,8 @@ class _KidsAdminScreenState extends State<KidsAdminScreen>
     }
     try {
       await KidsStorage.instance.clearChildId();
+      // Sprint S16 — réinitialise l'onboarding pour le prochain appairage.
+      await KidsStorage.instance.clearKidsOnboardingDone();
     } catch (_) {}
     if (!mounted) return;
     Navigator.of(context).pushAndRemoveUntil(
@@ -284,6 +286,8 @@ class _KidsAdminScreenState extends State<KidsAdminScreen>
     try {
       // 2. Efface l'appairage local → l'app reviendra à KidsPairingScreen au prochain démarrage
       await KidsStorage.instance.clearChildId();
+      // Sprint S16 — réinitialise l'onboarding pour le prochain appairage.
+      await KidsStorage.instance.clearKidsOnboardingDone();
 
       // 3. Supprime family_links côté backend
       await UnlinkRequestService.instance.executeUnlink(requestId, childId);

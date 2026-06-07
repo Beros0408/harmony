@@ -11,10 +11,12 @@ class UserSession extends ChangeNotifier {
   String? _parentId;
   String? _email;
   String? _fullName;
+  bool _onboardingDone = false;
 
   String? get parentId => _parentId;
   String? get email => _email;
   String? get fullName => _fullName;
+  bool get onboardingDone => _onboardingDone;
 
   bool get isAuthenticated => _parentId != null;
 
@@ -30,11 +32,18 @@ class UserSession extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Marque l'onboarding comme terminé et notifie le router.
+  void completeOnboarding() {
+    _onboardingDone = true;
+    notifyListeners();
+  }
+
   /// Efface la session (déconnexion).
   void clear() {
     _parentId = null;
     _email = null;
     _fullName = null;
+    _onboardingDone = false;
     notifyListeners();
   }
 
@@ -47,5 +56,6 @@ class UserSession extends ChangeNotifier {
     _parentId = userId;
     _email = await storage.getUserEmail() ?? '';
     _fullName = await storage.getUserFullName() ?? '';
+    _onboardingDone = await storage.getOnboardingDone();
   }
 }
