@@ -138,11 +138,11 @@ class _WelcomePage extends StatelessWidget {
         icon: Icons.spa_outlined,
         color: AppColors.accentGreen,
       ),
-      title: 'Bienvenue sur Harmony',
+      title: 'Bienvenue sur KimiaCare',
       body: Column(
         children: [
           _BodyText(
-            'Harmony accompagne votre famille vers un usage numérique '
+            'KimiaCare accompagne votre famille vers un usage numérique '
             'serein — à votre rythme, avec bienveillance.',
           ),
           const SizedBox(height: 12),
@@ -170,7 +170,7 @@ class _PermissionsPage extends StatelessWidget {
         icon: Icons.shield_outlined,
         color: AppColors.accentBlue,
       ),
-      title: 'Ce qu\'Harmony surveille\npour vous',
+      title: 'Ce que KimiaCare surveille\npour vous',
       body: Column(
         children: const [
           _FeatureRow(
@@ -187,7 +187,7 @@ class _PermissionsPage extends StatelessWidget {
             color: AppColors.accentRed,
             title: 'Filtrage de contenu',
             description:
-                'Harmony bloque les sites inappropriés au niveau réseau, '
+                'KimiaCare bloque les sites inappropriés au niveau réseau, '
                 'directement sur l\'appareil de votre enfant.',
           ),
           SizedBox(height: 14),
@@ -233,7 +233,7 @@ class _ConsentPage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _BodyText(
-            'Harmony collecte uniquement les données nécessaires '
+            'KimiaCare collecte uniquement les données nécessaires '
             'au contrôle parental : activité applicative, position GPS '
             'et événements de filtrage réseau.',
           ),
@@ -517,7 +517,7 @@ class _ConsentCheckbox extends StatelessWidget {
             const SizedBox(width: 12),
             const Expanded(
               child: Text(
-                'J\'ai lu et j\'accepte la politique de confidentialité d\'Harmony.',
+                'J\'ai lu et j\'accepte la politique de confidentialité de KimiaCare.',
                 style: TextStyle(
                   fontFamily: 'Inter',
                   fontSize: 13,

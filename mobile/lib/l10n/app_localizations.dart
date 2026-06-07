@@ -107,13 +107,13 @@ abstract class AppLocalizations {
   /// Nom de l'application
   ///
   /// In fr, this message translates to:
-  /// **'Harmony'**
+  /// **'KimiaCare'**
   String get appName;
 
   /// Titre de la barre d'app dashboard
   ///
   /// In fr, this message translates to:
-  /// **'Harmony'**
+  /// **'KimiaCare'**
   String get dashboardTitle;
 
   /// No description provided for @dashboardWelcomeWave.
@@ -779,7 +779,7 @@ abstract class AppLocalizations {
   /// No description provided for @authWelcomeTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Bienvenue sur Harmony'**
+  /// **'Bienvenue sur KimiaCare'**
   String get authWelcomeTitle;
 
   /// No description provided for @authCreatePinTitle.
@@ -839,7 +839,7 @@ abstract class AppLocalizations {
   /// No description provided for @authBiometricSetupDesc.
   ///
   /// In fr, this message translates to:
-  /// **'Déverrouillez Harmony avec Face ID ou votre empreinte digitale.'**
+  /// **'Déverrouillez KimiaCare avec Face ID ou votre empreinte digitale.'**
   String get authBiometricSetupDesc;
 
   /// No description provided for @authBiometricEnable.
@@ -1007,7 +1007,7 @@ abstract class AppLocalizations {
   /// No description provided for @contactsPermissionSubtitle.
   ///
   /// In fr, this message translates to:
-  /// **'Harmony a besoin de votre permission pour afficher votre carnet d\'adresses.'**
+  /// **'KimiaCare a besoin de votre permission pour afficher votre carnet d\'adresses.'**
   String get contactsPermissionSubtitle;
 
   /// No description provided for @contactsPermissionCta.
@@ -1121,7 +1121,7 @@ abstract class AppLocalizations {
   /// No description provided for @callScreeningEnableDescription.
   ///
   /// In fr, this message translates to:
-  /// **'Pour bloquer les appels indésirables, Harmony doit être votre application de filtrage par défaut'**
+  /// **'Pour bloquer les appels indésirables, KimiaCare doit être votre application de filtrage par défaut'**
   String get callScreeningEnableDescription;
 
   /// No description provided for @callScreeningEnableButton.
@@ -1193,7 +1193,7 @@ abstract class AppLocalizations {
   /// No description provided for @iosFilteringStep2.
   ///
   /// In fr, this message translates to:
-  /// **'Activez Harmony dans la liste'**
+  /// **'Activez KimiaCare dans la liste'**
   String get iosFilteringStep2;
 
   /// No description provided for @iosFilteringOpenSettingsButton.
@@ -1517,7 +1517,7 @@ abstract class AppLocalizations {
   /// No description provided for @permissionLocationBody.
   ///
   /// In fr, this message translates to:
-  /// **'Harmony a besoin de votre position pour surveiller les zones'**
+  /// **'KimiaCare a besoin de votre position pour surveiller les zones'**
   String get permissionLocationBody;
 
   /// No description provided for @permissionLocationGrant.
@@ -1907,7 +1907,7 @@ abstract class AppLocalizations {
   /// No description provided for @messagesIosLimitation.
   ///
   /// In fr, this message translates to:
-  /// **'iOS : WhatsApp et Signal ne peuvent pas être interceptés par Harmony en raison du sandboxing Apple. Seuls les SMS sont filtrables via SMS Filter Extension. Utilisez Screen Time pour limiter WhatsApp sur iOS.'**
+  /// **'iOS : WhatsApp et Signal ne peuvent pas être interceptés par KimiaCare en raison du sandboxing Apple. Seuls les SMS sont filtrables via SMS Filter Extension. Utilisez Screen Time pour limiter WhatsApp sur iOS.'**
   String get messagesIosLimitation;
 
   /// No description provided for @messagesPermissionRequiredTitle.
@@ -1919,7 +1919,7 @@ abstract class AppLocalizations {
   /// No description provided for @messagesPermissionRequiredSubtitle.
   ///
   /// In fr, this message translates to:
-  /// **'Activez l\'accès aux SMS pour les voir dans Harmony'**
+  /// **'Activez l\'accès aux SMS pour les voir dans KimiaCare'**
   String get messagesPermissionRequiredSubtitle;
 
   /// No description provided for @messagesPermissionAllowCta.
@@ -2045,7 +2045,7 @@ abstract class AppLocalizations {
   /// No description provided for @fitnessPermissionSubtitle.
   ///
   /// In fr, this message translates to:
-  /// **'Harmony a besoin de votre permission pour compter vos pas et suivre votre activité'**
+  /// **'KimiaCare a besoin de votre permission pour compter vos pas et suivre votre activité'**
   String get fitnessPermissionSubtitle;
 
   /// No description provided for @fitnessPermissionAllowCta.
@@ -2135,7 +2135,7 @@ abstract class AppLocalizations {
   /// No description provided for @subscriptionPaywallTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Harmony Premium'**
+  /// **'KimiaCare Premium'**
   String get subscriptionPaywallTitle;
 
   /// No description provided for @subscriptionPaywallSubtitle.
@@ -2273,7 +2273,7 @@ abstract class AppLocalizations {
   /// No description provided for @splashCtaButton.
   ///
   /// In fr, this message translates to:
-  /// **'Entrer dans Harmony'**
+  /// **'Entrer dans KimiaCare'**
   String get splashCtaButton;
 
   /// No description provided for @messageDetailTypeSms.

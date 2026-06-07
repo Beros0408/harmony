@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Libellé affiché dans l'écran "Administrateurs d'appareils" d'Android -->
-    <string name="device_admin_label">Harmony Kids Protection</string>
+    <string name="device_admin_label">KimiaCare Kids Protection</string>
     <!-- Description affichée lors de la demande d'activation du mode admin -->
-    <string name="device_admin_description">Permet à votre parent de verrouiller l\'écran de cet appareil à distance via l\'app Harmony. Aucune autre action n\'est effectuée sans votre consentement.</string>
+    <string name="device_admin_description">Permet à votre parent de verrouiller l\'écran de cet appareil à distance via l\'app KimiaCare. Aucune autre action n\'est effectuée sans votre consentement.</string>
 
     <!-- Service d'accessibilité — blocage bienveillant des apps (Sprint 5C) -->
-    <string name="accessibility_service_label">Harmony Kids — Limites de temps d\'écran</string>
-    <string name="accessibility_service_description">Permet à Harmony Kids de détecter l\'application utilisée et d\'afficher un message doux quand le temps d\'écran convenu avec ton parent est écoulé. Aucun contenu (messages, photos, etc.) n\'est lu.</string>
+    <string name="accessibility_service_label">KimiaCare Kids — Limites de temps d\'écran</string>
+    <string name="accessibility_service_description">Permet à KimiaCare Kids de détecter l\'application utilisée et d\'afficher un message doux quand le temps d\'écran convenu avec ton parent est écoulé. Aucun contenu (messages, photos, etc.) n\'est lu.</string>
 </resources>

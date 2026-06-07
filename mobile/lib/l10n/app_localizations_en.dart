@@ -9,10 +9,10 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appName => 'Harmony';
+  String get appName => 'KimiaCare';
 
   @override
-  String get dashboardTitle => 'Harmony';
+  String get dashboardTitle => 'KimiaCare';
 
   @override
   String get dashboardWelcomeWave => 'Welcome 👋';
@@ -365,7 +365,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get agendaCreateToast => 'Event creation coming in Sprint 4';
 
   @override
-  String get authWelcomeTitle => 'Welcome to Harmony';
+  String get authWelcomeTitle => 'Welcome to KimiaCare';
 
   @override
   String get authCreatePinTitle => 'Create your PIN';
@@ -404,7 +404,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get authBiometricSetupDesc =>
-      'Unlock Harmony with Face ID or your fingerprint.';
+      'Unlock KimiaCare with Face ID or your fingerprint.';
 
   @override
   String get authBiometricEnable => 'Enable';
@@ -491,7 +491,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get contactsPermissionSubtitle =>
-      'Harmony needs your permission to display your address book.';
+      'KimiaCare needs your permission to display your address book.';
 
   @override
   String get contactsPermissionCta => 'Grant contacts access';
@@ -569,7 +569,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get callScreeningEnableDescription =>
-      'To block unwanted calls, Harmony must be your default call screening app';
+      'To block unwanted calls, KimiaCare must be your default call screening app';
 
   @override
   String get callScreeningEnableButton => 'Enable';
@@ -607,7 +607,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Open Settings → Phone → Call Blocking & Identification';
 
   @override
-  String get iosFilteringStep2 => 'Enable Harmony in the list';
+  String get iosFilteringStep2 => 'Enable KimiaCare in the list';
 
   @override
   String get iosFilteringOpenSettingsButton => 'Open settings';
@@ -777,7 +777,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get permissionLocationBody =>
-      'Harmony needs your location to monitor safe zones';
+      'KimiaCare needs your location to monitor safe zones';
 
   @override
   String get permissionLocationGrant => 'Allow';
@@ -978,14 +978,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get messagesIosLimitation =>
-      'iOS: WhatsApp and Signal cannot be intercepted by Harmony due to Apple sandboxing. Only SMS can be filtered via SMS Filter Extension. Use Screen Time to restrict WhatsApp on iOS.';
+      'iOS: WhatsApp and Signal cannot be intercepted by KimiaCare due to Apple sandboxing. Only SMS can be filtered via SMS Filter Extension. Use Screen Time to restrict WhatsApp on iOS.';
 
   @override
   String get messagesPermissionRequiredTitle => 'SMS permission required';
 
   @override
   String get messagesPermissionRequiredSubtitle =>
-      'Enable SMS access to view messages in Harmony';
+      'Enable SMS access to view messages in KimiaCare';
 
   @override
   String get messagesPermissionAllowCta => 'Allow';
@@ -1051,7 +1051,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get fitnessPermissionSubtitle =>
-      'Harmony needs permission to count your steps and track your activity';
+      'KimiaCare needs permission to count your steps and track your activity';
 
   @override
   String get fitnessPermissionAllowCta => 'Allow access';
@@ -1098,7 +1098,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sosContactsAdd => 'Add a contact';
 
   @override
-  String get subscriptionPaywallTitle => 'Harmony Premium';
+  String get subscriptionPaywallTitle => 'KimiaCare Premium';
 
   @override
   String get subscriptionPaywallSubtitle => 'Unlock all features';
@@ -1172,7 +1172,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get splashTagline => 'Your digital sanctuary';
 
   @override
-  String get splashCtaButton => 'Enter Harmony';
+  String get splashCtaButton => 'Enter KimiaCare';
 
   @override
   String get messageDetailTypeSms => 'SMS';

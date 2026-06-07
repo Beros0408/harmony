@@ -132,7 +132,7 @@ class HarmonyApp extends StatelessWidget {
             builder: (context, themeMode) {
               SystemUiAdapter.apply(themeMode);
               return MaterialApp.router(
-                title: 'Harmony',
+                title: 'KimiaCare',
                 debugShowCheckedModeBanner: false,
                 theme: HarmonyTheme.light(),
                 darkTheme: HarmonyTheme.dark(),

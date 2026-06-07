@@ -83,7 +83,7 @@ class _SplashScreenState extends State<SplashScreen>
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      'Harmony',
+                      'KimiaCare',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 52,

@@ -78,7 +78,7 @@ class HarmonyDnsVpnService : VpnService() {
                 .addAddress(TUN_ADDR, 32)
                 .addDnsServer(FAKE_DNS_ADDR)
                 .addRoute(FAKE_DNS_ADDR, 32)  // seul le trafic vers le faux DNS passe par le tunnel
-                .setSession("Harmony DNS Filter")
+                .setSession("KimiaCare DNS Filter")
                 .setBlocking(true)
                 .establish()
 

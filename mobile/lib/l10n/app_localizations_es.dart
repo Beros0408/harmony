@@ -9,10 +9,10 @@ class AppLocalizationsEs extends AppLocalizations {
   AppLocalizationsEs([String locale = 'es']) : super(locale);
 
   @override
-  String get appName => 'Harmony';
+  String get appName => 'KimiaCare';
 
   @override
-  String get dashboardTitle => 'Harmony';
+  String get dashboardTitle => 'KimiaCare';
 
   @override
   String get dashboardWelcomeWave => 'Bienvenido 👋';
@@ -366,7 +366,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get agendaCreateToast => 'Creación de evento disponible en Sprint 4';
 
   @override
-  String get authWelcomeTitle => 'Bienvenido a Harmony';
+  String get authWelcomeTitle => 'Bienvenido a KimiaCare';
 
   @override
   String get authCreatePinTitle => 'Crea tu código PIN';
@@ -405,7 +405,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get authBiometricSetupDesc =>
-      'Desbloquea Harmony con Face ID o tu huella dactilar.';
+      'Desbloquea KimiaCare con Face ID o tu huella dactilar.';
 
   @override
   String get authBiometricEnable => 'Activar';
@@ -492,7 +492,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get contactsPermissionSubtitle =>
-      'Harmony necesita tu permiso para mostrar tu agenda.';
+      'KimiaCare necesita tu permiso para mostrar tu agenda.';
 
   @override
   String get contactsPermissionCta => 'Permitir acceso a contactos';
@@ -570,7 +570,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get callScreeningEnableDescription =>
-      'Para bloquear llamadas no deseadas, Harmony debe ser tu app de filtrado por defecto';
+      'Para bloquear llamadas no deseadas, KimiaCare debe ser tu app de filtrado por defecto';
 
   @override
   String get callScreeningEnableButton => 'Activar';
@@ -608,7 +608,7 @@ class AppLocalizationsEs extends AppLocalizations {
       'Abra Ajustes → Teléfono → Bloqueo e identificación de llamadas';
 
   @override
-  String get iosFilteringStep2 => 'Active Harmony en la lista';
+  String get iosFilteringStep2 => 'Active KimiaCare en la lista';
 
   @override
   String get iosFilteringOpenSettingsButton => 'Abrir ajustes';
@@ -779,7 +779,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get permissionLocationBody =>
-      'Harmony necesita tu ubicación para supervisar las zonas';
+      'KimiaCare necesita tu ubicación para supervisar las zonas';
 
   @override
   String get permissionLocationGrant => 'Permitir';
@@ -981,14 +981,14 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get messagesIosLimitation =>
-      'iOS: WhatsApp y Signal no pueden ser interceptados por Harmony debido al sandboxing de Apple. Solo los SMS se pueden filtrar. Usa Screen Time para limitar WhatsApp en iOS.';
+      'iOS: WhatsApp y Signal no pueden ser interceptados por KimiaCare debido al sandboxing de Apple. Solo los SMS se pueden filtrar. Usa Screen Time para limitar WhatsApp en iOS.';
 
   @override
   String get messagesPermissionRequiredTitle => 'Permiso de SMS requerido';
 
   @override
   String get messagesPermissionRequiredSubtitle =>
-      'Activa el acceso a SMS para ver los mensajes en Harmony';
+      'Activa el acceso a SMS para ver los mensajes en KimiaCare';
 
   @override
   String get messagesPermissionAllowCta => 'Permitir';
@@ -1054,7 +1054,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get fitnessPermissionSubtitle =>
-      'Harmony necesita permiso para contar tus pasos y registrar tu actividad';
+      'KimiaCare necesita permiso para contar tus pasos y registrar tu actividad';
 
   @override
   String get fitnessPermissionAllowCta => 'Permitir acceso';
@@ -1101,7 +1101,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get sosContactsAdd => 'Añadir un contacto';
 
   @override
-  String get subscriptionPaywallTitle => 'Harmony Premium';
+  String get subscriptionPaywallTitle => 'KimiaCare Premium';
 
   @override
   String get subscriptionPaywallSubtitle => 'Desbloquea todas las funciones';
@@ -1174,7 +1174,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get splashTagline => 'Tu santuario digital';
 
   @override
-  String get splashCtaButton => 'Entrar en Harmony';
+  String get splashCtaButton => 'Entrar en KimiaCare';
 
   @override
   String get messageDetailTypeSms => 'SMS';

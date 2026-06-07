@@ -1,8 +1,8 @@
 {
   "@@locale": "pt",
 
-  "appName": "Harmony",
-  "dashboardTitle": "Harmony",
+  "appName": "KimiaCare",
+  "dashboardTitle": "KimiaCare",
   "dashboardWelcomeWave": "Bem-vindo 👋",
   "dashboardAllServicesActive": "Todos os serviços ativos",
   "dashboardSectionModules": "OS MEUS MÓDULOS",
@@ -123,7 +123,7 @@
   "agendaCreateButton": "Novo evento",
   "agendaCreateToast": "Criação de evento disponível no Sprint 4",
 
-  "authWelcomeTitle": "Bem-vindo ao Harmony",
+  "authWelcomeTitle": "Bem-vindo ao KimiaCare",
   "authCreatePinTitle": "Criar o seu PIN",
   "authChoosePin": "Escolha um código de 4 dígitos",
   "authConfirmPinTitle": "Confirmar o seu PIN",
@@ -133,7 +133,7 @@
   "authIncorrectCode": "Código incorreto",
   "authAttemptsLeft": "{count, plural, =1{1 tentativa restante} other{{count} tentativas restantes}}",
   "authBiometricSetupTitle": "Ativar biometria?",
-  "authBiometricSetupDesc": "Desbloqueie o Harmony com Face ID ou a sua impressão digital.",
+  "authBiometricSetupDesc": "Desbloqueie o KimiaCare com Face ID ou a sua impressão digital.",
   "authBiometricEnable": "Ativar",
   "authBiometricLater": "Mais tarde",
   "authBiometricSkip": "Ignorar",
@@ -168,7 +168,7 @@
   "contactsEmpty": "Sem contactos",
   "contactsRemove": "Remover",
   "contactsPermissionTitle": "Acesso aos contactos necessário",
-  "contactsPermissionSubtitle": "A Harmony precisa da sua permissão para mostrar a sua agenda.",
+  "contactsPermissionSubtitle": "A KimiaCare precisa da sua permissão para mostrar a sua agenda.",
   "contactsPermissionCta": "Permitir acesso aos contactos",
   "blacklistPickFromContacts": "Escolher dos meus contactos",
 
@@ -198,7 +198,7 @@
   "voicemailPlay": "Ouvir",
 
   "callScreeningEnableTitle": "Ativar proteção",
-  "callScreeningEnableDescription": "Para bloquear chamadas indesejadas, o Harmony deve ser a sua app de filtragem predefinida",
+  "callScreeningEnableDescription": "Para bloquear chamadas indesejadas, o KimiaCare deve ser a sua app de filtragem predefinida",
   "callScreeningEnableButton": "Ativar",
   "callScreeningActiveStatus": "Proteção ativa",
   "callLogScreenTitle": "Registo de bloqueios",
@@ -211,7 +211,7 @@
   "iosFilteringTitle": "Filtragem iOS",
   "iosFilteringInstructions": "Para ativar o bloqueio de chamadas no iOS, ative a extensão nas Definições.",
   "iosFilteringStep1": "Abra Definições → Telefone → Bloqueio e identificação de chamadas",
-  "iosFilteringStep2": "Ative o Harmony na lista",
+  "iosFilteringStep2": "Ative o KimiaCare na lista",
   "iosFilteringOpenSettingsButton": "Abrir definições",
 
   "outgoingCallAlertTitle": "Chamada potencialmente tarifada",
@@ -278,7 +278,7 @@
   "sosActiveCancel": "Cancelar SOS",
   "sosCancelConfirm": "Você está seguro?",
   "permissionLocationTitle": "Localização necessária",
-  "permissionLocationBody": "Harmony precisa da sua localização para monitorar as zonas",
+  "permissionLocationBody": "KimiaCare precisa da sua localização para monitorar as zonas",
   "permissionLocationGrant": "Permitir",
 
   "agendaNoEvents": "Nenhum evento",
@@ -346,10 +346,10 @@
   "messagesStatBlocked": "Bloqueados",
   "messagesStatRules": "Regras",
   "messagesEmptyState": "Nenhuma mensagem capturada.\nAtive o acesso a notificações\ne envie um SMS ou mensagem WhatsApp.",
-  "messagesIosLimitation": "iOS: WhatsApp e Signal não podem ser interceptados pelo Harmony devido ao sandboxing da Apple. Apenas SMS são filtráveis. Use o Screen Time para limitar o WhatsApp no iOS.",
+  "messagesIosLimitation": "iOS: WhatsApp e Signal não podem ser interceptados pelo KimiaCare devido ao sandboxing da Apple. Apenas SMS são filtráveis. Use o Screen Time para limitar o WhatsApp no iOS.",
 
   "messagesPermissionRequiredTitle": "Permissão de SMS necessária",
-  "messagesPermissionRequiredSubtitle": "Ative o acesso a SMS para ver mensagens no Harmony",
+  "messagesPermissionRequiredSubtitle": "Ative o acesso a SMS para ver mensagens no KimiaCare",
   "messagesPermissionAllowCta": "Permitir",
   "messagesPermissionDeniedSnack": "Permissão de SMS negada. Você pode ativá-la nas configurações do aplicativo.",
 
@@ -372,7 +372,7 @@
   "messageRuleScheduleDisplay": "(período horário)",
 
   "fitnessPermissionTitle": "Acesso à atividade necessário",
-  "fitnessPermissionSubtitle": "O Harmony precisa de permissão para contar seus passos e monitorar sua atividade",
+  "fitnessPermissionSubtitle": "O KimiaCare precisa de permissão para contar seus passos e monitorar sua atividade",
   "fitnessPermissionAllowCta": "Permitir acesso",
   "fitnessGoalTitle": "META DIÁRIA",
   "fitnessGoalSteps": "{count} passos / dia",
@@ -392,7 +392,7 @@
   "sosContactsEmpty": "Nenhum contato SOS",
   "sosContactsAdd": "Adicionar um contato",
 
-  "subscriptionPaywallTitle": "Harmony Premium",
+  "subscriptionPaywallTitle": "KimiaCare Premium",
   "subscriptionPaywallSubtitle": "Desbloqueie todas as funcionalidades",
   "subscriptionCtaStart": "Começar agora",
   "subscriptionRestorePurchases": "Restaurar compras",
@@ -422,7 +422,7 @@
   "moduleMeditationBadge": "Novo",
 
   "splashTagline": "Seu santuário digital",
-  "splashCtaButton": "Entrar no Harmony",
+  "splashCtaButton": "Entrar no KimiaCare",
 
   "messageDetailTypeSms": "SMS",
   "messageDetailTypeWhatsapp": "WhatsApp",

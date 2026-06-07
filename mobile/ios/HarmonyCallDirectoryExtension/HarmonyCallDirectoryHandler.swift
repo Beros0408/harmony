@@ -27,7 +27,7 @@ class HarmonyCallDirectoryHandler: CXCallDirectoryProvider {
         for number in normalized.sorted() {
             context.addIdentificationEntry(
                 withNextSequentialPhoneNumber: number,
-                label: "Harmony — autorisé"
+                label: "KimiaCare — autorisé"
             )
         }
     }

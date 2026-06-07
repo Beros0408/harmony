@@ -7,22 +7,22 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Harmony</string>
+	<string>KimiaCare</string>
 	<key>NSFaceIDUsageDescription</key>
-	<string>Harmony utilise Face ID pour sécuriser l'accès parental</string>
+	<string>KimiaCare utilise Face ID pour sécuriser l'accès parental</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Harmony utilise votre localisation pour le contrôle parental géographique</string>
+	<string>KimiaCare utilise votre localisation pour le contrôle parental géographique</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Harmony utilise votre localisation en arrière-plan pour le suivi parental</string>
+	<string>KimiaCare utilise votre localisation en arrière-plan pour le suivi parental</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Harmony utilise votre localisation en arrière-plan pour alerter en cas de sortie de zone</string>
+	<string>KimiaCare utilise votre localisation en arrière-plan pour alerter en cas de sortie de zone</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>location</string>
 		<string>fetch</string>
 	</array>
 	<key>NSContactsUsageDescription</key>
-	<string>Harmony accède à vos contacts pour identifier les appelants</string>
+	<string>KimiaCare accède à vos contacts pour identifier les appelants</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>

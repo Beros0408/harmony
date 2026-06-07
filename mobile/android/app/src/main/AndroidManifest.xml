@@ -51,7 +51,7 @@
         tools:ignore="ProtectedPermissions" />
 
     <application
-        android:label="Harmony"
+        android:label="KimiaCare"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
@@ -85,7 +85,7 @@
         <service
             android:name=".messages.HarmonyNotificationListener"
             android:exported="true"
-            android:label="Harmony Messages"
+            android:label="KimiaCare Messages"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
             <intent-filter>
                 <action android:name="android.service.notification.NotificationListenerService" />
