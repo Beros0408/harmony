@@ -45,11 +45,11 @@ class BlockedCallEntry {
 
 /// Pont Flutter ↔ natif cross-platform pour le filtrage d'appels.
 ///
-/// Android : MethodChannel "com.harmony.app/call_filter" → CallScreeningService Kotlin
-/// iOS     : MethodChannel "com.harmony.app/call_filter_ios" → CXCallDirectoryProvider Swift
+/// Android : MethodChannel "com.kimiacare.app/call_filter" → CallScreeningService Kotlin
+/// iOS     : MethodChannel "com.kimiacare.app/call_filter_ios" → CXCallDirectoryProvider Swift
 class CallFilterChannel {
-  static const _androidChannel = MethodChannel('com.harmony.app/call_filter');
-  static const _iosChannel = MethodChannel('com.harmony.app/call_filter_ios');
+  static const _androidChannel = MethodChannel('com.kimiacare.app/call_filter');
+  static const _iosChannel = MethodChannel('com.kimiacare.app/call_filter_ios');
 
   static bool get _isIOS => defaultTargetPlatform == TargetPlatform.iOS;
 

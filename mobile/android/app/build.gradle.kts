@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.harmony.harmony"
+    namespace = "com.kimiacare.app"
     compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
@@ -16,7 +16,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.harmony.app"
+        applicationId = "com.kimiacare.app"
         minSdk = 29  // Android 10+
         targetSdk = 36
         versionCode = flutter.versionCode

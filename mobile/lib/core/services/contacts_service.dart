@@ -15,7 +15,7 @@ class ContactsService {
 
   static final ContactsService instance = ContactsService._();
 
-  static const _channel = MethodChannel('com.harmony.app/contacts_reader');
+  static const _channel = MethodChannel('com.kimiacare.app/contacts_reader');
 
   // ─── Permissions ──────────────────────────────────────────────────────────
 

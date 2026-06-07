@@ -502,7 +502,7 @@ class _MapSection extends StatelessWidget {
                   children: [
                     TileLayer(
                       urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                      userAgentPackageName: 'com.harmony.app',
+                      userAgentPackageName: 'com.kimiacare.app',
                     ),
                     CircleLayer(
                       circles: zones

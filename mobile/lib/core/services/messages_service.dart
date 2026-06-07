@@ -4,14 +4,14 @@ import 'package:permission_handler/permission_handler.dart';
 
 import '../../features/messages/data/models/captured_message.dart';
 
-/// Wrapper du MethodChannel "com.harmony.app/messages_filter".
+/// Wrapper du MethodChannel "com.kimiacare.app/messages_filter".
 /// Fait le pont entre Flutter et le plugin Kotlin MessagesFilterPlugin.
 class MessagesService {
   MessagesService._();
 
   static final MessagesService instance = MessagesService._();
 
-  static const _channel = MethodChannel('com.harmony.app/messages_filter');
+  static const _channel = MethodChannel('com.kimiacare.app/messages_filter');
 
   // ─── Listener access ───────────────────────────────────────────────────────
 

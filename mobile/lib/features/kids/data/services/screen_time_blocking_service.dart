@@ -40,7 +40,7 @@ class ScreenTimeBlockingService {
   /// Packages jamais bloqués côté Flutter — miroir de NEVER_BLOCK dans HarmonyScreenTimeService.kt.
   /// Inclut les launchers et apps système critiques pour éviter de bricker l'appareil.
   static const Set<String> neverBlock = {
-    'com.harmony.harmony',
+    'com.kimiacare.app',
     'android',
     'com.android.systemui',
     'com.android.settings',
