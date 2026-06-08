@@ -283,6 +283,19 @@
   "sosTriggerConfirmSend": "Send SOS",
   "sosSentSuccess": "SOS sent, your parent has been alerted",
   "sosSentError": "Unable to send SOS, check your connection",
+  "sosSectionTitle": "SOS ALERTS",
+  "sosNoActive": "No SOS alert — all is well.",
+  "sosAcknowledge": "Got it — Acknowledge",
+  "sosPosition": "Location: {lat}, {lon}",
+  "@sosPosition": {
+    "placeholders": {
+      "lat": {"type": "String"},
+      "lon": {"type": "String"}
+    }
+  },
+  "sosViewOnMap": "View on map",
+  "sosLoadError": "Unable to load SOS alerts.",
+  "sosAckError": "Unable to acknowledge the alert.",
   "permissionLocationTitle": "Location required",
   "permissionLocationBody": "KimiaCare needs your location to monitor safe zones",
   "permissionLocationGrant": "Allow",

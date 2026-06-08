@@ -795,6 +795,29 @@ class AppLocalizationsIt extends AppLocalizations {
       'Impossibile inviare il SOS, controlla la connessione';
 
   @override
+  String get sosSectionTitle => 'ALLERTE SOS';
+
+  @override
+  String get sosNoActive => 'Nessuna allerta SOS — tutto bene.';
+
+  @override
+  String get sosAcknowledge => 'Visto — Conferma';
+
+  @override
+  String sosPosition(String lat, String lon) {
+    return 'Posizione: $lat, $lon';
+  }
+
+  @override
+  String get sosViewOnMap => 'Vedi sulla mappa';
+
+  @override
+  String get sosLoadError => 'Impossibile caricare le allerte SOS.';
+
+  @override
+  String get sosAckError => 'Impossibile confermare l\'allerta.';
+
+  @override
   String get permissionLocationTitle => 'Posizione richiesta';
 
   @override

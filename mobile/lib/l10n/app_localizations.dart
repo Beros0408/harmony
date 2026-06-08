@@ -1544,6 +1544,48 @@ abstract class AppLocalizations {
   /// **'Impossible d\'envoyer le SOS, vérifie ta connexion'**
   String get sosSentError;
 
+  /// No description provided for @sosSectionTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'ALERTES SOS'**
+  String get sosSectionTitle;
+
+  /// No description provided for @sosNoActive.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune alerte SOS — tout va bien.'**
+  String get sosNoActive;
+
+  /// No description provided for @sosAcknowledge.
+  ///
+  /// In fr, this message translates to:
+  /// **'J\'ai vu — Acquitter'**
+  String get sosAcknowledge;
+
+  /// No description provided for @sosPosition.
+  ///
+  /// In fr, this message translates to:
+  /// **'Position : {lat}, {lon}'**
+  String sosPosition(String lat, String lon);
+
+  /// No description provided for @sosViewOnMap.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir sur la carte'**
+  String get sosViewOnMap;
+
+  /// No description provided for @sosLoadError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger les alertes SOS.'**
+  String get sosLoadError;
+
+  /// No description provided for @sosAckError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible d\'acquitter l\'alerte.'**
+  String get sosAckError;
+
   /// No description provided for @permissionLocationTitle.
   ///
   /// In fr, this message translates to:

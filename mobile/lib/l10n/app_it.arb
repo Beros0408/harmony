@@ -283,6 +283,19 @@
   "sosTriggerConfirmSend": "Invia SOS",
   "sosSentSuccess": "SOS inviato, il tuo genitore è stato avvisato",
   "sosSentError": "Impossibile inviare il SOS, controlla la connessione",
+  "sosSectionTitle": "ALLERTE SOS",
+  "sosNoActive": "Nessuna allerta SOS — tutto bene.",
+  "sosAcknowledge": "Visto — Conferma",
+  "sosPosition": "Posizione: {lat}, {lon}",
+  "@sosPosition": {
+    "placeholders": {
+      "lat": {"type": "String"},
+      "lon": {"type": "String"}
+    }
+  },
+  "sosViewOnMap": "Vedi sulla mappa",
+  "sosLoadError": "Impossibile caricare le allerte SOS.",
+  "sosAckError": "Impossibile confermare l'allerta.",
   "permissionLocationTitle": "Posizione richiesta",
   "permissionLocationBody": "KimiaCare ha bisogno della tua posizione per monitorare le zone",
   "permissionLocationGrant": "Consenti",

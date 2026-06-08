@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_radius.dart';
@@ -23,6 +24,7 @@ import '../../data/services/content_filter_api_service.dart';
 import '../../data/services/fitness_summary_service.dart';
 import '../../data/services/lock_command_service.dart';
 import '../../data/services/pause_command_service.dart';
+import '../../data/services/sos_alert_service.dart';
 import '../../data/services/unlink_parent_service.dart';
 import '../../data/services/wellbeing_alert_service.dart';
 import '../../logic/child_profile_cubit.dart';
@@ -164,6 +166,10 @@ class _ChildDetailBody extends StatelessWidget {
 
         // Bouton pause à distance (Sprint 5D-3)
         _PauseButton(childId: profile.id),
+        const SizedBox(height: AppSpacing.xl),
+
+        // Section alertes SOS (A3) — prioritaire, en tête des sections
+        _SosSection(childId: profile.id),
         const SizedBox(height: AppSpacing.xl),
 
         // Section alertes bien-être numérique (Module 6)
@@ -1567,6 +1573,270 @@ class _UnlinkPendingCard extends StatelessWidget {
                 ),
               ),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Section alertes SOS (A3) ─────────────────────────────────────────────────
+
+class _SosSection extends StatefulWidget {
+  const _SosSection({required this.childId});
+  final String childId;
+
+  @override
+  State<_SosSection> createState() => _SosSectionState();
+}
+
+class _SosSectionState extends State<_SosSection> {
+  final _service = SosAlertService.instance;
+
+  List<SosEvent> _events = [];
+  bool _loading  = true;
+  bool _hasError = false;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+    _timer = Timer.periodic(const Duration(seconds: 30), (_) => _loadSilent());
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _load() async {
+    if (mounted) setState(() { _loading = true; _hasError = false; });
+    try {
+      final events = await _service.getActiveSos(widget.childId);
+      if (mounted) setState(() => _events = events);
+    } catch (_) {
+      if (mounted) setState(() => _hasError = true);
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  // Actualisation silencieuse par le timer — pas de spinner, liste inchangée si erreur.
+  Future<void> _loadSilent() async {
+    try {
+      final events = await _service.getActiveSos(widget.childId);
+      if (mounted) setState(() => _events = events);
+    } catch (_) {}
+  }
+
+  // Mise à jour optimiste : retire l'event immédiatement, rollback si erreur réseau.
+  Future<void> _acknowledge(SosEvent event) async {
+    setState(() => _events = _events.where((e) => e.id != event.id).toList());
+
+    try {
+      await _service.acknowledge(event.id);
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _events = [event, ..._events]);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.sosAckError),
+          backgroundColor: AppColors.accentRed,
+          duration: const Duration(seconds: 4),
+        ),
+      );
+    }
+  }
+
+  // Formate triggered_at (déjà en local) : "HH:mm" si aujourd'hui, "dd/MM HH:mm" sinon.
+  String _formatTime(DateTime dt) {
+    final now      = DateTime.now();
+    final todayDate = DateTime(now.year, now.month, now.day);
+    final dtDate    = DateTime(dt.year, dt.month, dt.day);
+    final hhmm = '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
+    if (todayDate.difference(dtDate).inDays <= 0) return hhmm;
+    return '${dt.day.toString().padLeft(2, '0')}/${dt.month.toString().padLeft(2, '0')} $hhmm';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l  = AppLocalizations.of(context)!;
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          l.sosSectionTitle,
+          style: tt.labelSmall?.copyWith(
+            color: cs.onSurfaceVariant,
+            letterSpacing: 1.2,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.sm),
+
+        if (_loading)
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: AppSpacing.lg),
+            child: Center(child: CircularProgressIndicator()),
+          )
+        else if (_hasError)
+          HarmonyCard(
+            padding: AppSpacing.md,
+            child: Row(
+              children: [
+                Icon(Icons.wifi_off_outlined, color: cs.onSurfaceVariant),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: Text(
+                    l.sosLoadError,
+                    style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+                  ),
+                ),
+                TextButton(
+                  onPressed: _load,
+                  child: const Text('Réessayer'),
+                ),
+              ],
+            ),
+          )
+        else if (_events.isEmpty)
+          HarmonyCard(
+            padding: AppSpacing.md,
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.check_circle_outline,
+                  color: AppColors.accentGreen,
+                  size: 20,
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: Text(
+                    l.sosNoActive,
+                    style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+                  ),
+                ),
+              ],
+            ),
+          )
+        else
+          for (final event in _events) ...[
+            _SosAlertCard(
+              event: event,
+              timeLabel: _formatTime(event.triggeredAt),
+              onAcknowledge: () => _acknowledge(event),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+          ],
+      ],
+    );
+  }
+}
+
+// ─── Carte alerte SOS ─────────────────────────────────────────────────────────
+
+class _SosAlertCard extends StatelessWidget {
+  const _SosAlertCard({
+    required this.event,
+    required this.timeLabel,
+    required this.onAcknowledge,
+  });
+
+  final SosEvent event;
+  final String timeLabel;
+  final VoidCallback onAcknowledge;
+
+  Future<void> _openMap() async {
+    final uri = Uri.parse(
+      'https://www.google.com/maps/search/?api=1&query=${event.latitude},${event.longitude}',
+    );
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l  = AppLocalizations.of(context)!;
+    final tt = Theme.of(context).textTheme;
+    final cs = Theme.of(context).colorScheme;
+    final latStr = event.latitude.toStringAsFixed(5);
+    final lonStr = event.longitude.toStringAsFixed(5);
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: AppColors.accentRed.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.accentRed.withValues(alpha: 0.35)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // En-tête : icône + titre + heure
+          Row(
+            children: [
+              const Icon(
+                Icons.warning_amber_rounded,
+                color: AppColors.accentRed,
+                size: 20,
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Text(
+                l.sosActiveTitle,
+                style: tt.labelLarge?.copyWith(
+                  color: AppColors.accentRed,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const Spacer(),
+              Text(
+                timeLabel,
+                style: tt.bodySmall?.copyWith(color: AppColors.accentRed),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.sm),
+
+          // Position brute
+          Text(
+            l.sosPosition(latStr, lonStr),
+            style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+          ),
+          const SizedBox(height: AppSpacing.xs),
+
+          // Lien Google Maps
+          TextButton.icon(
+            onPressed: _openMap,
+            icon: const Icon(Icons.map_outlined, size: 14),
+            label: Text(l.sosViewOnMap),
+            style: TextButton.styleFrom(
+              foregroundColor: AppColors.accentRed,
+              textStyle: tt.bodySmall,
+              padding: EdgeInsets.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+
+          // Bouton acquitter
+          FilledButton.icon(
+            icon: const Icon(Icons.check_circle_outline, size: 18),
+            label: Text(l.sosAcknowledge),
+            style: FilledButton.styleFrom(
+              backgroundColor: AppColors.accentRed,
+              foregroundColor: Colors.white,
+              minimumSize: const Size.fromHeight(40),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            onPressed: onAcknowledge,
           ),
         ],
       ),
