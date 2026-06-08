@@ -1508,6 +1508,42 @@ abstract class AppLocalizations {
   /// **'Êtes-vous en sécurité ?'**
   String get sosCancelConfirm;
 
+  /// No description provided for @sosTriggerConfirmTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoyer une alerte SOS ?'**
+  String get sosTriggerConfirmTitle;
+
+  /// No description provided for @sosTriggerConfirmMessage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ton parent sera alerté immédiatement avec ta position.'**
+  String get sosTriggerConfirmMessage;
+
+  /// No description provided for @sosTriggerConfirmCancel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler'**
+  String get sosTriggerConfirmCancel;
+
+  /// No description provided for @sosTriggerConfirmSend.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoyer le SOS'**
+  String get sosTriggerConfirmSend;
+
+  /// No description provided for @sosSentSuccess.
+  ///
+  /// In fr, this message translates to:
+  /// **'SOS envoyé, ton parent a été alerté'**
+  String get sosSentSuccess;
+
+  /// No description provided for @sosSentError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible d\'envoyer le SOS, vérifie ta connexion'**
+  String get sosSentError;
+
   /// No description provided for @permissionLocationTitle.
   ///
   /// In fr, this message translates to:

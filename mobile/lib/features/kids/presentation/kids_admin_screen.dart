@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
@@ -15,6 +16,7 @@ import '../data/services/kids_link_verification_service.dart';
 import '../data/services/kids_storage.dart';
 import '../data/services/screen_time_blocking_service.dart';
 import '../data/services/screen_time_upload_service.dart';
+import '../data/services/sos_api_service.dart';
 import '../data/services/unlink_request_service.dart';
 import '../data/services/usage_stats_service.dart';
 import 'accessibility_permission_screen.dart';
@@ -46,6 +48,7 @@ class _KidsAdminScreenState extends State<KidsAdminScreen>
   bool _isAdminActive      = false;
   bool _isFiltering        = false;
   bool _loading            = false;
+  bool _sosSending         = false;
   bool _screenTimeGranted  = false;
   bool _blockingGranted    = false;
   bool _locationGranted    = false;
@@ -224,6 +227,105 @@ class _KidsAdminScreenState extends State<KidsAdminScreen>
     }
   }
 
+  // ── SOS ───────────────────────────────────────────────────────────────────
+
+  Future<void> _onSosPressed() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Envoyer une alerte SOS ?'),
+        content: const Text(
+          'Ton parent sera alerté immédiatement avec ta position.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Annuler'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: AppColors.accentRed),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Envoyer le SOS'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    setState(() => _sosSending = true);
+
+    try {
+      final childId = await KidsStorage.instance.getChildId();
+      if (childId == null || childId.isEmpty) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Impossible d\'envoyer le SOS, vérifie ta connexion.'),
+            ),
+          );
+        }
+        return;
+      }
+
+      double lat = 0.0, lon = 0.0;
+      double? accuracy;
+
+      // Étape 1 : position fraîche, timeout 5 s
+      try {
+        final fresh = await LocationService.instance
+            .getCurrentPosition(childId)
+            .timeout(const Duration(seconds: 5));
+        if (fresh != null) {
+          lat = fresh.latitude;
+          lon = fresh.longitude;
+          accuracy = fresh.accuracy;
+        } else {
+          throw const FormatException('null');
+        }
+      } catch (_) {
+        // Étape 2 : dernière position connue au niveau OS
+        try {
+          final last = await Geolocator.getLastKnownPosition();
+          if (last != null) {
+            lat = last.latitude;
+            lon = last.longitude;
+            accuracy = last.accuracy;
+          }
+        } catch (_) {
+          // Étape 3 : fallback 0/0 — le SOS part quand même
+        }
+      }
+
+      await SosApiService.instance.trigger(
+        childId: childId,
+        latitude: lat,
+        longitude: lon,
+        accuracy: accuracy,
+      );
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('SOS envoyé, ton parent a été alerté.'),
+            backgroundColor: AppColors.accentGreen,
+          ),
+        );
+      }
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Impossible d\'envoyer le SOS, vérifie ta connexion.'),
+            backgroundColor: AppColors.accentRed,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _sosSending = false);
+    }
+  }
+
   // ── Déliage ───────────────────────────────────────────────────────────────
 
   /// Vérifie au démarrage si une demande est déjà en cours (reprise après fermeture app).
@@ -364,6 +466,10 @@ class _KidsAdminScreenState extends State<KidsAdminScreen>
               padding: const EdgeInsets.all(AppSpacing.lg),
               children: [
                 const SizedBox(height: AppSpacing.lg),
+
+                // ── Bouton SOS ────────────────────────────────────────────
+                _SosButton(sending: _sosSending, onPressed: _onSosPressed),
+                const SizedBox(height: AppSpacing.xl),
 
                 // ── Statut admin ──────────────────────────────────────────
                 _AdminStatusCard(isActive: _isAdminActive),
@@ -1118,6 +1224,45 @@ class _ErrorCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+// ─── Bouton SOS ──────────────────────────────────────────────────────────────
+
+class _SosButton extends StatelessWidget {
+  const _SosButton({required this.sending, required this.onPressed});
+  final bool sending;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return FilledButton.icon(
+      icon: sending
+          ? const SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator.adaptive(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              ),
+            )
+          : const Icon(Icons.warning_amber_rounded, size: 24),
+      label: const Text('SOS'),
+      style: FilledButton.styleFrom(
+        backgroundColor: AppColors.accentRed,
+        foregroundColor: Colors.white,
+        minimumSize: const Size.fromHeight(56),
+        textStyle: const TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 2,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(14),
+        ),
+      ),
+      onPressed: sending ? null : onPressed,
     );
   }
 }

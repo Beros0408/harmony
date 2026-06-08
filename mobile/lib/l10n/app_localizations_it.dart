@@ -775,6 +775,26 @@ class AppLocalizationsIt extends AppLocalizations {
   String get sosCancelConfirm => 'Sei al sicuro?';
 
   @override
+  String get sosTriggerConfirmTitle => 'Inviare un\'allerta SOS?';
+
+  @override
+  String get sosTriggerConfirmMessage =>
+      'Il tuo genitore sarà avvisato immediatamente con la tua posizione.';
+
+  @override
+  String get sosTriggerConfirmCancel => 'Annulla';
+
+  @override
+  String get sosTriggerConfirmSend => 'Invia SOS';
+
+  @override
+  String get sosSentSuccess => 'SOS inviato, il tuo genitore è stato avvisato';
+
+  @override
+  String get sosSentError =>
+      'Impossibile inviare il SOS, controlla la connessione';
+
+  @override
   String get permissionLocationTitle => 'Posizione richiesta';
 
   @override
