@@ -269,6 +269,26 @@ async def setup_database():
                 ON public.sos_events (child_id, triggered_at DESC)
             """
         ))
+        # table contacts SOS (Sprint SOS-B1)
+        await conn.execute(text(
+            """
+            CREATE TABLE IF NOT EXISTS public.sos_contacts (
+                id          UUID        NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
+                child_id    UUID        NOT NULL,
+                name        TEXT        NOT NULL,
+                phone       TEXT        NOT NULL,
+                created_by  TEXT        NOT NULL CHECK (created_by IN ('parent', 'child')),
+                sort_order  INT         NOT NULL DEFAULT 0,
+                created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+            )
+            """
+        ))
+        await conn.execute(text(
+            """
+            CREATE INDEX IF NOT EXISTS idx_sos_contacts_child
+                ON public.sos_contacts (child_id, sort_order ASC, created_at ASC)
+            """
+        ))
         # table consentements RGPD (Sprint S16)
         await conn.execute(text(
             """
@@ -305,6 +325,7 @@ async def setup_database():
         ))
     yield
     async with test_engine.begin() as conn:
+        await conn.execute(text("DROP TABLE IF EXISTS public.sos_contacts"))
         await conn.execute(text("DROP TABLE IF EXISTS public.sos_events"))
         await conn.execute(text("DROP TABLE IF EXISTS public.locations"))
         await conn.execute(text("DROP TABLE IF EXISTS public.fitness_activity"))

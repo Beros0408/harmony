@@ -11,6 +11,7 @@ from app.api.v1.privacy.router import router as privacy_router
 from app.api.v1.schedules.router import router as schedules_router
 from app.api.v1.screen_time.router import router as screen_time_router
 from app.api.v1.sos.router import router as sos_router
+from app.api.v1.sos_contacts.router import router as sos_contacts_router
 from app.api.v1.unlink.router import router as unlink_router
 from app.api.v1.wellbeing.router import router as wellbeing_router
 
@@ -29,3 +30,4 @@ api_router.include_router(screen_time_router)
 api_router.include_router(unlink_router)
 api_router.include_router(wellbeing_router)
 api_router.include_router(sos_router)
+api_router.include_router(sos_contacts_router)
