@@ -1,3 +1,5 @@
+import 'dart:math' show sqrt;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -9,7 +11,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/harmony_app_bar.dart';
 import '../../../../shared/widgets/harmony_card.dart';
 import '../../data/models/location_point.dart';
-import '../../data/repositories/location_repository.dart';
+import '../../data/services/child_location_fetch_service.dart';
 
 class TripHistoryScreen extends StatefulWidget {
   const TripHistoryScreen({super.key, required this.childId});
@@ -32,9 +34,16 @@ class _TripHistoryScreenState extends State<TripHistoryScreen> {
 
   Future<void> _load() async {
     setState(() => _loading = true);
+    // Fetch depuis le backend (max 200 points, récents d'abord) puis filtre côté client
+    // sur le jour sélectionné en heure locale (recorded_at est converti en local par fromJson).
     final from = DateTime(_selectedDay.year, _selectedDay.month, _selectedDay.day);
     final to = from.add(const Duration(days: 1));
-    final pts = await LocationRepository.instance.getHistory(widget.childId, from, to);
+    final all = await ChildLocationFetchService.instance
+        .fetchHistory(widget.childId, limit: 200);
+    final pts = all
+        .where((p) => !p.timestamp.isBefore(from) && p.timestamp.isBefore(to))
+        .toList()
+      ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
     if (mounted) {
       setState(() {
         _points = pts;
@@ -184,7 +193,7 @@ class _StatsCard extends StatelessWidget {
       // Approximation rapide en degrés → mètres
       final dlat = (b.latitude - a.latitude) * 111000;
       final dlon = (b.longitude - a.longitude) * 85000;
-      total += (dlat * dlat + dlon * dlon).abs();
+      total += sqrt(dlat * dlat + dlon * dlon);
     }
     return total;
   }

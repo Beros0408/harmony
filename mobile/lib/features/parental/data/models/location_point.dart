@@ -39,6 +39,16 @@ class LocationPoint extends Equatable {
         batteryLevel: map['battery_level'] as int?,
       );
 
+  // Désérialise un point venant du backend (recorded_at en UTC → heure locale).
+  factory LocationPoint.fromJson(Map<String, dynamic> json) => LocationPoint(
+        id: json['id'] as String,
+        childId: json['child_id'] as String,
+        latitude: (json['latitude'] as num).toDouble(),
+        longitude: (json['longitude'] as num).toDouble(),
+        accuracy: (json['accuracy'] as num?)?.toDouble() ?? 0.0,
+        timestamp: DateTime.parse(json['recorded_at'] as String).toLocal(),
+      );
+
   @override
   List<Object?> get props => [id, childId, latitude, longitude, accuracy, timestamp, batteryLevel];
 }

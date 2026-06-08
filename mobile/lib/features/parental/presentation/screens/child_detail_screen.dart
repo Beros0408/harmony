@@ -18,14 +18,14 @@ import '../../../../shared/widgets/harmony_card.dart';
 import '../../data/models/child_profile.dart';
 import '../../data/models/location_point.dart';
 import '../../data/models/security_score.dart';
+import '../../data/services/child_location_fetch_service.dart';
 import '../../data/services/content_filter_api_service.dart';
+import '../../data/services/fitness_summary_service.dart';
 import '../../data/services/lock_command_service.dart';
 import '../../data/services/pause_command_service.dart';
 import '../../data/services/unlink_parent_service.dart';
-import '../../data/services/fitness_summary_service.dart';
 import '../../data/services/wellbeing_alert_service.dart';
 import '../../logic/child_profile_cubit.dart';
-import '../../logic/location_cubit.dart';
 import '../widgets/privacy_section.dart';
 import '../widgets/schedules_section.dart';
 
@@ -492,55 +492,162 @@ class _ContentFilterSectionState extends State<_ContentFilterSection> {
 
 // ─── Carte de localisation ───────────────────────────────────────────────────
 
-class _ChildMap extends StatelessWidget {
+class _ChildMap extends StatefulWidget {
   const _ChildMap({required this.childId, required this.avatarColor});
   final String childId;
   final Color avatarColor;
 
   @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<LocationCubit, LocationState>(
-      builder: (context, state) {
-        final locations = state is LocationTracking ? state.latestByChild : <String, LocationPoint>{};
-        final point = locations[childId];
-        final center = point != null
-            ? LatLng(point.latitude, point.longitude)
-            : const LatLng(48.8534, 2.3488);
+  State<_ChildMap> createState() => _ChildMapState();
+}
 
-        return ClipRRect(
-          borderRadius: AppRadius.xlRadius,
-          child: SizedBox(
-            height: 220,
-            child: FlutterMap(
+class _ChildMapState extends State<_ChildMap> {
+  static const _pollInterval = Duration(seconds: 30);
+
+  LocationPoint? _point;
+  bool _loading = true;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetch();
+    _timer = Timer.periodic(_pollInterval, (_) => _fetch());
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _fetch() async {
+    final point = await ChildLocationFetchService.instance.fetchLatest(widget.childId);
+    if (mounted) setState(() { _point = point; _loading = false; });
+  }
+
+  String _freshness(DateTime recordedAt) {
+    final diff = DateTime.now().difference(recordedAt);
+    if (diff.inSeconds < 60) return 'À l\'instant';
+    if (diff.inMinutes < 60) return 'Il y a ${diff.inMinutes} min';
+    if (diff.inHours < 24) return 'Il y a ${diff.inHours} h';
+    return 'Il y a ${diff.inDays} j';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
+
+    // Premier chargement
+    if (_loading) {
+      return ClipRRect(
+        borderRadius: AppRadius.xlRadius,
+        child: SizedBox(
+          height: 220,
+          child: ColoredBox(
+            color: cs.surfaceContainerHighest,
+            child: const Center(child: CircularProgressIndicator()),
+          ),
+        ),
+      );
+    }
+
+    // Aucune position disponible
+    if (_point == null) {
+      return ClipRRect(
+        borderRadius: AppRadius.xlRadius,
+        child: SizedBox(
+          height: 220,
+          child: ColoredBox(
+            color: cs.surfaceContainerHighest,
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.location_off_outlined, color: cs.onSurfaceVariant, size: 36),
+                    const SizedBox(height: AppSpacing.sm),
+                    Text(
+                      'Position non disponible',
+                      style: tt.bodyMedium?.copyWith(color: cs.onSurface, fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(
+                      "L'application enfant n'a pas encore transmis sa position.",
+                      style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    final center = LatLng(_point!.latitude, _point!.longitude);
+
+    return ClipRRect(
+      borderRadius: AppRadius.xlRadius,
+      child: SizedBox(
+        height: 220,
+        child: Stack(
+          children: [
+            FlutterMap(
               options: MapOptions(initialCenter: center, initialZoom: 15),
               children: [
                 TileLayer(
                   urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                   userAgentPackageName: 'com.kimiacare.app',
                 ),
-                if (point != null)
-                  MarkerLayer(
-                    markers: [
-                      Marker(
-                        point: center,
-                        width: 48,
-                        height: 48,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: avatarColor,
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white, width: 3),
-                          ),
-                          child: const Icon(Icons.person, color: Colors.white, size: 24),
+                MarkerLayer(
+                  markers: [
+                    Marker(
+                      point: center,
+                      width: 48,
+                      height: 48,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: widget.avatarColor,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 3),
                         ),
+                        child: const Icon(Icons.person, color: Colors.white, size: 24),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
+                ),
               ],
             ),
-          ),
-        );
-      },
+            // Indicateur de fraîcheur (heure locale)
+            Positioned(
+              bottom: AppSpacing.sm,
+              left: AppSpacing.sm,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.black54,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.access_time, color: Colors.white, size: 12),
+                    const SizedBox(width: 4),
+                    Text(
+                      _freshness(_point!.timestamp),
+                      style: tt.bodySmall?.copyWith(color: Colors.white, fontSize: 11),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
