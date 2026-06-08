@@ -5,6 +5,7 @@ from app.api.v1.consent.router import router as consent_router
 from app.api.v1.content_filter.router import router as content_filter_router
 from app.api.v1.family.router import router as family_router
 from app.api.v1.fitness.router import router as fitness_router
+from app.api.v1.locations.router import router as locations_router
 from app.api.v1.pairing.router import router as pairing_router
 from app.api.v1.privacy.router import router as privacy_router
 from app.api.v1.schedules.router import router as schedules_router
@@ -19,6 +20,7 @@ api_router.include_router(commands_router)
 api_router.include_router(consent_router)
 api_router.include_router(family_router)
 api_router.include_router(fitness_router)
+api_router.include_router(locations_router)
 api_router.include_router(privacy_router)
 api_router.include_router(schedules_router)
 api_router.include_router(content_filter_router)

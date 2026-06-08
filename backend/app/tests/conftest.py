@@ -228,6 +228,26 @@ async def setup_database():
             )
             """
         ))
+        # table géolocalisation (Sprint Geoloc)
+        await conn.execute(text(
+            """
+            CREATE TABLE IF NOT EXISTS public.locations (
+                id          uuid        DEFAULT gen_random_uuid() PRIMARY KEY,
+                child_id    uuid        NOT NULL,
+                latitude    double precision NOT NULL,
+                longitude   double precision NOT NULL,
+                accuracy    double precision,
+                recorded_at timestamptz NOT NULL DEFAULT now(),
+                created_at  timestamptz NOT NULL DEFAULT now()
+            )
+            """
+        ))
+        await conn.execute(text(
+            """
+            CREATE INDEX IF NOT EXISTS idx_locations_child_recorded
+                ON public.locations (child_id, recorded_at DESC)
+            """
+        ))
         # table consentements RGPD (Sprint S16)
         await conn.execute(text(
             """
@@ -264,6 +284,7 @@ async def setup_database():
         ))
     yield
     async with test_engine.begin() as conn:
+        await conn.execute(text("DROP TABLE IF EXISTS public.locations"))
         await conn.execute(text("DROP TABLE IF EXISTS public.fitness_activity"))
         # wellbeing_alerts avant wellbeing_signals (dépendance signal_id)
         await conn.execute(text("DROP TABLE IF EXISTS public.wellbeing_alerts"))

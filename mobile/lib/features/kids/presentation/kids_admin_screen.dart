@@ -1,8 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../parental/data/repositories/location_repository.dart';
+import '../../parental/data/services/i_location_service.dart';
+import '../../parental/data/services/location_service.dart';
 import '../data/services/command_polling_service.dart';
 import '../data/services/content_filter_service.dart';
 import '../data/services/device_admin_service.dart';
@@ -43,7 +48,10 @@ class _KidsAdminScreenState extends State<KidsAdminScreen>
   bool _loading            = false;
   bool _screenTimeGranted  = false;
   bool _blockingGranted    = false;
+  bool _locationGranted    = false;
   String? _errorMessage;
+
+  StreamSubscription? _locationSub;
 
   // ── État déliage ──────────────────────────────────────────────────────────
   _UnlinkState _unlinkState = _UnlinkState.none;
@@ -56,6 +64,7 @@ class _KidsAdminScreenState extends State<KidsAdminScreen>
     _refreshAdminStatus();
     _refreshScreenTimePermission();
     _refreshBlockingStatus();
+    _refreshLocationPermission();
 
     if (widget.childId != null) {
       // Démarre le polling des commandes + plannings + filtrage + déliage
@@ -72,8 +81,8 @@ class _KidsAdminScreenState extends State<KidsAdminScreen>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    // Détache les callbacks : le polling continue en fond, mais ne rappellera plus cet écran
     CommandPollingService.instance.clearUnlinkCallbacks();
+    _stopLocationTracking();
     super.dispose();
   }
 
@@ -83,6 +92,7 @@ class _KidsAdminScreenState extends State<KidsAdminScreen>
       _refreshAdminStatus();
       _refreshScreenTimePermission();
       _refreshBlockingStatus();
+      _refreshLocationPermission();
       _verifyLinkOnResume();
     }
   }
@@ -101,6 +111,36 @@ class _KidsAdminScreenState extends State<KidsAdminScreen>
     final granted =
         await ScreenTimeBlockingService.instance.isAccessibilityGranted();
     if (mounted) setState(() => _blockingGranted = granted);
+  }
+
+  Future<void> _refreshLocationPermission() async {
+    final status = await LocationService.instance.checkPermissions();
+    final granted = status == LocationPermissionStatus.granted ||
+        status == LocationPermissionStatus.grantedBackground;
+    if (mounted) setState(() => _locationGranted = granted);
+    if (granted) _startLocationTracking();
+  }
+
+  void _startLocationTracking() {
+    if (_locationSub != null) return; // déjà actif
+    LocationService.instance.startTracking();
+    _locationSub = LocationService.instance
+        .positionStream('current')
+        .listen((point) => LocationRepository.instance.addPoint(point));
+  }
+
+  void _stopLocationTracking() {
+    _locationSub?.cancel();
+    _locationSub = null;
+    LocationService.instance.stopTracking();
+  }
+
+  Future<void> _requestLocationPermission() async {
+    final status = await LocationService.instance.requestPermissions();
+    final granted = status == LocationPermissionStatus.granted ||
+        status == LocationPermissionStatus.grantedBackground;
+    if (mounted) setState(() => _locationGranted = granted);
+    if (granted) _startLocationTracking();
   }
 
   // ── Vérification du lien serveur (protection appairage fantôme) ──────────
@@ -462,6 +502,14 @@ class _KidsAdminScreenState extends State<KidsAdminScreen>
                   },
                 ),
 
+                const SizedBox(height: AppSpacing.xl),
+
+                // ── Section localisation ──────────────────────────────────
+                _LocationSection(
+                  granted: _locationGranted,
+                  onRequestPermission: _requestLocationPermission,
+                ),
+
                 const SizedBox(height: AppSpacing.xxxl),
 
                 // ── Section déliage ───────────────────────────────────────
@@ -606,6 +654,86 @@ class _BlockingSection extends StatelessWidget {
                 Icon(Icons.chevron_right, color: cs.onSurfaceVariant),
               ],
             ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ─── Section localisation ────────────────────────────────────────────────────
+
+class _LocationSection extends StatelessWidget {
+  const _LocationSection({
+    required this.granted,
+    required this.onRequestPermission,
+  });
+
+  final bool granted;
+  final VoidCallback onRequestPermission;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs     = Theme.of(context).colorScheme;
+    final tt     = Theme.of(context).textTheme;
+    final color  = granted ? AppColors.accentGreen : AppColors.accentAmber;
+    final icon   = granted ? Icons.location_on : Icons.location_off_outlined;
+    final status = granted ? 'Partage actif' : 'À autoriser';
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'LOCALISATION',
+          style: tt.labelSmall?.copyWith(
+            color: cs.onSurfaceVariant,
+            letterSpacing: 1.2,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.08),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: color.withValues(alpha: 0.3)),
+          ),
+          child: Row(
+            children: [
+              Icon(icon, color: color, size: 28),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Position partagée avec le parent',
+                      style: tt.labelLarge?.copyWith(color: cs.onSurface),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      granted
+                          ? 'Ta position est partagée avec ton parent sur une carte privée.'
+                          : status,
+                      style: tt.bodySmall?.copyWith(color: color),
+                    ),
+                  ],
+                ),
+              ),
+              if (!granted)
+                TextButton(
+                  onPressed: onRequestPermission,
+                  style: TextButton.styleFrom(
+                    foregroundColor: AppColors.accentAmber,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.md,
+                      vertical: AppSpacing.sm,
+                    ),
+                  ),
+                  child: const Text('Autoriser'),
+                ),
+            ],
           ),
         ),
       ],

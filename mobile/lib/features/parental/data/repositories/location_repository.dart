@@ -1,4 +1,10 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
+
 import '../../../../core/database/database_helper.dart';
+import '../../../kids/data/services/kids_storage.dart';
+import '../../../kids/data/services/location_api_service.dart';
 import '../models/location_point.dart';
 import 'i_location_repository.dart';
 
@@ -15,6 +21,24 @@ class LocationRepository implements ILocationRepository {
     await db.insert(_table, point.toMap());
     // Nettoyage automatique des points de plus de 30 jours
     await cleanupOlderThan(DateTime.now().subtract(const Duration(days: 30)));
+
+    // Envoi backend : on utilise TOUJOURS l'UUID réel de KidsStorage,
+    // jamais point.childId qui peut valoir 'current' (placeholder LocationService).
+    final childId = await KidsStorage.instance.getChildId();
+    if (childId == null) return; // enfant non appairé → SQLite local seulement
+
+    unawaited(
+      LocationApiService.instance
+          .sendPosition(
+            childId: childId,
+            latitude: point.latitude,
+            longitude: point.longitude,
+            accuracy: point.accuracy,
+            recordedAt: point.timestamp,
+          )
+          .catchError((Object e) =>
+              debugPrint('[LocationRepository] envoi backend KO: $e')),
+    );
   }
 
   @override
