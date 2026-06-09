@@ -1142,6 +1142,12 @@ class AppLocalizationsPt extends AppLocalizations {
   String get sosContactsAdd => 'Adicionar um contato';
 
   @override
+  String get sosContactsCall => 'Ligar';
+
+  @override
+  String get sosContactsSms => 'SMS';
+
+  @override
   String get subscriptionPaywallTitle => 'KimiaCare Premium';
 
   @override

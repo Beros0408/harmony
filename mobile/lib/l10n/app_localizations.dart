@@ -2210,6 +2210,18 @@ abstract class AppLocalizations {
   /// **'Ajouter un contact'**
   String get sosContactsAdd;
 
+  /// No description provided for @sosContactsCall.
+  ///
+  /// In fr, this message translates to:
+  /// **'Appeler'**
+  String get sosContactsCall;
+
+  /// No description provided for @sosContactsSms.
+  ///
+  /// In fr, this message translates to:
+  /// **'SMS'**
+  String get sosContactsSms;
+
   /// No description provided for @subscriptionPaywallTitle.
   ///
   /// In fr, this message translates to:

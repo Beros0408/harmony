@@ -410,6 +410,8 @@
   "sosContactsTitle": "Contactos SOS",
   "sosContactsEmpty": "Sin contactos SOS",
   "sosContactsAdd": "Añadir un contacto",
+  "sosContactsCall": "Llamar",
+  "sosContactsSms": "SMS",
 
   "subscriptionPaywallTitle": "KimiaCare Premium",
   "subscriptionPaywallSubtitle": "Desbloquea todas las funciones",
