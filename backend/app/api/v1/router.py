@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 from app.api.v1.auth.router import router as auth_router
+from app.api.v1.blocked_calls.router import router as blocked_calls_router
 from app.api.v1.call_filter.router import router as call_filter_router
 from app.api.v1.commands.router import router as commands_router
 from app.api.v1.consent.router import router as consent_router
@@ -32,4 +33,5 @@ api_router.include_router(unlink_router)
 api_router.include_router(wellbeing_router)
 api_router.include_router(sos_router)
 api_router.include_router(sos_contacts_router)
+api_router.include_router(blocked_calls_router)
 api_router.include_router(call_filter_router)

@@ -323,6 +323,27 @@ async def setup_database():
                 WHERE child_id IS NULL
             """
         ))
+        # table appels bloqués (Sprint A2)
+        await conn.execute(text(
+            """
+            CREATE TABLE IF NOT EXISTS public.blocked_call_logs (
+                id           UUID        NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
+                child_id     UUID        NOT NULL,
+                phone_number TEXT        NOT NULL,
+                blocked_at   TIMESTAMPTZ NOT NULL,
+                list_mode    TEXT        CHECK (list_mode IN ('blacklist', 'whitelist')),
+                latency_ms   BIGINT,
+                created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                CONSTRAINT uq_blocked_call UNIQUE (child_id, phone_number, blocked_at)
+            )
+            """
+        ))
+        await conn.execute(text(
+            """
+            CREATE INDEX IF NOT EXISTS idx_blocked_calls_child_blocked
+                ON public.blocked_call_logs (child_id, blocked_at DESC)
+            """
+        ))
         # tables filtrage appels (Sprint A1)
         await conn.execute(text(
             """
@@ -361,6 +382,7 @@ async def setup_database():
         ))
     yield
     async with test_engine.begin() as conn:
+        await conn.execute(text("DROP TABLE IF EXISTS public.blocked_call_logs"))
         await conn.execute(text("DROP TABLE IF EXISTS public.call_filter_rules"))
         await conn.execute(text("DROP TABLE IF EXISTS public.call_filter_settings"))
         await conn.execute(text("DROP TABLE IF EXISTS public.sos_contacts"))
