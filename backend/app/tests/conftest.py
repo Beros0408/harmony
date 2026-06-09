@@ -323,8 +323,46 @@ async def setup_database():
                 WHERE child_id IS NULL
             """
         ))
+        # tables filtrage appels (Sprint A1)
+        await conn.execute(text(
+            """
+            CREATE TABLE IF NOT EXISTS public.call_filter_rules (
+                id           UUID        NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
+                child_id     UUID        NOT NULL,
+                phone_number TEXT        NOT NULL,
+                list_type    TEXT        NOT NULL CHECK (list_type IN ('blacklist', 'whitelist')),
+                label        TEXT,
+                created_by   TEXT        NOT NULL CHECK (created_by IN ('parent', 'child')),
+                created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                UNIQUE (child_id, phone_number)
+            )
+            """
+        ))
+        await conn.execute(text(
+            """
+            CREATE INDEX IF NOT EXISTS idx_cfr_child_id
+                ON public.call_filter_rules (child_id)
+            """
+        ))
+        await conn.execute(text(
+            """
+            CREATE TABLE IF NOT EXISTS public.call_filter_settings (
+                child_id         UUID        PRIMARY KEY,
+                list_mode        TEXT        NOT NULL DEFAULT 'blacklist'
+                                             CHECK (list_mode IN ('blacklist', 'whitelist')),
+                block_hour_start INT         NOT NULL DEFAULT 22
+                                             CHECK (block_hour_start BETWEEN 0 AND 23),
+                block_hour_end   INT         NOT NULL DEFAULT 7
+                                             CHECK (block_hour_end   BETWEEN 0 AND 23),
+                updated_by       TEXT        NOT NULL CHECK (updated_by IN ('parent', 'child')),
+                updated_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
+            )
+            """
+        ))
     yield
     async with test_engine.begin() as conn:
+        await conn.execute(text("DROP TABLE IF EXISTS public.call_filter_rules"))
+        await conn.execute(text("DROP TABLE IF EXISTS public.call_filter_settings"))
         await conn.execute(text("DROP TABLE IF EXISTS public.sos_contacts"))
         await conn.execute(text("DROP TABLE IF EXISTS public.sos_events"))
         await conn.execute(text("DROP TABLE IF EXISTS public.locations"))
