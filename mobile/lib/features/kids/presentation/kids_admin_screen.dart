@@ -18,6 +18,9 @@ import '../data/services/screen_time_blocking_service.dart';
 import '../data/services/screen_time_upload_service.dart';
 import '../data/services/sos_api_service.dart';
 import '../data/services/unlink_request_service.dart';
+import '../../parental/data/models/sos_contact.dart';
+import '../../parental/data/services/sos_contacts_api_service.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../data/services/usage_stats_service.dart';
 import 'accessibility_permission_screen.dart';
 import 'kids_pairing_screen.dart';
@@ -49,6 +52,8 @@ class _KidsAdminScreenState extends State<KidsAdminScreen>
   bool _isFiltering        = false;
   bool _loading            = false;
   bool _sosSending         = false;
+  List<SosContact> _sosContacts        = [];
+  bool _sosContactsLoading             = false;
   bool _screenTimeGranted  = false;
   bool _blockingGranted    = false;
   bool _locationGranted    = false;
@@ -78,6 +83,7 @@ class _KidsAdminScreenState extends State<KidsAdminScreen>
 
       // Restaure l'état de déliage si l'app a été fermée entre la demande et l'approbation
       _initUnlinkStatus();
+      _loadSosContacts();
     }
   }
 
@@ -97,6 +103,7 @@ class _KidsAdminScreenState extends State<KidsAdminScreen>
       _refreshBlockingStatus();
       _refreshLocationPermission();
       _verifyLinkOnResume();
+      _loadSosContacts();
     }
   }
 
@@ -224,6 +231,23 @@ class _KidsAdminScreenState extends State<KidsAdminScreen>
       if (mounted) setState(() => _errorMessage = 'Erreur inattendue. Réessaie.');
     } finally {
       if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  // ── Contacts SOS ─────────────────────────────────────────────────────────
+
+  Future<void> _loadSosContacts() async {
+    if (widget.childId == null) return;
+    setState(() => _sosContactsLoading = true);
+    try {
+      final contacts =
+          await SosContactsApiService.instance.getContacts(widget.childId!);
+      if (!mounted) return;
+      setState(() => _sosContacts = contacts);
+    } catch (_) {
+      // Erreur réseau silencieuse — on affiche l'état vide, jamais de crash
+    } finally {
+      if (mounted) setState(() => _sosContactsLoading = false);
     }
   }
 
@@ -469,6 +493,23 @@ class _KidsAdminScreenState extends State<KidsAdminScreen>
 
                 // ── Bouton SOS ────────────────────────────────────────────
                 _SosButton(sending: _sosSending, onPressed: _onSosPressed),
+                const SizedBox(height: AppSpacing.lg),
+
+                // ── Contacts SOS ──────────────────────────────────────────
+                _SosContactsSection(
+                  contacts: _sosContacts,
+                  loading: _sosContactsLoading,
+                  onLaunchError: () {
+                    if (!mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'Impossible d\'ouvrir le téléphone. Réessaie.',
+                        ),
+                      ),
+                    );
+                  },
+                ),
                 const SizedBox(height: AppSpacing.xl),
 
                 // ── Statut admin ──────────────────────────────────────────
@@ -1223,6 +1264,169 @@ class _ErrorCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// ─── Section contacts SOS (côté enfant) ──────────────────────────────────────
+
+class _SosContactsSection extends StatelessWidget {
+  const _SosContactsSection({
+    required this.contacts,
+    required this.loading,
+    required this.onLaunchError,
+  });
+
+  final List<SosContact> contacts;
+  final bool loading;
+  final VoidCallback onLaunchError;
+
+  Future<void> _call(SosContact c) async {
+    try {
+      final uri = Uri(scheme: 'tel', path: c.phone);
+      if (!await launchUrl(uri)) throw Exception('launch failed');
+    } catch (_) {
+      onLaunchError();
+    }
+  }
+
+  Future<void> _sms(SosContact c) async {
+    try {
+      final uri = Uri(
+        scheme: 'sms',
+        path: c.phone,
+        queryParameters: {'body': 'Besoin d\'aide, peux-tu m\'appeler ?'},
+      );
+      if (!await launchUrl(uri)) throw Exception('launch failed');
+    } catch (_) {
+      onLaunchError();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'MES CONTACTS SOS',
+          style: tt.labelSmall?.copyWith(
+            color: cs.onSurfaceVariant,
+            letterSpacing: 1.2,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        if (loading)
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: AppSpacing.md),
+            child: Center(child: CircularProgressIndicator()),
+          )
+        else if (contacts.isEmpty)
+          _buildEmpty(cs, tt)
+        else
+          ...contacts.map((c) => _buildContactCard(cs, tt, c)),
+      ],
+    );
+  }
+
+  Widget _buildEmpty(ColorScheme cs, TextTheme tt) {
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: cs.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.contacts_outlined, size: 18, color: cs.onSurfaceVariant),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: Text(
+              'Aucun contact SOS configuré. Demande à ton parent d\'en ajouter.',
+              style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildContactCard(ColorScheme cs, TextTheme tt, SosContact c) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+      child: Container(
+        padding: const EdgeInsets.all(AppSpacing.md),
+        decoration: BoxDecoration(
+          color: cs.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: cs.outlineVariant),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.person_outline, size: 20, color: cs.onSurface),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        c.name,
+                        style: tt.labelLarge?.copyWith(color: cs.onSurface),
+                      ),
+                      Text(
+                        c.phone,
+                        style: tt.bodySmall
+                            ?.copyWith(color: cs.onSurfaceVariant),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            Row(
+              children: [
+                Expanded(
+                  child: FilledButton.icon(
+                    icon: const Icon(Icons.phone, size: 18),
+                    label: const Text('Appeler'),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: AppColors.accentGreen,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    onPressed: () => _call(c),
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: FilledButton.icon(
+                    icon: const Icon(Icons.sms, size: 18),
+                    label: const Text('SMS'),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: AppColors.accentBlue,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    onPressed: () => _sms(c),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
