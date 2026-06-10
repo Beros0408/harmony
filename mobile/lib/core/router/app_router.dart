@@ -21,6 +21,7 @@ import '../../features/parental/presentation/screens/add_child_pairing_screen.da
 import '../../features/parental/presentation/screens/parental_screen.dart';
 import '../../features/parental/presentation/screens/safe_zone_editor_screen.dart';
 import '../../features/parental/presentation/screens/sos_active_screen.dart';
+import '../../features/parental/presentation/screens/call_filter_rules_screen.dart';
 import '../../features/parental/presentation/screens/sos_contacts_screen.dart';
 import '../../features/parental/presentation/screens/trip_history_screen.dart';
 import '../../features/contacts/presentation/screens/contacts_screen.dart';
@@ -286,6 +287,14 @@ final GoRouter appRouter = GoRouter(
       pageBuilder: (context, state) => _slidePage(
         key: state.pageKey,
         child: SosContactsScreen(childId: state.pathParameters['id']!),
+      ),
+    ),
+    // ── Sprint C1 — Filtrage des appels parent ────────────────────────────
+    GoRoute(
+      path: '${RouteNames.childDetail}/:id/call-filter-rules',
+      pageBuilder: (context, state) => _slidePage(
+        key: state.pageKey,
+        child: CallFilterRulesScreen(childId: state.pathParameters['id']!),
       ),
     ),
     GoRoute(

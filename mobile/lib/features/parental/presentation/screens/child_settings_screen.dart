@@ -237,6 +237,23 @@ class _ChildSettingsScreenState extends State<ChildSettingsScreen> {
               ),
             ),
           ),
+          const SizedBox(height: AppSpacing.sm),
+
+          // Filtrage des appels
+          HarmonyCard(
+            child: ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading:
+                  const Icon(Icons.call_outlined, color: AppColors.accentBlue),
+              title: Text(l10n.callFilterRulesTitle,
+                  style: Theme.of(context).textTheme.labelLarge),
+              subtitle: Text(l10n.callFilterRulesSubtitle),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => context.push(
+                '${RouteNames.childDetail}/${widget.childId}/call-filter-rules',
+              ),
+            ),
+          ),
           const SizedBox(height: AppSpacing.xxl),
 
           // Sauvegarder

@@ -57,6 +57,9 @@ class RouteNames {
   // Sprint S16 — Onboarding parent (premier lancement)
   static const String onboarding = '/onboarding';
 
+  // Sprint C1 — Filtrage des appels parent
+  static const String callFilterRules = '/parental/child/:id/call-filter-rules';
+
   // Dev only — design system showcase (non indexée en production)
   static const String devComponents = '/dev/components';
 }

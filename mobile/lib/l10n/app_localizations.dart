@@ -2402,6 +2402,138 @@ abstract class AppLocalizations {
   /// **'Bloquer ce contact'**
   String get messageDetailBlockContact;
 
+  /// No description provided for @callFilterRulesTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Filtrage des appels'**
+  String get callFilterRulesTitle;
+
+  /// No description provided for @callFilterRulesSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gérer les numéros autorisés ou bloqués'**
+  String get callFilterRulesSubtitle;
+
+  /// No description provided for @callFilterModeBlacklist.
+  ///
+  /// In fr, this message translates to:
+  /// **'Liste noire'**
+  String get callFilterModeBlacklist;
+
+  /// No description provided for @callFilterModeWhitelist.
+  ///
+  /// In fr, this message translates to:
+  /// **'Liste blanche'**
+  String get callFilterModeWhitelist;
+
+  /// No description provided for @callFilterModeBlacklistDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tous les appels sont autorisés sauf les numéros listés'**
+  String get callFilterModeBlacklistDesc;
+
+  /// No description provided for @callFilterModeWhitelistDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Seuls les numéros listés peuvent appeler'**
+  String get callFilterModeWhitelistDesc;
+
+  /// No description provided for @callFilterRulesEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun numéro dans la liste'**
+  String get callFilterRulesEmpty;
+
+  /// No description provided for @callFilterRulesEmptyDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajoutez des numéros à bloquer ou autoriser selon le mode actif'**
+  String get callFilterRulesEmptyDesc;
+
+  /// No description provided for @callFilterAddRule.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter un numéro'**
+  String get callFilterAddRule;
+
+  /// No description provided for @callFilterPhoneLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Numéro de téléphone'**
+  String get callFilterPhoneLabel;
+
+  /// No description provided for @callFilterPhoneHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'+33 6 12 34 56 78'**
+  String get callFilterPhoneHint;
+
+  /// No description provided for @callFilterLabelOptional.
+  ///
+  /// In fr, this message translates to:
+  /// **'Étiquette (optionnel)'**
+  String get callFilterLabelOptional;
+
+  /// No description provided for @callFilterTypeBlacklist.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bloqué'**
+  String get callFilterTypeBlacklist;
+
+  /// No description provided for @callFilterTypeWhitelist.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autorisé'**
+  String get callFilterTypeWhitelist;
+
+  /// No description provided for @callFilterDeleteConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer cette règle ?'**
+  String get callFilterDeleteConfirm;
+
+  /// No description provided for @callFilterDeleteContent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce numéro sera retiré de la liste.'**
+  String get callFilterDeleteContent;
+
+  /// No description provided for @callFilterDuplicateError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce numéro est déjà dans la liste'**
+  String get callFilterDuplicateError;
+
+  /// No description provided for @callFilterSaveError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de l\'enregistrement'**
+  String get callFilterSaveError;
+
+  /// No description provided for @callFilterLoadError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur de chargement des règles'**
+  String get callFilterLoadError;
+
+  /// No description provided for @callFilterDeleteError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de la suppression'**
+  String get callFilterDeleteError;
+
+  /// No description provided for @callFilterInfoBanner.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les numéros ajoutés ici sont appliqués automatiquement sur l\'appareil de l\'enfant.'**
+  String get callFilterInfoBanner;
+
+  /// No description provided for @callFilterPhoneEmptyError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Veuillez saisir un numéro'**
+  String get callFilterPhoneEmptyError;
+
   /// No description provided for @greetingMorning.
   ///
   /// In fr, this message translates to:

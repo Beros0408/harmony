@@ -1243,6 +1243,77 @@ class AppLocalizationsFr extends AppLocalizations {
   String get messageDetailBlockContact => 'Bloquer ce contact';
 
   @override
+  String get callFilterRulesTitle => 'Filtrage des appels';
+
+  @override
+  String get callFilterRulesSubtitle =>
+      'Gérer les numéros autorisés ou bloqués';
+
+  @override
+  String get callFilterModeBlacklist => 'Liste noire';
+
+  @override
+  String get callFilterModeWhitelist => 'Liste blanche';
+
+  @override
+  String get callFilterModeBlacklistDesc =>
+      'Tous les appels sont autorisés sauf les numéros listés';
+
+  @override
+  String get callFilterModeWhitelistDesc =>
+      'Seuls les numéros listés peuvent appeler';
+
+  @override
+  String get callFilterRulesEmpty => 'Aucun numéro dans la liste';
+
+  @override
+  String get callFilterRulesEmptyDesc =>
+      'Ajoutez des numéros à bloquer ou autoriser selon le mode actif';
+
+  @override
+  String get callFilterAddRule => 'Ajouter un numéro';
+
+  @override
+  String get callFilterPhoneLabel => 'Numéro de téléphone';
+
+  @override
+  String get callFilterPhoneHint => '+33 6 12 34 56 78';
+
+  @override
+  String get callFilterLabelOptional => 'Étiquette (optionnel)';
+
+  @override
+  String get callFilterTypeBlacklist => 'Bloqué';
+
+  @override
+  String get callFilterTypeWhitelist => 'Autorisé';
+
+  @override
+  String get callFilterDeleteConfirm => 'Supprimer cette règle ?';
+
+  @override
+  String get callFilterDeleteContent => 'Ce numéro sera retiré de la liste.';
+
+  @override
+  String get callFilterDuplicateError => 'Ce numéro est déjà dans la liste';
+
+  @override
+  String get callFilterSaveError => 'Erreur lors de l\'enregistrement';
+
+  @override
+  String get callFilterLoadError => 'Erreur de chargement des règles';
+
+  @override
+  String get callFilterDeleteError => 'Erreur lors de la suppression';
+
+  @override
+  String get callFilterInfoBanner =>
+      'Les numéros ajoutés ici sont appliqués automatiquement sur l\'appareil de l\'enfant.';
+
+  @override
+  String get callFilterPhoneEmptyError => 'Veuillez saisir un numéro';
+
+  @override
   String get greetingMorning => 'Bonne matinée 🌅';
 
   @override

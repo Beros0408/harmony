@@ -1241,6 +1241,76 @@ class AppLocalizationsEn extends AppLocalizations {
   String get messageDetailBlockContact => 'Block this contact';
 
   @override
+  String get callFilterRulesTitle => 'Call Filtering';
+
+  @override
+  String get callFilterRulesSubtitle => 'Manage allowed or blocked numbers';
+
+  @override
+  String get callFilterModeBlacklist => 'Blacklist';
+
+  @override
+  String get callFilterModeWhitelist => 'Whitelist';
+
+  @override
+  String get callFilterModeBlacklistDesc =>
+      'All calls are allowed except listed numbers';
+
+  @override
+  String get callFilterModeWhitelistDesc => 'Only listed numbers can call';
+
+  @override
+  String get callFilterRulesEmpty => 'No numbers in the list';
+
+  @override
+  String get callFilterRulesEmptyDesc =>
+      'Add numbers to block or allow based on the active mode';
+
+  @override
+  String get callFilterAddRule => 'Add a number';
+
+  @override
+  String get callFilterPhoneLabel => 'Phone number';
+
+  @override
+  String get callFilterPhoneHint => '+1 555 000 0000';
+
+  @override
+  String get callFilterLabelOptional => 'Label (optional)';
+
+  @override
+  String get callFilterTypeBlacklist => 'Blocked';
+
+  @override
+  String get callFilterTypeWhitelist => 'Allowed';
+
+  @override
+  String get callFilterDeleteConfirm => 'Delete this rule?';
+
+  @override
+  String get callFilterDeleteContent =>
+      'This number will be removed from the list.';
+
+  @override
+  String get callFilterDuplicateError => 'This number is already in the list';
+
+  @override
+  String get callFilterSaveError => 'Error saving rule';
+
+  @override
+  String get callFilterLoadError => 'Error loading rules';
+
+  @override
+  String get callFilterDeleteError => 'Error deleting rule';
+
+  @override
+  String get callFilterInfoBanner =>
+      'Numbers added here are automatically applied to the child\'s device.';
+
+  @override
+  String get callFilterPhoneEmptyError => 'Please enter a number';
+
+  @override
   String get greetingMorning => 'Good morning 🌅';
 
   @override

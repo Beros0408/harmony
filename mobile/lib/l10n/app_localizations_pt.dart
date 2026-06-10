@@ -1243,6 +1243,77 @@ class AppLocalizationsPt extends AppLocalizations {
   String get messageDetailBlockContact => 'Bloquear este contato';
 
   @override
+  String get callFilterRulesTitle => 'Filtragem de chamadas';
+
+  @override
+  String get callFilterRulesSubtitle =>
+      'Gerir números permitidos ou bloqueados';
+
+  @override
+  String get callFilterModeBlacklist => 'Lista negra';
+
+  @override
+  String get callFilterModeWhitelist => 'Lista branca';
+
+  @override
+  String get callFilterModeBlacklistDesc =>
+      'Todas as chamadas são permitidas exceto os números listados';
+
+  @override
+  String get callFilterModeWhitelistDesc =>
+      'Apenas os números listados podem ligar';
+
+  @override
+  String get callFilterRulesEmpty => 'Sem números na lista';
+
+  @override
+  String get callFilterRulesEmptyDesc =>
+      'Adicione números para bloquear ou permitir com base no modo ativo';
+
+  @override
+  String get callFilterAddRule => 'Adicionar um número';
+
+  @override
+  String get callFilterPhoneLabel => 'Número de telefone';
+
+  @override
+  String get callFilterPhoneHint => '+351 912 345 678';
+
+  @override
+  String get callFilterLabelOptional => 'Etiqueta (opcional)';
+
+  @override
+  String get callFilterTypeBlacklist => 'Bloqueado';
+
+  @override
+  String get callFilterTypeWhitelist => 'Permitido';
+
+  @override
+  String get callFilterDeleteConfirm => 'Eliminar esta regra?';
+
+  @override
+  String get callFilterDeleteContent => 'Este número será removido da lista.';
+
+  @override
+  String get callFilterDuplicateError => 'Este número já está na lista';
+
+  @override
+  String get callFilterSaveError => 'Erro ao guardar a regra';
+
+  @override
+  String get callFilterLoadError => 'Erro ao carregar as regras';
+
+  @override
+  String get callFilterDeleteError => 'Erro ao eliminar a regra';
+
+  @override
+  String get callFilterInfoBanner =>
+      'Os números adicionados aqui são aplicados automaticamente no dispositivo da criança.';
+
+  @override
+  String get callFilterPhoneEmptyError => 'Por favor insira um número';
+
+  @override
   String get greetingMorning => 'Bom dia 🌅';
 
   @override
