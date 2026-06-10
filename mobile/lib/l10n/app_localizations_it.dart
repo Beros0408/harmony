@@ -1318,6 +1318,22 @@ class AppLocalizationsIt extends AppLocalizations {
   String get callFilterPhoneEmptyError => 'Inserisci un numero';
 
   @override
+  String get blockedCallsLogTitle => 'CHIAMATE BLOCCATE';
+
+  @override
+  String get blockedCallsLogEmpty => 'Nessuna chiamata bloccata di recente';
+
+  @override
+  String get blockedCallsLogLoadError =>
+      'Impossibile caricare le chiamate bloccate.';
+
+  @override
+  String get blockedCallsLogBadgeBlacklist => 'Lista nera';
+
+  @override
+  String get blockedCallsLogBadgeWhitelist => 'Lista bianca';
+
+  @override
   String get greetingMorning => 'Buongiorno 🌅';
 
   @override

@@ -518,6 +518,12 @@
   "callFilterInfoBanner": "Les numéros ajoutés ici sont appliqués automatiquement sur l'appareil de l'enfant.",
   "callFilterPhoneEmptyError": "Veuillez saisir un numéro",
 
+  "blockedCallsLogTitle": "APPELS BLOQUÉS",
+  "blockedCallsLogEmpty": "Aucun appel bloqué récemment",
+  "blockedCallsLogLoadError": "Impossible de charger les appels bloqués.",
+  "blockedCallsLogBadgeBlacklist": "Liste noire",
+  "blockedCallsLogBadgeWhitelist": "Liste blanche",
+
   "greetingMorning": "Bonne matinée 🌅",
   "greetingAfternoon": "Bonne après-midi ☀",
   "greetingEvening": "Bonsoir 🌙",

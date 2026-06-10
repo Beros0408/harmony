@@ -16,9 +16,11 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/harmony_app_bar.dart';
 import '../../../../shared/widgets/harmony_badge.dart';
 import '../../../../shared/widgets/harmony_card.dart';
+import '../../data/models/blocked_call_log.dart';
 import '../../data/models/child_profile.dart';
 import '../../data/models/location_point.dart';
 import '../../data/models/security_score.dart';
+import '../../data/services/call_filter_api_service.dart';
 import '../../data/services/child_location_fetch_service.dart';
 import '../../data/services/content_filter_api_service.dart';
 import '../../data/services/fitness_summary_service.dart';
@@ -186,6 +188,10 @@ class _ChildDetailBody extends StatelessWidget {
 
         // Section filtrage de contenu (Sprint C)
         _ContentFilterSection(childId: profile.id),
+        const SizedBox(height: AppSpacing.xl),
+
+        // Section appels bloqués (Sprint C2)
+        _BlockedCallsSection(childId: profile.id),
         const SizedBox(height: AppSpacing.xl),
 
         // Section demandes de déliage (Sprint Délier)
@@ -1837,6 +1843,196 @@ class _SosAlertCard extends StatelessWidget {
               ),
             ),
             onPressed: onAcknowledge,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Section appels bloqués (Sprint C2) ──────────────────────────────────────
+
+class _BlockedCallsSection extends StatefulWidget {
+  const _BlockedCallsSection({required this.childId});
+  final String childId;
+
+  @override
+  State<_BlockedCallsSection> createState() => _BlockedCallsSectionState();
+}
+
+class _BlockedCallsSectionState extends State<_BlockedCallsSection> {
+  final _service = CallFilterApiService.instance;
+
+  List<BlockedCallLog> _calls = [];
+  bool _loading  = true;
+  bool _hasError = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    if (mounted) setState(() { _loading = true; _hasError = false; });
+    try {
+      final calls = await _service.getBlockedCalls(widget.childId);
+      if (mounted) setState(() => _calls = calls);
+    } catch (_) {
+      if (mounted) setState(() => _hasError = true);
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  // HH:mm si aujourd'hui, dd/MM sinon — indépendant du _formatTime de _SosSection.
+  String _formatTime(DateTime dt) {
+    final now       = DateTime.now();
+    final todayDate = DateTime(now.year, now.month, now.day);
+    final dtDate    = DateTime(dt.year, dt.month, dt.day);
+    final hhmm = '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
+    if (todayDate.difference(dtDate).inDays <= 0) return hhmm;
+    return '${dt.day.toString().padLeft(2, '0')}/${dt.month.toString().padLeft(2, '0')} $hhmm';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l  = AppLocalizations.of(context)!;
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          l.blockedCallsLogTitle,
+          style: tt.labelSmall?.copyWith(
+            color: cs.onSurfaceVariant,
+            letterSpacing: 1.2,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.sm),
+
+        if (_loading)
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: AppSpacing.lg),
+            child: Center(child: CircularProgressIndicator()),
+          )
+        else if (_hasError)
+          HarmonyCard(
+            padding: AppSpacing.md,
+            child: Row(
+              children: [
+                Icon(Icons.wifi_off_outlined, color: cs.onSurfaceVariant),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: Text(
+                    l.blockedCallsLogLoadError,
+                    style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+                  ),
+                ),
+                TextButton(
+                  onPressed: _load,
+                  child: const Text('Réessayer'),
+                ),
+              ],
+            ),
+          )
+        else if (_calls.isEmpty)
+          HarmonyCard(
+            padding: AppSpacing.md,
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.check_circle_outline,
+                  color: AppColors.accentGreen,
+                  size: 20,
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: Text(
+                    l.blockedCallsLogEmpty,
+                    style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+                  ),
+                ),
+              ],
+            ),
+          )
+        else
+          RefreshIndicator(
+            onRefresh: _load,
+            child: ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: _calls.length,
+              itemBuilder: (_, i) => _BlockedCallRow(
+                log: _calls[i],
+                timeLabel: _formatTime(_calls[i].blockedAt),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+// ─── Ligne d'un appel bloqué ──────────────────────────────────────────────────
+
+class _BlockedCallRow extends StatelessWidget {
+  const _BlockedCallRow({required this.log, required this.timeLabel});
+  final BlockedCallLog log;
+  final String timeLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    final l  = AppLocalizations.of(context)!;
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
+
+    final showBadge = log.listMode == 'whitelist';
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: AppSpacing.xs),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
+      ),
+      decoration: BoxDecoration(
+        color: cs.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.phone_missed_outlined, size: 18, color: AppColors.accentRed),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: Text(
+              log.phoneNumber,
+              style: tt.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          if (showBadge) ...[
+            const SizedBox(width: AppSpacing.xs),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: cs.outline.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Text(
+                l.blockedCallsLogBadgeWhitelist,
+                style: tt.labelSmall?.copyWith(
+                  color: cs.onSurfaceVariant,
+                  fontSize: 10,
+                ),
+              ),
+            ),
+          ],
+          const SizedBox(width: AppSpacing.sm),
+          Text(
+            timeLabel,
+            style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
           ),
         ],
       ),

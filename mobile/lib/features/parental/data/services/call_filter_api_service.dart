@@ -1,4 +1,5 @@
 import '../../../../core/services/harmony_services.dart';
+import '../models/blocked_call_log.dart';
 import '../models/call_filter_rule.dart';
 
 class CallFilterApiService {
@@ -54,5 +55,21 @@ class CallFilterApiService {
         'updated_by': 'parent',
       },
     );
+  }
+
+  Future<List<BlockedCallLog>> getBlockedCalls(
+    String childId, {
+    int limit = 50,
+  }) async {
+    final response = await HarmonyServices.dioClient.instance
+        .get<Map<String, dynamic>>(
+      '/api/v1/blocked-calls/$childId',
+      queryParameters: {'limit': limit},
+    );
+    final calls = response.data!['calls'] as List<dynamic>? ?? [];
+    return calls
+        .whereType<Map<String, dynamic>>()
+        .map(BlockedCallLog.fromJson)
+        .toList();
   }
 }

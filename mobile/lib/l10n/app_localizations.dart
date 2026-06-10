@@ -2534,6 +2534,36 @@ abstract class AppLocalizations {
   /// **'Veuillez saisir un numéro'**
   String get callFilterPhoneEmptyError;
 
+  /// No description provided for @blockedCallsLogTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'APPELS BLOQUÉS'**
+  String get blockedCallsLogTitle;
+
+  /// No description provided for @blockedCallsLogEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun appel bloqué récemment'**
+  String get blockedCallsLogEmpty;
+
+  /// No description provided for @blockedCallsLogLoadError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger les appels bloqués.'**
+  String get blockedCallsLogLoadError;
+
+  /// No description provided for @blockedCallsLogBadgeBlacklist.
+  ///
+  /// In fr, this message translates to:
+  /// **'Liste noire'**
+  String get blockedCallsLogBadgeBlacklist;
+
+  /// No description provided for @blockedCallsLogBadgeWhitelist.
+  ///
+  /// In fr, this message translates to:
+  /// **'Liste blanche'**
+  String get blockedCallsLogBadgeWhitelist;
+
   /// No description provided for @greetingMorning.
   ///
   /// In fr, this message translates to:

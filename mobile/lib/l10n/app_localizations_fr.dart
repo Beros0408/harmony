@@ -1314,6 +1314,22 @@ class AppLocalizationsFr extends AppLocalizations {
   String get callFilterPhoneEmptyError => 'Veuillez saisir un numéro';
 
   @override
+  String get blockedCallsLogTitle => 'APPELS BLOQUÉS';
+
+  @override
+  String get blockedCallsLogEmpty => 'Aucun appel bloqué récemment';
+
+  @override
+  String get blockedCallsLogLoadError =>
+      'Impossible de charger les appels bloqués.';
+
+  @override
+  String get blockedCallsLogBadgeBlacklist => 'Liste noire';
+
+  @override
+  String get blockedCallsLogBadgeWhitelist => 'Liste blanche';
+
+  @override
   String get greetingMorning => 'Bonne matinée 🌅';
 
   @override

@@ -475,6 +475,12 @@
   "callFilterInfoBanner": "I numeri aggiunti qui vengono applicati automaticamente sul dispositivo del bambino.",
   "callFilterPhoneEmptyError": "Inserisci un numero",
 
+  "blockedCallsLogTitle": "CHIAMATE BLOCCATE",
+  "blockedCallsLogEmpty": "Nessuna chiamata bloccata di recente",
+  "blockedCallsLogLoadError": "Impossibile caricare le chiamate bloccate.",
+  "blockedCallsLogBadgeBlacklist": "Lista nera",
+  "blockedCallsLogBadgeWhitelist": "Lista bianca",
+
   "greetingMorning": "Buongiorno 🌅",
   "greetingAfternoon": "Buon pomeriggio ☀",
   "greetingEvening": "Buonasera 🌙",

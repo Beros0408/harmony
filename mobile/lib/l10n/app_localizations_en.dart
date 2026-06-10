@@ -1311,6 +1311,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get callFilterPhoneEmptyError => 'Please enter a number';
 
   @override
+  String get blockedCallsLogTitle => 'BLOCKED CALLS';
+
+  @override
+  String get blockedCallsLogEmpty => 'No calls blocked recently';
+
+  @override
+  String get blockedCallsLogLoadError => 'Unable to load blocked calls.';
+
+  @override
+  String get blockedCallsLogBadgeBlacklist => 'Blacklist';
+
+  @override
+  String get blockedCallsLogBadgeWhitelist => 'Whitelist';
+
+  @override
   String get greetingMorning => 'Good morning 🌅';
 
   @override

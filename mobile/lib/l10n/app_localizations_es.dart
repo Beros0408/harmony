@@ -1314,6 +1314,22 @@ class AppLocalizationsEs extends AppLocalizations {
   String get callFilterPhoneEmptyError => 'Por favor ingresa un número';
 
   @override
+  String get blockedCallsLogTitle => 'LLAMADAS BLOQUEADAS';
+
+  @override
+  String get blockedCallsLogEmpty => 'No hay llamadas bloqueadas recientemente';
+
+  @override
+  String get blockedCallsLogLoadError =>
+      'No se pueden cargar las llamadas bloqueadas.';
+
+  @override
+  String get blockedCallsLogBadgeBlacklist => 'Lista negra';
+
+  @override
+  String get blockedCallsLogBadgeWhitelist => 'Lista blanca';
+
+  @override
   String get greetingMorning => 'Buenos días 🌅';
 
   @override
