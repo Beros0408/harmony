@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import '../../../../core/services/harmony_services.dart';
+import 'call_filter_sync_service.dart';
 import 'content_filter_service.dart';
 import 'device_admin_service.dart';
 import 'schedule_service.dart';
@@ -89,6 +90,9 @@ class CommandPollingService {
 
       // Sprint Délier : détecter une approbation ou un refus parent
       await _checkUnlinkStatus(childId);
+
+      // Sprint Filtrage B1 : synchroniser les règles d'appels depuis le backend
+      await _checkCallFilterRules(childId);
     } catch (e) {
       // Ne jamais planter l'app en cas d'erreur réseau — simple log
       debugPrint('[CommandPollingService] erreur poll: $e');
@@ -201,6 +205,15 @@ class CommandPollingService {
     } catch (e) {
       // Erreur réseau sur /unlink/status — pas bloquant, on réessaie au prochain tick
       debugPrint('[CommandPollingService] erreur checkUnlinkStatus: $e');
+    }
+  }
+
+  /// Récupère le snapshot de filtrage d'appels et le pousse vers le moteur natif.
+  Future<void> _checkCallFilterRules(String childId) async {
+    try {
+      await CallFilterSyncService.instance.sync(childId);
+    } catch (e) {
+      debugPrint('[CommandPollingService] erreur checkCallFilterRules: $e');
     }
   }
 
