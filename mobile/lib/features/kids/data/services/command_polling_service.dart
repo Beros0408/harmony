@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import '../../../../core/services/harmony_services.dart';
+import 'blocked_calls_upload_service.dart';
 import 'call_filter_sync_service.dart';
 import 'content_filter_service.dart';
 import 'device_admin_service.dart';
@@ -93,6 +94,9 @@ class CommandPollingService {
 
       // Sprint Filtrage B1 : synchroniser les règles d'appels depuis le backend
       await _checkCallFilterRules(childId);
+
+      // Sprint Filtrage B2 : remonter les appels bloqués vers le backend
+      await _uploadBlockedCalls(childId);
     } catch (e) {
       // Ne jamais planter l'app en cas d'erreur réseau — simple log
       debugPrint('[CommandPollingService] erreur poll: $e');
@@ -205,6 +209,15 @@ class CommandPollingService {
     } catch (e) {
       // Erreur réseau sur /unlink/status — pas bloquant, on réessaie au prochain tick
       debugPrint('[CommandPollingService] erreur checkUnlinkStatus: $e');
+    }
+  }
+
+  /// Remonte les appels bloqués depuis le moteur natif vers le backend.
+  Future<void> _uploadBlockedCalls(String childId) async {
+    try {
+      await BlockedCallsUploadService.instance.upload(childId);
+    } catch (e) {
+      debugPrint('[CommandPollingService] erreur uploadBlockedCalls: $e');
     }
   }
 
