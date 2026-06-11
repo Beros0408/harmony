@@ -88,7 +88,7 @@ class _TopBar extends StatelessWidget {
       child: Row(
         children: [
           Text(
-            'Harmony Kids',
+            'KimiaCare Kids',
             style: Theme.of(context).textTheme.labelLarge?.copyWith(
                   color: cs.primary,
                   fontWeight: FontWeight.w700,
@@ -124,7 +124,7 @@ class _WelcomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return _PageLayout(
       icon: const _BigEmoji('👋'),
-      title: 'Bienvenue sur\nHarmony Kids',
+      title: 'Bienvenue sur\nKimiaCare Kids',
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

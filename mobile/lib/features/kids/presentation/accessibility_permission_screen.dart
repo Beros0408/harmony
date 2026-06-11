@@ -159,7 +159,7 @@ class _AccessibilityPermissionScreenState
               const SizedBox(height: AppSpacing.sm),
               Text(
                 'Android affichera la liste des services d\'accessibilité.\n'
-                'Trouve "Harmony Kids — Limites de temps d\'écran" et active-le.',
+                'Trouve "KimiaCare Kids — Limites de temps d\'écran" et active-le.',
                 style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
                 textAlign: TextAlign.center,
               ),

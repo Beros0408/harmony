@@ -86,7 +86,7 @@ class HarmonyKidsApp extends StatelessWidget {
       create: (_) => ThemeCubit(SecureStorageService()),
       child: BlocBuilder<ThemeCubit, ThemeMode>(
         builder: (context, themeMode) => MaterialApp(
-          title: 'Harmony Kids',
+          title: 'KimiaCare Kids',
           debugShowCheckedModeBanner: false,
           theme: HarmonyTheme.light(),
           darkTheme: HarmonyTheme.dark(),

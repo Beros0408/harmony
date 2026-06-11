@@ -526,7 +526,7 @@ class _KidsAdminScreenState extends State<KidsAdminScreen>
                   color: AppColors.accentBlue,
                   text:
                       'Pour pouvoir verrouiller cet écran à la demande de ton parent, '
-                      'Harmony Kids a besoin des droits "Administrateur d\'appareil" d\'Android. '
+                      'KimiaCare Kids a besoin des droits "Administrateur d\'appareil" d\'Android. '
                       'Ces droits sont uniquement utilisés pour le verrouillage d\'écran. '
                       'Ton parent et toi pouvez les retirer à tout moment dans les paramètres Android.',
                 ),

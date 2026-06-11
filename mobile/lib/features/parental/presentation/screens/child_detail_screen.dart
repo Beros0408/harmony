@@ -742,7 +742,7 @@ class _UnlinkRequestsSectionState extends State<_UnlinkRequestsSection> {
         ),
         content: Text(
           'Si tu approuves, l\'appareil sera retiré du contrôle parental '
-          'et Harmony Kids sera désactivé sur ce téléphone.',
+          'et KimiaCare Kids sera désactivé sur ce téléphone.',
           textAlign: TextAlign.center,
           style: Theme.of(ctx).textTheme.bodySmall?.copyWith(
                 color: cs.onSurfaceVariant,

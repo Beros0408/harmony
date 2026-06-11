@@ -135,7 +135,7 @@ class _AddChildPairingScreenState extends State<AddChildPairingScreen> {
         ),
         const SizedBox(height: AppSpacing.xs),
         Text(
-          "Génère un code à partager avec l'app Harmony Kids",
+          "Génère un code à partager avec l'app KimiaCare Kids",
           style: tt.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
           textAlign: TextAlign.center,
         ),
@@ -329,7 +329,7 @@ class _AddChildPairingScreenState extends State<AddChildPairingScreen> {
               const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: Text(
-                  "Saisis ce code dans l'app Harmony Kids installée sur le téléphone de ton enfant.",
+                  "Saisis ce code dans l'app KimiaCare Kids installée sur le téléphone de ton enfant.",
                   style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
                 ),
               ),

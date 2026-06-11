@@ -158,7 +158,7 @@ class _ScreenTimePermissionScreenState
               const SizedBox(height: AppSpacing.sm),
               Text(
                 'Android affichera la liste des apps autorisées.\n'
-                'Trouve "Harmony Kids" et active l\'accès.',
+                'Trouve "KimiaCare Kids" et active l\'accès.',
                 style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
                 textAlign: TextAlign.center,
               ),

@@ -110,7 +110,7 @@ class _KidsPairingScreenState extends State<KidsPairingScreen> {
         const SizedBox(height: AppSpacing.lg),
 
         Text(
-          'Harmony Kids',
+          'KimiaCare Kids',
           style: tt.headlineMedium?.copyWith(
             color: cs.onSurface,
             fontWeight: FontWeight.w700,
