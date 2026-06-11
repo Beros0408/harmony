@@ -1407,4 +1407,72 @@ class AppLocalizationsIt extends AppLocalizations {
   String welcomeStatsEvents(int count) {
     return '$count eventi oggi';
   }
+
+  @override
+  String get breathingTitle => 'Respirazione guidata';
+
+  @override
+  String get breathingChooseMode => 'Modalità di respirazione';
+
+  @override
+  String get breathingChooseDuration => 'Durata della sessione';
+
+  @override
+  String get breathingPhaseInhale => 'Inspira';
+
+  @override
+  String get breathingPhaseHold => 'Trattieni';
+
+  @override
+  String get breathingPhaseExhale => 'Espira';
+
+  @override
+  String get breathingModeCoherence => 'Coerenza cardiaca';
+
+  @override
+  String get breathingModeCoherenceDesc => '5s · 5s — ideale per il quotidiano';
+
+  @override
+  String get breathingModeRelax => 'Rilassamento 4-7-8';
+
+  @override
+  String get breathingModeRelaxDesc => '4s · 7s · 8s — per addormentarsi';
+
+  @override
+  String get breathingModeBox => 'Respirazione a scatola';
+
+  @override
+  String get breathingModeBoxDesc => '4s · 4s · 4s · 4s — concentrazione';
+
+  @override
+  String get breathingDuration1 => '1 min';
+
+  @override
+  String get breathingDuration3 => '3 min';
+
+  @override
+  String get breathingDuration5 => '5 min';
+
+  @override
+  String get breathingStart => 'Inizia';
+
+  @override
+  String breathingCyclesRemaining(int count) {
+    return '$count ciclo/i rimanente/i';
+  }
+
+  @override
+  String get breathingSessionEnd => 'Sessione terminata';
+
+  @override
+  String get breathingSessionCongrats => 'Bravo! Prenditi un momento per te.';
+
+  @override
+  String get breathingRestart => 'Ricomincia';
+
+  @override
+  String get breathingStop => 'Ferma';
+
+  @override
+  String get breathingReturn => 'Indietro';
 }

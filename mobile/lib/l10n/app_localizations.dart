@@ -2689,6 +2689,138 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'{count} événements aujourd\'hui'**
   String welcomeStatsEvents(int count);
+
+  /// No description provided for @breathingTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Respiration guidée'**
+  String get breathingTitle;
+
+  /// No description provided for @breathingChooseMode.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mode de respiration'**
+  String get breathingChooseMode;
+
+  /// No description provided for @breathingChooseDuration.
+  ///
+  /// In fr, this message translates to:
+  /// **'Durée de la séance'**
+  String get breathingChooseDuration;
+
+  /// No description provided for @breathingPhaseInhale.
+  ///
+  /// In fr, this message translates to:
+  /// **'Inspire'**
+  String get breathingPhaseInhale;
+
+  /// No description provided for @breathingPhaseHold.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retiens'**
+  String get breathingPhaseHold;
+
+  /// No description provided for @breathingPhaseExhale.
+  ///
+  /// In fr, this message translates to:
+  /// **'Expire'**
+  String get breathingPhaseExhale;
+
+  /// No description provided for @breathingModeCoherence.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cohérence cardiaque'**
+  String get breathingModeCoherence;
+
+  /// No description provided for @breathingModeCoherenceDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'5 s · 5 s — idéal au quotidien'**
+  String get breathingModeCoherenceDesc;
+
+  /// No description provided for @breathingModeRelax.
+  ///
+  /// In fr, this message translates to:
+  /// **'Relaxation 4-7-8'**
+  String get breathingModeRelax;
+
+  /// No description provided for @breathingModeRelaxDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'4 s · 7 s · 8 s — pour s\'endormir'**
+  String get breathingModeRelaxDesc;
+
+  /// No description provided for @breathingModeBox.
+  ///
+  /// In fr, this message translates to:
+  /// **'Respiration en boîte'**
+  String get breathingModeBox;
+
+  /// No description provided for @breathingModeBoxDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'4 s · 4 s · 4 s · 4 s — concentration'**
+  String get breathingModeBoxDesc;
+
+  /// No description provided for @breathingDuration1.
+  ///
+  /// In fr, this message translates to:
+  /// **'1 min'**
+  String get breathingDuration1;
+
+  /// No description provided for @breathingDuration3.
+  ///
+  /// In fr, this message translates to:
+  /// **'3 min'**
+  String get breathingDuration3;
+
+  /// No description provided for @breathingDuration5.
+  ///
+  /// In fr, this message translates to:
+  /// **'5 min'**
+  String get breathingDuration5;
+
+  /// No description provided for @breathingStart.
+  ///
+  /// In fr, this message translates to:
+  /// **'Commencer'**
+  String get breathingStart;
+
+  /// No description provided for @breathingCyclesRemaining.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count} cycle(s) restant(s)'**
+  String breathingCyclesRemaining(int count);
+
+  /// No description provided for @breathingSessionEnd.
+  ///
+  /// In fr, this message translates to:
+  /// **'Séance terminée'**
+  String get breathingSessionEnd;
+
+  /// No description provided for @breathingSessionCongrats.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bravo ! Prenez un moment pour vous.'**
+  String get breathingSessionCongrats;
+
+  /// No description provided for @breathingRestart.
+  ///
+  /// In fr, this message translates to:
+  /// **'Recommencer'**
+  String get breathingRestart;
+
+  /// No description provided for @breathingStop.
+  ///
+  /// In fr, this message translates to:
+  /// **'Arrêter'**
+  String get breathingStop;
+
+  /// No description provided for @breathingReturn.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retour'**
+  String get breathingReturn;
 }
 
 class _AppLocalizationsDelegate

@@ -523,5 +523,33 @@
   "welcomeStatsEvents": "{count} events today",
   "@welcomeStatsEvents": {
     "placeholders": {"count": {"type": "int"}}
-  }
+  },
+
+  "breathingTitle": "Guided Breathing",
+  "breathingChooseMode": "Breathing mode",
+  "breathingChooseDuration": "Session duration",
+  "breathingPhaseInhale": "Inhale",
+  "breathingPhaseHold": "Hold",
+  "breathingPhaseExhale": "Exhale",
+  "breathingModeCoherence": "Heart coherence",
+  "breathingModeCoherenceDesc": "5s · 5s — ideal for daily use",
+  "breathingModeRelax": "4-7-8 Relaxation",
+  "breathingModeRelaxDesc": "4s · 7s · 8s — helps with sleep",
+  "breathingModeBox": "Box breathing",
+  "breathingModeBoxDesc": "4s · 4s · 4s · 4s — focus & calm",
+  "breathingDuration1": "1 min",
+  "breathingDuration3": "3 min",
+  "breathingDuration5": "5 min",
+  "breathingStart": "Start",
+  "breathingCyclesRemaining": "{count} cycle(s) left",
+  "@breathingCyclesRemaining": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "breathingSessionEnd": "Session complete",
+  "breathingSessionCongrats": "Well done! Take a moment for yourself.",
+  "breathingRestart": "Restart",
+  "breathingStop": "Stop",
+  "breathingReturn": "Back"
 }
