@@ -755,6 +755,54 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zoneIconOther => 'Other';
 
   @override
+  String get zoneMapTapHint => 'Tap the map to position the zone';
+
+  @override
+  String get zoneFieldNameHint => 'E.g. City Library';
+
+  @override
+  String get zoneChildrenLabel => 'Affected children';
+
+  @override
+  String get familyNoChildrenPaired => 'No children paired yet';
+
+  @override
+  String get familyAddChildButton => 'Add a child';
+
+  @override
+  String get zoneScheduleAllDay => 'All day';
+
+  @override
+  String get unlinkDialogTitle => 'Unlink request';
+
+  @override
+  String unlinkDialogBody(String childName) {
+    return '$childName wants to remove this device from parental control. Do you agree?';
+  }
+
+  @override
+  String get unlinkDialogReject => 'Reject';
+
+  @override
+  String get unlinkDialogApprove => 'Approve';
+
+  @override
+  String unlinkApprovedSnack(String childName) {
+    return '$childName unlinked successfully.';
+  }
+
+  @override
+  String get unlinkApproveError => 'Approval failed. Please try again.';
+
+  @override
+  String unlinkRejectedSnack(String childName) {
+    return '$childName\'s request rejected.';
+  }
+
+  @override
+  String get unlinkRejectError => 'Rejection failed. Please try again.';
+
+  @override
   String get sosButtonLabel => 'SOS';
 
   @override

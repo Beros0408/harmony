@@ -755,6 +755,54 @@ class AppLocalizationsFr extends AppLocalizations {
   String get zoneIconOther => 'Autre';
 
   @override
+  String get zoneMapTapHint => 'Appuyez sur la carte pour positionner la zone';
+
+  @override
+  String get zoneFieldNameHint => 'Ex : École Jules Ferry';
+
+  @override
+  String get zoneChildrenLabel => 'Enfants concernés';
+
+  @override
+  String get familyNoChildrenPaired => 'Aucun enfant appairé pour le moment';
+
+  @override
+  String get familyAddChildButton => 'Ajouter un enfant';
+
+  @override
+  String get zoneScheduleAllDay => '24h/24';
+
+  @override
+  String get unlinkDialogTitle => 'Demande de déliage';
+
+  @override
+  String unlinkDialogBody(String childName) {
+    return '$childName demande à retirer cet appareil du contrôle parental. Acceptes-tu ?';
+  }
+
+  @override
+  String get unlinkDialogReject => 'Refuser';
+
+  @override
+  String get unlinkDialogApprove => 'Approuver';
+
+  @override
+  String unlinkApprovedSnack(String childName) {
+    return 'Déliage de $childName approuvé.';
+  }
+
+  @override
+  String get unlinkApproveError => 'Erreur lors de l\'approbation. Réessaie.';
+
+  @override
+  String unlinkRejectedSnack(String childName) {
+    return 'Demande de $childName refusée.';
+  }
+
+  @override
+  String get unlinkRejectError => 'Erreur lors du refus. Réessaie.';
+
+  @override
   String get sosButtonLabel => 'SOS';
 
   @override

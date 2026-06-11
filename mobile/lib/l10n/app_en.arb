@@ -271,6 +271,29 @@
   "zoneIconSchool": "School",
   "zoneIconSport": "Sport",
   "zoneIconOther": "Other",
+  "zoneMapTapHint": "Tap the map to position the zone",
+  "zoneFieldNameHint": "E.g. City Library",
+  "zoneChildrenLabel": "Affected children",
+  "familyNoChildrenPaired": "No children paired yet",
+  "familyAddChildButton": "Add a child",
+  "zoneScheduleAllDay": "All day",
+  "unlinkDialogTitle": "Unlink request",
+  "unlinkDialogBody": "{childName} wants to remove this device from parental control. Do you agree?",
+  "@unlinkDialogBody": {
+    "placeholders": {"childName": {"type": "String"}}
+  },
+  "unlinkDialogReject": "Reject",
+  "unlinkDialogApprove": "Approve",
+  "unlinkApprovedSnack": "{childName} unlinked successfully.",
+  "@unlinkApprovedSnack": {
+    "placeholders": {"childName": {"type": "String"}}
+  },
+  "unlinkApproveError": "Approval failed. Please try again.",
+  "unlinkRejectedSnack": "{childName}'s request rejected.",
+  "@unlinkRejectedSnack": {
+    "placeholders": {"childName": {"type": "String"}}
+  },
+  "unlinkRejectError": "Rejection failed. Please try again.",
   "sosButtonLabel": "SOS",
   "sosHoldHint": "Hold 3 seconds to trigger",
   "sosActiveTitle": "SOS ACTIVE",

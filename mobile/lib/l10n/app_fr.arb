@@ -314,6 +314,29 @@
   "zoneIconSchool": "École",
   "zoneIconSport": "Sport",
   "zoneIconOther": "Autre",
+  "zoneMapTapHint": "Appuyez sur la carte pour positionner la zone",
+  "zoneFieldNameHint": "Ex : École Jules Ferry",
+  "zoneChildrenLabel": "Enfants concernés",
+  "familyNoChildrenPaired": "Aucun enfant appairé pour le moment",
+  "familyAddChildButton": "Ajouter un enfant",
+  "zoneScheduleAllDay": "24h/24",
+  "unlinkDialogTitle": "Demande de déliage",
+  "unlinkDialogBody": "{childName} demande à retirer cet appareil du contrôle parental. Acceptes-tu ?",
+  "@unlinkDialogBody": {
+    "placeholders": {"childName": {"type": "String"}}
+  },
+  "unlinkDialogReject": "Refuser",
+  "unlinkDialogApprove": "Approuver",
+  "unlinkApprovedSnack": "Déliage de {childName} approuvé.",
+  "@unlinkApprovedSnack": {
+    "placeholders": {"childName": {"type": "String"}}
+  },
+  "unlinkApproveError": "Erreur lors de l'approbation. Réessaie.",
+  "unlinkRejectedSnack": "Demande de {childName} refusée.",
+  "@unlinkRejectedSnack": {
+    "placeholders": {"childName": {"type": "String"}}
+  },
+  "unlinkRejectError": "Erreur lors du refus. Réessaie.",
   "sosButtonLabel": "SOS",
   "sosHoldHint": "Maintenez 3 secondes pour déclencher",
   "sosActiveTitle": "SOS ACTIF",

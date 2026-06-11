@@ -271,6 +271,29 @@
   "zoneIconSchool": "Scuola",
   "zoneIconSport": "Sport",
   "zoneIconOther": "Altro",
+  "zoneMapTapHint": "Tocca la mappa per posizionare la zona",
+  "zoneFieldNameHint": "Es.: Scuola Leonardo",
+  "zoneChildrenLabel": "Bambini coinvolti",
+  "familyNoChildrenPaired": "Nessun figlio abbinato per il momento",
+  "familyAddChildButton": "Aggiungi un figlio",
+  "zoneScheduleAllDay": "Tutto il giorno",
+  "unlinkDialogTitle": "Richiesta di scollegamento",
+  "unlinkDialogBody": "{childName} chiede di rimuovere questo dispositivo dal controllo parentale. Accetti?",
+  "@unlinkDialogBody": {
+    "placeholders": {"childName": {"type": "String"}}
+  },
+  "unlinkDialogReject": "Rifiuta",
+  "unlinkDialogApprove": "Approva",
+  "unlinkApprovedSnack": "Scollegamento di {childName} approvato.",
+  "@unlinkApprovedSnack": {
+    "placeholders": {"childName": {"type": "String"}}
+  },
+  "unlinkApproveError": "Errore durante l'approvazione. Riprova.",
+  "unlinkRejectedSnack": "Richiesta di {childName} rifiutata.",
+  "@unlinkRejectedSnack": {
+    "placeholders": {"childName": {"type": "String"}}
+  },
+  "unlinkRejectError": "Errore durante il rifiuto. Riprova.",
   "sosButtonLabel": "SOS",
   "sosHoldHint": "Tieni premuto 3 secondi per attivare",
   "sosActiveTitle": "SOS ATTIVO",

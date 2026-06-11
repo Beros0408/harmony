@@ -271,6 +271,29 @@
   "zoneIconSchool": "Escola",
   "zoneIconSport": "Esporte",
   "zoneIconOther": "Outro",
+  "zoneMapTapHint": "Toque o mapa para posicionar a zona",
+  "zoneFieldNameHint": "Ex.: Escola Municipal",
+  "zoneChildrenLabel": "Filhos envolvidos",
+  "familyNoChildrenPaired": "Nenhum filho vinculado por enquanto",
+  "familyAddChildButton": "Adicionar um filho",
+  "zoneScheduleAllDay": "24h por dia",
+  "unlinkDialogTitle": "Pedido de desvinculação",
+  "unlinkDialogBody": "{childName} pede para remover este dispositivo do controlo parental. Aceitas?",
+  "@unlinkDialogBody": {
+    "placeholders": {"childName": {"type": "String"}}
+  },
+  "unlinkDialogReject": "Recusar",
+  "unlinkDialogApprove": "Aprovar",
+  "unlinkApprovedSnack": "Desvinculação de {childName} aprovada.",
+  "@unlinkApprovedSnack": {
+    "placeholders": {"childName": {"type": "String"}}
+  },
+  "unlinkApproveError": "Erro ao aprovar. Tenta novamente.",
+  "unlinkRejectedSnack": "Pedido de {childName} recusado.",
+  "@unlinkRejectedSnack": {
+    "placeholders": {"childName": {"type": "String"}}
+  },
+  "unlinkRejectError": "Erro ao recusar. Tenta novamente.",
   "sosButtonLabel": "SOS",
   "sosHoldHint": "Segure 3 segundos para acionar",
   "sosActiveTitle": "SOS ATIVO",

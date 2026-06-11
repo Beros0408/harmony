@@ -94,6 +94,7 @@ class _ParentalScreenState extends State<ParentalScreen> {
   /// Retourne après que le parent ait pris sa décision.
   Future<void> _showUnlinkDialog(UnlinkPendingItem item) async {
     _dialogOpen = true;
+    final l10n = AppLocalizations.of(context)!;
 
     final approved = await showDialog<bool>(
       context: context,
@@ -104,13 +105,12 @@ class _ParentalScreenState extends State<ParentalScreen> {
           backgroundColor: cs.surface,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           icon: const Icon(Icons.link_off, size: 32, color: AppColors.accentAmber),
-          title: const Text(
-            'Demande de déliage',
+          title: Text(
+            l10n.unlinkDialogTitle,
             textAlign: TextAlign.center,
           ),
           content: Text(
-            '${item.childName} demande à retirer cet appareil du contrôle parental. '
-            'Acceptes-tu ?',
+            l10n.unlinkDialogBody(item.childName),
             textAlign: TextAlign.center,
             style: Theme.of(ctx).textTheme.bodyMedium?.copyWith(
                   color: cs.onSurfaceVariant,
@@ -120,7 +120,7 @@ class _ParentalScreenState extends State<ParentalScreen> {
           actions: [
             OutlinedButton.icon(
               icon: const Icon(Icons.close, size: 18),
-              label: const Text('Refuser'),
+              label: Text(l10n.unlinkDialogReject),
               style: OutlinedButton.styleFrom(
                 foregroundColor: AppColors.accentRed,
                 side: const BorderSide(color: AppColors.accentRed),
@@ -129,7 +129,7 @@ class _ParentalScreenState extends State<ParentalScreen> {
             ),
             FilledButton.icon(
               icon: const Icon(Icons.check, size: 18),
-              label: const Text('Approuver'),
+              label: Text(l10n.unlinkDialogApprove),
               style: FilledButton.styleFrom(
                 backgroundColor: AppColors.accentGreen,
                 foregroundColor: Colors.white,
@@ -154,12 +154,13 @@ class _ParentalScreenState extends State<ParentalScreen> {
   Future<void> _handleApprove(UnlinkPendingItem item) async {
     final parentId = UserSession.instance.parentId;
     if (parentId == null || !mounted) return;
+    final l10n = AppLocalizations.of(context)!;
     try {
       await UnlinkParentService.instance.approve(item.id, parentId);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Déliage de ${item.childName} approuvé.'),
+          content: Text(l10n.unlinkApprovedSnack(item.childName)),
           backgroundColor: AppColors.accentGreen,
           duration: const Duration(seconds: 4),
         ),
@@ -169,10 +170,10 @@ class _ParentalScreenState extends State<ParentalScreen> {
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Erreur lors de l\'approbation. Réessaie.'),
+        SnackBar(
+          content: Text(l10n.unlinkApproveError),
           backgroundColor: AppColors.accentRed,
-          duration: Duration(seconds: 4),
+          duration: const Duration(seconds: 4),
         ),
       );
     }
@@ -181,22 +182,23 @@ class _ParentalScreenState extends State<ParentalScreen> {
   Future<void> _handleReject(UnlinkPendingItem item) async {
     final parentId = UserSession.instance.parentId;
     if (parentId == null || !mounted) return;
+    final l10n = AppLocalizations.of(context)!;
     try {
       await UnlinkParentService.instance.reject(item.id, parentId);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Demande de ${item.childName} refusée.'),
+          content: Text(l10n.unlinkRejectedSnack(item.childName)),
           duration: const Duration(seconds: 3),
         ),
       );
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Erreur lors du refus. Réessaie.'),
+        SnackBar(
+          content: Text(l10n.unlinkRejectError),
           backgroundColor: AppColors.accentRed,
-          duration: Duration(seconds: 4),
+          duration: const Duration(seconds: 4),
         ),
       );
     }
@@ -302,6 +304,7 @@ class _ChildrenSection extends StatelessWidget {
 class _EmptyChildrenCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;
     return Padding(
@@ -312,7 +315,7 @@ class _EmptyChildrenCard extends StatelessWidget {
           const SizedBox(width: AppSpacing.sm),
           Expanded(
             child: Text(
-              'Aucun enfant appairé pour le moment',
+              l10n.familyNoChildrenPaired,
               style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
             ),
           ),
@@ -626,6 +629,7 @@ class _ZonesList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return HarmonyCard(
       padding: AppSpacing.md,
       child: Column(
@@ -643,7 +647,7 @@ class _ZonesList extends StatelessWidget {
             ),
             title: Text(zone.name, style: Theme.of(context).textTheme.labelLarge),
             subtitle: Text(
-              '${zone.radiusMeters.toInt()}m · ${_schedule(zone)}',
+              '${zone.radiusMeters.toInt()}m · ${_schedule(zone, l10n)}',
               style: Theme.of(context).textTheme.bodySmall,
             ),
             trailing: Row(
@@ -672,11 +676,11 @@ class _ZonesList extends StatelessWidget {
         SafeZoneIcon.other => Icons.place,
       };
 
-  String _schedule(SafeZone z) {
+  String _schedule(SafeZone z, AppLocalizations l10n) {
     if (z.startTime != null && z.endTime != null) {
       return '${z.startTime!.hour}h-${z.endTime!.hour}h';
     }
-    return '24h/24';
+    return l10n.zoneScheduleAllDay;
   }
 }
 
@@ -685,9 +689,10 @@ class _ZonesList extends StatelessWidget {
 class _AddChildButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return OutlinedButton.icon(
       icon: const Icon(Icons.person_add_outlined, size: 16),
-      label: const Text('Ajouter un enfant'),
+      label: Text(l10n.familyAddChildButton),
       style: OutlinedButton.styleFrom(
         foregroundColor: AppColors.accentBlue,
         side: const BorderSide(color: AppColors.accentBlue),

@@ -1472,6 +1472,90 @@ abstract class AppLocalizations {
   /// **'Autre'**
   String get zoneIconOther;
 
+  /// No description provided for @zoneMapTapHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Appuyez sur la carte pour positionner la zone'**
+  String get zoneMapTapHint;
+
+  /// No description provided for @zoneFieldNameHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ex : École Jules Ferry'**
+  String get zoneFieldNameHint;
+
+  /// No description provided for @zoneChildrenLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enfants concernés'**
+  String get zoneChildrenLabel;
+
+  /// No description provided for @familyNoChildrenPaired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun enfant appairé pour le moment'**
+  String get familyNoChildrenPaired;
+
+  /// No description provided for @familyAddChildButton.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter un enfant'**
+  String get familyAddChildButton;
+
+  /// No description provided for @zoneScheduleAllDay.
+  ///
+  /// In fr, this message translates to:
+  /// **'24h/24'**
+  String get zoneScheduleAllDay;
+
+  /// No description provided for @unlinkDialogTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demande de déliage'**
+  String get unlinkDialogTitle;
+
+  /// No description provided for @unlinkDialogBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'{childName} demande à retirer cet appareil du contrôle parental. Acceptes-tu ?'**
+  String unlinkDialogBody(String childName);
+
+  /// No description provided for @unlinkDialogReject.
+  ///
+  /// In fr, this message translates to:
+  /// **'Refuser'**
+  String get unlinkDialogReject;
+
+  /// No description provided for @unlinkDialogApprove.
+  ///
+  /// In fr, this message translates to:
+  /// **'Approuver'**
+  String get unlinkDialogApprove;
+
+  /// No description provided for @unlinkApprovedSnack.
+  ///
+  /// In fr, this message translates to:
+  /// **'Déliage de {childName} approuvé.'**
+  String unlinkApprovedSnack(String childName);
+
+  /// No description provided for @unlinkApproveError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de l\'approbation. Réessaie.'**
+  String get unlinkApproveError;
+
+  /// No description provided for @unlinkRejectedSnack.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demande de {childName} refusée.'**
+  String unlinkRejectedSnack(String childName);
+
+  /// No description provided for @unlinkRejectError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors du refus. Réessaie.'**
+  String get unlinkRejectError;
+
   /// No description provided for @sosButtonLabel.
   ///
   /// In fr, this message translates to:

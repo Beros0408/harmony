@@ -757,6 +757,54 @@ class AppLocalizationsEs extends AppLocalizations {
   String get zoneIconOther => 'Otro';
 
   @override
+  String get zoneMapTapHint => 'Toca el mapa para posicionar la zona';
+
+  @override
+  String get zoneFieldNameHint => 'Ej.: Colegio San José';
+
+  @override
+  String get zoneChildrenLabel => 'Hijos afectados';
+
+  @override
+  String get familyNoChildrenPaired => 'Ningún hijo vinculado por el momento';
+
+  @override
+  String get familyAddChildButton => 'Añadir un hijo';
+
+  @override
+  String get zoneScheduleAllDay => 'Todo el día';
+
+  @override
+  String get unlinkDialogTitle => 'Solicitud de desvinculación';
+
+  @override
+  String unlinkDialogBody(String childName) {
+    return '$childName solicita retirar este dispositivo del control parental. ¿Aceptas?';
+  }
+
+  @override
+  String get unlinkDialogReject => 'Rechazar';
+
+  @override
+  String get unlinkDialogApprove => 'Aprobar';
+
+  @override
+  String unlinkApprovedSnack(String childName) {
+    return 'Desvinculación de $childName aprobada.';
+  }
+
+  @override
+  String get unlinkApproveError => 'Error al aprobar. Inténtalo de nuevo.';
+
+  @override
+  String unlinkRejectedSnack(String childName) {
+    return 'Solicitud de $childName rechazada.';
+  }
+
+  @override
+  String get unlinkRejectError => 'Error al rechazar. Inténtalo de nuevo.';
+
+  @override
   String get sosButtonLabel => 'SOS';
 
   @override

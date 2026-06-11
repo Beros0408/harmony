@@ -757,6 +757,54 @@ class AppLocalizationsIt extends AppLocalizations {
   String get zoneIconOther => 'Altro';
 
   @override
+  String get zoneMapTapHint => 'Tocca la mappa per posizionare la zona';
+
+  @override
+  String get zoneFieldNameHint => 'Es.: Scuola Leonardo';
+
+  @override
+  String get zoneChildrenLabel => 'Bambini coinvolti';
+
+  @override
+  String get familyNoChildrenPaired => 'Nessun figlio abbinato per il momento';
+
+  @override
+  String get familyAddChildButton => 'Aggiungi un figlio';
+
+  @override
+  String get zoneScheduleAllDay => 'Tutto il giorno';
+
+  @override
+  String get unlinkDialogTitle => 'Richiesta di scollegamento';
+
+  @override
+  String unlinkDialogBody(String childName) {
+    return '$childName chiede di rimuovere questo dispositivo dal controllo parentale. Accetti?';
+  }
+
+  @override
+  String get unlinkDialogReject => 'Rifiuta';
+
+  @override
+  String get unlinkDialogApprove => 'Approva';
+
+  @override
+  String unlinkApprovedSnack(String childName) {
+    return 'Scollegamento di $childName approvato.';
+  }
+
+  @override
+  String get unlinkApproveError => 'Errore durante l\'approvazione. Riprova.';
+
+  @override
+  String unlinkRejectedSnack(String childName) {
+    return 'Richiesta di $childName rifiutata.';
+  }
+
+  @override
+  String get unlinkRejectError => 'Errore durante il rifiuto. Riprova.';
+
+  @override
   String get sosButtonLabel => 'SOS';
 
   @override

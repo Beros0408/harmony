@@ -122,7 +122,7 @@ class _SafeZoneEditorScreenState extends State<SafeZoneEditorScreen> {
           ),
           const SizedBox(height: AppSpacing.sm),
           Text(
-            'Appuyez sur la carte pour positionner la zone',
+            l10n.zoneMapTapHint,
             style: tt.bodySmall,
             textAlign: TextAlign.center,
           ),
@@ -132,7 +132,7 @@ class _SafeZoneEditorScreenState extends State<SafeZoneEditorScreen> {
           HarmonyTextField(
             controller: _nameController,
             label: l10n.zoneFieldName,
-            hint: 'Ex: École Jules Ferry',
+            hint: l10n.zoneFieldNameHint,
           ),
           const SizedBox(height: AppSpacing.lg),
 
@@ -206,7 +206,7 @@ class _SafeZoneEditorScreenState extends State<SafeZoneEditorScreen> {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Enfants concernés', style: tt.labelLarge),
+                  Text(l10n.zoneChildrenLabel, style: tt.labelLarge),
                   const SizedBox(height: AppSpacing.sm),
                   ...state.profiles.map((child) {
                     final isSelected = _selectedChildIds.contains(child.id);
