@@ -23,6 +23,7 @@ import '../../parental/data/services/sos_contacts_api_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../data/services/usage_stats_service.dart';
 import 'accessibility_permission_screen.dart';
+import 'kids_activity_screen.dart';
 import 'kids_pairing_screen.dart';
 import 'screen_time_permission_screen.dart';
 
@@ -655,6 +656,17 @@ class _KidsAdminScreenState extends State<KidsAdminScreen>
                 _LocationSection(
                   granted: _locationGranted,
                   onRequestPermission: _requestLocationPermission,
+                ),
+
+                const SizedBox(height: AppSpacing.xl),
+
+                // ── Section activité ──────────────────────────────────────
+                _ActivitySection(
+                  onTap: () => Navigator.of(context).push<void>(
+                    MaterialPageRoute<void>(
+                      builder: (_) => const KidsActivityScreen(),
+                    ),
+                  ),
                 ),
 
                 const SizedBox(height: AppSpacing.xxxl),
@@ -1428,6 +1440,77 @@ class _SosContactsSection extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+// ─── Section activité ────────────────────────────────────────────────────────
+
+class _ActivitySection extends StatelessWidget {
+  const _ActivitySection({required this.onTap});
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'MON ACTIVITÉ',
+          style: tt.labelSmall?.copyWith(
+            color: cs.onSurfaceVariant,
+            letterSpacing: 1.2,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            decoration: BoxDecoration(
+              color: AppColors.accentGreen.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: AppColors.accentGreen.withValues(alpha: 0.3),
+              ),
+            ),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.directions_walk,
+                  color: AppColors.accentGreen,
+                  size: 28,
+                ),
+                const SizedBox(width: AppSpacing.md),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Mes pas du jour',
+                        style: tt.labelLarge?.copyWith(color: cs.onSurface),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Voir mon compteur de pas',
+                        style: tt.bodySmall?.copyWith(
+                          color: AppColors.accentGreen,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(Icons.chevron_right, color: cs.onSurfaceVariant),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

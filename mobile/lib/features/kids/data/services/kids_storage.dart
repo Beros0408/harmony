@@ -29,4 +29,21 @@ class KidsStorage {
 
   Future<void> clearKidsOnboardingDone() =>
       _storage.delete(key: _kOnboardingDone);
+
+  // ── Activité physique — pas du jour ──────────────────────────────────────
+  static const _kStepOffset = 'harmony_kids_step_offset';
+  static const _kStepDate   = 'harmony_kids_step_date';
+
+  Future<void> saveStepOffset(int offset) =>
+      _storage.write(key: _kStepOffset, value: offset.toString());
+
+  Future<int?> getStepOffset() async {
+    final value = await _storage.read(key: _kStepOffset);
+    return value != null ? int.tryParse(value) : null;
+  }
+
+  Future<void> saveStepDate(String date) =>
+      _storage.write(key: _kStepDate, value: date);
+
+  Future<String?> getStepDate() => _storage.read(key: _kStepDate);
 }
