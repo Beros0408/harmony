@@ -221,7 +221,7 @@ class _FitnessBodyState extends State<_FitnessBody> {
         HarmonyCard(
           padding: AppSpacing.lg,
           child: SizedBox(
-            height: 160,
+            height: 180,
             child: _WeeklyBarChart(
               weeklySteps: widget.weeklySteps,
               goal: widget.goal,
@@ -461,7 +461,7 @@ class _MiniStatCard extends StatelessWidget {
 
 // ─── Graphique hebdomadaire ───────────────────────────────────────────────────
 
-class _WeeklyBarChart extends StatelessWidget {
+class _WeeklyBarChart extends StatefulWidget {
   const _WeeklyBarChart({
     required this.weeklySteps,
     required this.goal,
@@ -472,77 +472,161 @@ class _WeeklyBarChart extends StatelessWidget {
   final List<String> dayLabels;
 
   @override
-  Widget build(BuildContext context) {
-    final values = weeklySteps.map((d) => d.stepCount.toDouble()).toList();
-    // Complète à 7 si la liste est courte
-    while (values.length < 7) values.insert(0, 0);
-    final maxY = ([...values, goal.toDouble()].reduce((a, b) => a > b ? a : b)) * 1.2;
+  State<_WeeklyBarChart> createState() => _WeeklyBarChartState();
+}
 
-    return BarChart(
-      BarChartData(
-        maxY: maxY,
-        alignment: BarChartAlignment.spaceAround,
-        barGroups: List.generate(values.length, (i) {
-          final isToday = i == values.length - 1;
-          final goalReached = values[i] >= goal;
-          final color = goalReached
-              ? AppColors.accentGreen
-              : isToday
-                  ? AppColors.accentBlue
-                  : AppColors.accentBlue.withValues(alpha: 0.35);
-          return BarChartGroupData(
-            x: i,
-            barRods: [
-              BarChartRodData(
-                toY: values[i] > 0 ? values[i] : 0,
-                color: color,
-                width: 22,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
-              ),
-            ],
-          );
-        }),
-        extraLinesData: ExtraLinesData(
-          horizontalLines: [
-            HorizontalLine(
-              y: goal.toDouble(),
-              color: AppColors.accentAmber.withValues(alpha: 0.5),
-              strokeWidth: 1.5,
-              dashArray: [6, 4],
-            ),
-          ],
-        ),
-        titlesData: FlTitlesData(
-          bottomTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              reservedSize: 28,
-              getTitlesWidget: (value, meta) {
-                final i = value.toInt();
-                if (i < 0 || i >= dayLabels.length) return const SizedBox.shrink();
-                return Padding(
-                  padding: const EdgeInsets.only(top: 6),
-                  child: Text(
-                    dayLabels[i],
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSurfaceVariant
-                              .withValues(alpha: 0.6),
-                        ),
-                  ),
+class _WeeklyBarChartState extends State<_WeeklyBarChart>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _ctrl;
+  late final Animation<double> _anim;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
+    _anim = CurvedAnimation(parent: _ctrl, curve: Curves.easeOutCubic);
+    _ctrl.forward();
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final values = widget.weeklySteps.map((d) => d.stepCount.toDouble()).toList();
+    // Complète à 7 si la liste est courte
+    while (values.length < 7) { values.insert(0, 0); }
+    final maxY =
+        ([...values, widget.goal.toDouble()].reduce((a, b) => a > b ? a : b)) * 1.2;
+
+    return AnimatedBuilder(
+      animation: _anim,
+      builder: (context, _) {
+        return BarChart(
+          BarChartData(
+            maxY: maxY,
+            alignment: BarChartAlignment.spaceAround,
+            barGroups: List.generate(values.length, (i) {
+              final isToday     = i == values.length - 1;
+              final goalReached = values[i] >= widget.goal;
+              final isWeak      = values[i] < widget.goal * 0.20;
+
+              final LinearGradient gradient;
+              if (goalReached) {
+                gradient = LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    const Color(0xFF059669),
+                    AppColors.accentGreen.withValues(alpha: 0.65),
+                  ],
                 );
-              },
+              } else if (isToday) {
+                gradient = LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    AppColors.accentBlue,
+                    AppColors.accentBlue.withValues(alpha: 0.7),
+                  ],
+                );
+              } else if (isWeak) {
+                gradient = LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    cs.onSurfaceVariant.withValues(alpha: 0.30),
+                    cs.onSurfaceVariant.withValues(alpha: 0.15),
+                  ],
+                );
+              } else {
+                gradient = LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    AppColors.accentBlue,
+                    AppColors.accentCyan.withValues(alpha: 0.5),
+                  ],
+                );
+              }
+
+              return BarChartGroupData(
+                x: i,
+                barRods: [
+                  BarChartRodData(
+                    toY: values[i] > 0 ? values[i] * _anim.value : 0,
+                    gradient: gradient,
+                    width: 12,
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(6),
+                    ),
+                  ),
+                ],
+              );
+            }),
+            extraLinesData: ExtraLinesData(
+              horizontalLines: [
+                HorizontalLine(
+                  y: widget.goal.toDouble(),
+                  color: cs.onSurfaceVariant.withValues(alpha: 0.35),
+                  strokeWidth: 0.8,
+                  label: HorizontalLineLabel(
+                    show: true,
+                    alignment: Alignment.topRight,
+                    padding: const EdgeInsets.only(right: 4, bottom: 2),
+                    style: TextStyle(
+                      fontSize: 9,
+                      color: cs.onSurfaceVariant.withValues(alpha: 0.65),
+                    ),
+                    labelResolver: (line) => '${(widget.goal ~/ 1000)}k',
+                  ),
+                ),
+              ],
             ),
+            titlesData: FlTitlesData(
+              bottomTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true,
+                  reservedSize: 28,
+                  getTitlesWidget: (value, meta) {
+                    final i = value.toInt();
+                    if (i < 0 || i >= widget.dayLabels.length) {
+                      return const SizedBox.shrink();
+                    }
+                    final isToday = i == widget.dayLabels.length - 1;
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 6),
+                      child: Text(
+                        widget.dayLabels[i],
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                              color: isToday
+                                  ? AppColors.accentBlue
+                                  : cs.onSurfaceVariant.withValues(alpha: 0.80),
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.5,
+                            ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              leftTitles:  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              topTitles:   const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            ),
+            gridData:     const FlGridData(show: false),
+            borderData:   FlBorderData(show: false),
+            barTouchData: BarTouchData(enabled: false),
           ),
-          leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-        ),
-        gridData: const FlGridData(show: false),
-        borderData: FlBorderData(show: false),
-        barTouchData: BarTouchData(enabled: false),
-      ),
+        );
+      },
     );
   }
 }
