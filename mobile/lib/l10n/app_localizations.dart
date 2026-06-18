@@ -2821,6 +2821,12 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Retour'**
   String get breathingReturn;
+
+  /// No description provided for @settingsPrivacyPolicy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Politique de confidentialité'**
+  String get settingsPrivacyPolicy;
 }
 
 class _AppLocalizationsDelegate

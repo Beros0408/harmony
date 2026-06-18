@@ -1468,4 +1468,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get breathingReturn => 'Back';
+
+  @override
+  String get settingsPrivacyPolicy => 'Privacy Policy';
 }

@@ -62,4 +62,7 @@ class RouteNames {
 
   // Dev only — design system showcase (non indexée en production)
   static const String devComponents = '/dev/components';
+
+  // Légal
+  static const String privacyPolicy = '/privacy-policy';
 }

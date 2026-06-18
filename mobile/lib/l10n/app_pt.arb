@@ -551,5 +551,7 @@
   "breathingSessionCongrats": "Parabéns! Tire um momento para si.",
   "breathingRestart": "Reiniciar",
   "breathingStop": "Parar",
-  "breathingReturn": "Voltar"
+  "breathingReturn": "Voltar",
+
+  "settingsPrivacyPolicy": "Política de privacidade"
 }

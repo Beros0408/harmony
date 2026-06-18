@@ -1472,4 +1472,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get breathingReturn => 'Volver';
+
+  @override
+  String get settingsPrivacyPolicy => 'Política de privacidad';
 }

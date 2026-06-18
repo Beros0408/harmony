@@ -551,5 +551,7 @@
   "breathingSessionCongrats": "¡Bien hecho! Tómate un momento para ti.",
   "breathingRestart": "Reiniciar",
   "breathingStop": "Detener",
-  "breathingReturn": "Volver"
+  "breathingReturn": "Volver",
+
+  "settingsPrivacyPolicy": "Política de privacidad"
 }

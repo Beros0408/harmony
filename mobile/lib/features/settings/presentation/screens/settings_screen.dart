@@ -130,8 +130,7 @@ class SettingsScreen extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.workspace_premium_outlined,
-                        size: 20, color: AppColors.accentBlue),
+                    const Icon(Icons.workspace_premium_outlined, size: 20, color: AppColors.accentBlue),
                     const SizedBox(width: AppSpacing.md),
                     Expanded(
                       child: Text(
@@ -139,8 +138,35 @@ class SettingsScreen extends StatelessWidget {
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
                     ),
-                    const Icon(Icons.chevron_right,
-                        size: 20, color: AppColors.textMuted),
+                    const Icon(Icons.chevron_right, size: 20, color: AppColors.textMuted),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          // Politique de confidentialité
+          HarmonyCard(
+            padding: AppSpacing.md,
+            child: InkWell(
+              onTap: () => context.push(RouteNames.privacyPolicy),
+              borderRadius: BorderRadius.circular(8),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.sm,
+                  vertical: AppSpacing.md,
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.privacy_tip_outlined, size: 20, color: AppColors.accentBlue),
+                    const SizedBox(width: AppSpacing.md),
+                    Expanded(
+                      child: Text(
+                        l10n.settingsPrivacyPolicy,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ),
+                    const Icon(Icons.chevron_right, size: 20, color: AppColors.textMuted),
                   ],
                 ),
               ),

@@ -1471,4 +1471,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get breathingReturn => 'Retour';
+
+  @override
+  String get settingsPrivacyPolicy => 'Politique de confidentialité';
 }
