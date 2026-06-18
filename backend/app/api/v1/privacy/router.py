@@ -82,6 +82,51 @@ async def export_child_data(
                 "SELECT * FROM public.family_links"
                 " WHERE child_id = CAST(:child_id AS uuid)"
             ),
+            "locations": await _many(
+                "SELECT * FROM public.locations"
+                " WHERE child_id = CAST(:child_id AS uuid)"
+                " ORDER BY recorded_at DESC"
+            ),
+            "sos_events": await _many(
+                "SELECT * FROM public.sos_events"
+                " WHERE child_id = CAST(:child_id AS uuid)"
+                " ORDER BY triggered_at DESC"
+            ),
+            "sos_contacts": await _many(
+                "SELECT * FROM public.sos_contacts"
+                " WHERE child_id = CAST(:child_id AS uuid)"
+                " ORDER BY sort_order ASC, created_at ASC"
+            ),
+            "blocked_call_logs": await _many(
+                "SELECT * FROM public.blocked_call_logs"
+                " WHERE child_id = CAST(:child_id AS uuid)"
+                " ORDER BY blocked_at DESC"
+            ),
+            "call_filter_rules": await _many(
+                "SELECT * FROM public.call_filter_rules"
+                " WHERE child_id = CAST(:child_id AS uuid)"
+                " ORDER BY created_at ASC"
+            ),
+            "call_filter_settings": await _one(
+                "SELECT * FROM public.call_filter_settings"
+                " WHERE child_id = CAST(:child_id AS uuid)"
+            ),
+            "consent_records": await _many(
+                "SELECT * FROM public.consent_records"
+                " WHERE child_id = CAST(:child_id AS uuid)"
+                " ORDER BY created_at DESC"
+            ),
+            "pairing_codes": await _many(
+                "SELECT * FROM public.pairing_codes"
+                " WHERE parent_id = ("
+                "   SELECT parent_id FROM public.family_links"
+                "   WHERE child_id = CAST(:child_id AS uuid) LIMIT 1"
+                " )"
+                " AND child_name = ("
+                "   SELECT full_name FROM public.profiles"
+                "   WHERE id = CAST(:child_id AS uuid)"
+                " )"
+            ),
             "screen_time_usage": await _many(
                 "SELECT * FROM public.screen_time_usage"
                 " WHERE child_id = CAST(:child_id AS uuid)"
@@ -167,20 +212,60 @@ async def delete_child_data(
 
         touched: dict[str, int] = {}
 
+        # ── Tables ajoutées (purge RGPD complète) ───────────────────────────
+        touched["blocked_call_logs"]    = await _del("blocked_call_logs")
+        touched["call_filter_rules"]    = await _del("call_filter_rules")
+        touched["call_filter_settings"] = await _del("call_filter_settings")
+        touched["locations"]            = await _del("locations")
+        touched["sos_contacts"]         = await _del("sos_contacts")
+        touched["sos_events"]           = await _del("sos_events")
+
+        # ── Tables existantes ────────────────────────────────────────────────
         # wellbeing_alerts avant wellbeing_signals : signal_id référence wellbeing_signals.id
-        touched["wellbeing_alerts"]   = await _del("wellbeing_alerts")
-        touched["wellbeing_signals"]  = await _del("wellbeing_signals")
-        touched["screen_time_usage"]  = await _del("screen_time_usage")
-        touched["screen_time_limits"] = await _del("screen_time_limits")
-        touched["screen_time_bonus"]  = await _del("screen_time_bonus")
-        touched["fitness_activity"]   = await _del("fitness_activity")
-        touched["lock_schedules"]     = await _del("lock_schedules")
-        touched["device_commands"]    = await _del("device_commands")
-        touched["content_filter"]     = await _del("content_filter")
-        touched["unlink_requests"]    = await _del("unlink_requests")
-        touched["family_links"]       = await _del("family_links")
+        touched["wellbeing_alerts"]     = await _del("wellbeing_alerts")
+        touched["wellbeing_signals"]    = await _del("wellbeing_signals")
+        touched["screen_time_usage"]    = await _del("screen_time_usage")
+        touched["screen_time_limits"]   = await _del("screen_time_limits")
+        touched["screen_time_bonus"]    = await _del("screen_time_bonus")
+        touched["fitness_activity"]     = await _del("fitness_activity")
+        touched["lock_schedules"]       = await _del("lock_schedules")
+        touched["device_commands"]      = await _del("device_commands")
+        touched["content_filter"]       = await _del("content_filter")
+        touched["unlink_requests"]      = await _del("unlink_requests")
+
+        # pairing_codes : pas de child_id direct — on résout parent_id + child_name
+        # AVANT de supprimer family_links et profiles (les deux sources de ces valeurs).
+        r_parent = await db.execute(
+            text(
+                "SELECT fl.parent_id, p.full_name"
+                " FROM public.family_links fl"
+                " JOIN public.profiles p ON p.id = CAST(:child_id AS uuid)"
+                " WHERE fl.child_id = CAST(:child_id AS uuid)"
+                " LIMIT 1"
+            ),
+            {"child_id": child_id},
+        )
+        parent_row = r_parent.fetchone()
+        if parent_row:
+            r_pc = await db.execute(
+                text(
+                    "DELETE FROM public.pairing_codes"
+                    " WHERE parent_id = CAST(:parent_id AS uuid)"
+                    "   AND child_name = :child_name"
+                ),
+                {"parent_id": str(parent_row[0]), "child_name": parent_row[1]},
+            )
+            touched["pairing_codes"] = r_pc.rowcount
+        else:
+            touched["pairing_codes"] = 0
+
+        # consent_records : child_id nullable ; ON DELETE CASCADE sur profiles le
+        # couvrirait, mais on le supprime explicitement pour la traçabilité du log.
+        touched["consent_records"]      = await _del("consent_records")
+
+        touched["family_links"]         = await _del("family_links")
         # Filtre sur id (= child_id) — ne touche aucun autre profil
-        touched["profiles"]           = await _del("profiles", col="id")
+        touched["profiles"]             = await _del("profiles", col="id")
 
         logger.info("privacy_data_deleted", child_id=child_id, tables=touched)
 
