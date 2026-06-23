@@ -596,5 +596,71 @@
   "breathingStop": "Arrêter",
   "breathingReturn": "Retour",
 
-  "settingsPrivacyPolicy": "Politique de confidentialité"
+  "settingsPrivacyPolicy": "Politique de confidentialité",
+
+  "privacySectionTitle": "CONFIDENTIALITÉ (RGPD)",
+  "privacyIntro": "Conformément au RGPD, vous pouvez à tout moment exporter ou supprimer les données de {childName}.",
+  "@privacyIntro": {
+    "placeholders": {
+      "childName": {"type": "String"}
+    }
+  },
+  "privacyExportButton": "Exporter les données",
+  "privacyExportLoading": "Export en cours…",
+  "privacyExportDescription": "Télécharge toutes les données de {childName} au format JSON.",
+  "@privacyExportDescription": {
+    "placeholders": {
+      "childName": {"type": "String"}
+    }
+  },
+  "privacyDeleteButton": "Supprimer toutes les données",
+  "privacyDeleteLoading": "Suppression en cours…",
+  "privacyDeleteDialogTitle": "Données de {childName}",
+  "@privacyDeleteDialogTitle": {
+    "placeholders": {
+      "childName": {"type": "String"}
+    }
+  },
+  "privacyDeleteDialogBody": "Supprimer toutes les données effacera l'historique, les paramètres et l'appairage de {childName}. Cette action est irréversible.\n\nPensez à exporter d'abord si vous souhaitez garder une copie.",
+  "@privacyDeleteDialogBody": {
+    "placeholders": {
+      "childName": {"type": "String"}
+    }
+  },
+  "privacyDeleteExportFirst": "Exporter d'abord",
+  "privacyDeleteConfirmDestructive": "Supprimer définitivement",
+  "privacyDialogCancel": "Annuler",
+  "privacyDeleteFinalTitle": "Dernière confirmation",
+  "privacyDeleteFinalBody": "Vous allez supprimer définitivement toutes les données de {childName}. L'appairage sera également supprimé. Cette action ne peut pas être annulée.",
+  "@privacyDeleteFinalBody": {
+    "placeholders": {
+      "childName": {"type": "String"}
+    }
+  },
+  "privacyDeleteFinalConfirm": "Je confirme",
+  "privacyExportSuccessTitle": "Export de {childName} enregistré.",
+  "@privacyExportSuccessTitle": {
+    "placeholders": {
+      "childName": {"type": "String"}
+    }
+  },
+  "privacyExportInternalStorageNote": "Stockage interne — non visible depuis le gestionnaire de fichiers.",
+  "privacyExportError": "Erreur lors de l'export : {error}",
+  "@privacyExportError": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "privacyDeleteSuccess": "Toutes les données de {childName} ont été supprimées.",
+  "@privacyDeleteSuccess": {
+    "placeholders": {
+      "childName": {"type": "String"}
+    }
+  },
+  "privacyDeleteError": "Erreur lors de la suppression : {error}",
+  "@privacyDeleteError": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  }
 }

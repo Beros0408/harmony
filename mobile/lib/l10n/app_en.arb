@@ -553,5 +553,71 @@
   "breathingStop": "Stop",
   "breathingReturn": "Back",
 
-  "settingsPrivacyPolicy": "Privacy Policy"
+  "settingsPrivacyPolicy": "Privacy Policy",
+
+  "privacySectionTitle": "PRIVACY (GDPR)",
+  "privacyIntro": "Under GDPR, you can export or delete {childName}'s data at any time.",
+  "@privacyIntro": {
+    "placeholders": {
+      "childName": {"type": "String"}
+    }
+  },
+  "privacyExportButton": "Export data",
+  "privacyExportLoading": "Exporting…",
+  "privacyExportDescription": "Downloads all of {childName}'s data as a JSON file.",
+  "@privacyExportDescription": {
+    "placeholders": {
+      "childName": {"type": "String"}
+    }
+  },
+  "privacyDeleteButton": "Delete all data",
+  "privacyDeleteLoading": "Deleting…",
+  "privacyDeleteDialogTitle": "{childName}'s data",
+  "@privacyDeleteDialogTitle": {
+    "placeholders": {
+      "childName": {"type": "String"}
+    }
+  },
+  "privacyDeleteDialogBody": "Deleting all data will erase {childName}'s history, settings and pairing. This action cannot be undone.\n\nConsider exporting first if you want to keep a copy.",
+  "@privacyDeleteDialogBody": {
+    "placeholders": {
+      "childName": {"type": "String"}
+    }
+  },
+  "privacyDeleteExportFirst": "Export first",
+  "privacyDeleteConfirmDestructive": "Delete permanently",
+  "privacyDialogCancel": "Cancel",
+  "privacyDeleteFinalTitle": "Final confirmation",
+  "privacyDeleteFinalBody": "You are about to permanently delete all of {childName}'s data. Pairing will also be removed. This action cannot be undone.",
+  "@privacyDeleteFinalBody": {
+    "placeholders": {
+      "childName": {"type": "String"}
+    }
+  },
+  "privacyDeleteFinalConfirm": "I confirm",
+  "privacyExportSuccessTitle": "Export of {childName} saved.",
+  "@privacyExportSuccessTitle": {
+    "placeholders": {
+      "childName": {"type": "String"}
+    }
+  },
+  "privacyExportInternalStorageNote": "Internal storage — not visible from the file manager.",
+  "privacyExportError": "Export error: {error}",
+  "@privacyExportError": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "privacyDeleteSuccess": "All of {childName}'s data has been deleted.",
+  "@privacyDeleteSuccess": {
+    "placeholders": {
+      "childName": {"type": "String"}
+    }
+  },
+  "privacyDeleteError": "Delete error: {error}",
+  "@privacyDeleteError": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  }
 }

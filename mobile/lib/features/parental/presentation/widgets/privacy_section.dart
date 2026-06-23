@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_radius.dart';
 import '../../../../core/constants/app_spacing.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/harmony_card.dart';
 import '../../data/services/privacy_service.dart';
 
@@ -45,6 +45,8 @@ class _PrivacySectionState extends State<PrivacySection> {
     if (_exporting) return;
     if (mounted) setState(() => _exporting = true);
 
+    final l10n = AppLocalizations.of(context)!;
+
     try {
       final data   = await _service.exportData(widget.childId);
       final result = await _service.saveExportFile(widget.childName, data);
@@ -57,7 +59,7 @@ class _PrivacySectionState extends State<PrivacySection> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Export de ${widget.childName} enregistré.',
+                l10n.privacyExportSuccessTitle(widget.childName),
                 style: const TextStyle(fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 4),
@@ -67,9 +69,9 @@ class _PrivacySectionState extends State<PrivacySection> {
               ),
               if (!result.isExternal) ...[
                 const SizedBox(height: 2),
-                const Text(
-                  'Stockage interne — non visible depuis le gestionnaire de fichiers.',
-                  style: TextStyle(fontSize: 11),
+                Text(
+                  l10n.privacyExportInternalStorageNote,
+                  style: const TextStyle(fontSize: 11),
                 ),
               ],
             ],
@@ -82,7 +84,7 @@ class _PrivacySectionState extends State<PrivacySection> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Erreur lors de l\'export : $e'),
+          content: Text(l10n.privacyExportError(e.toString())),
           backgroundColor: AppColors.accentRed,
           duration: const Duration(seconds: 4),
         ),
@@ -97,6 +99,7 @@ class _PrivacySectionState extends State<PrivacySection> {
   Future<void> _showDeleteDialog() async {
     final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;
+    final l10n = AppLocalizations.of(context)!;
 
     final action = await showDialog<_DeleteAction>(
       context: context,
@@ -109,15 +112,12 @@ class _PrivacySectionState extends State<PrivacySection> {
           color: AppColors.accentAmber,
         ),
         title: Text(
-          'Données de ${widget.childName}',
+          l10n.privacyDeleteDialogTitle(widget.childName),
           textAlign: TextAlign.center,
           style: tt.titleMedium,
         ),
         content: Text(
-          'Supprimer toutes les données effacera l\'historique, les paramètres '
-          'et l\'appairage de ${widget.childName}. '
-          'Cette action est irréversible.\n\n'
-          'Pensez à exporter d\'abord si vous souhaitez garder une copie.',
+          l10n.privacyDeleteDialogBody(widget.childName),
           textAlign: TextAlign.center,
           style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant, height: 1.5),
         ),
@@ -129,7 +129,7 @@ class _PrivacySectionState extends State<PrivacySection> {
             width: double.infinity,
             child: OutlinedButton.icon(
               icon: const Icon(Icons.download_outlined, size: 18),
-              label: const Text('Exporter d\'abord'),
+              label: Text(l10n.privacyDeleteExportFirst),
               style: OutlinedButton.styleFrom(
                 foregroundColor: AppColors.accentBlue,
                 side: const BorderSide(color: AppColors.accentBlue),
@@ -149,7 +149,7 @@ class _PrivacySectionState extends State<PrivacySection> {
               ),
               onPressed: () =>
                   Navigator.pop(ctx, _DeleteAction.deleteDefinitive),
-              child: const Text('Supprimer définitivement'),
+              child: Text(l10n.privacyDeleteConfirmDestructive),
             ),
           ),
           const SizedBox(height: 4),
@@ -162,7 +162,7 @@ class _PrivacySectionState extends State<PrivacySection> {
                     borderRadius: AppRadius.mdRadius),
               ),
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Annuler'),
+              child: Text(l10n.privacyDialogCancel),
             ),
           ),
         ],
@@ -186,6 +186,7 @@ class _PrivacySectionState extends State<PrivacySection> {
   Future<void> _showFinalConfirmDialog() async {
     final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;
+    final l10n = AppLocalizations.of(context)!;
 
     final confirmed = await showDialog<bool>(
       context: context,
@@ -198,39 +199,24 @@ class _PrivacySectionState extends State<PrivacySection> {
           size: 32,
           color: AppColors.accentRed.withValues(alpha: 0.85),
         ),
-        title: const Text(
-          'Dernière confirmation',
+        title: Text(
+          l10n.privacyDeleteFinalTitle,
           textAlign: TextAlign.center,
         ),
         titleTextStyle: tt.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-        content: RichText(
+        content: Text(
+          l10n.privacyDeleteFinalBody(widget.childName),
           textAlign: TextAlign.center,
-          text: TextSpan(
-            style: tt.bodySmall?.copyWith(
-              color: cs.onSurfaceVariant,
-              height: 1.6,
-            ),
-            children: [
-              const TextSpan(
-                text: 'Vous allez supprimer définitivement toutes les données '
-                    'de ',
-              ),
-              TextSpan(
-                text: widget.childName,
-                style: const TextStyle(fontWeight: FontWeight.w700),
-              ),
-              const TextSpan(
-                text: '. L\'appairage sera également supprimé. '
-                    'Cette action ne peut pas être annulée.',
-              ),
-            ],
+          style: tt.bodySmall?.copyWith(
+            color: cs.onSurfaceVariant,
+            height: 1.6,
           ),
         ),
         actionsAlignment: MainAxisAlignment.spaceEvenly,
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Annuler'),
+            child: Text(l10n.privacyDialogCancel),
           ),
           OutlinedButton(
             style: OutlinedButton.styleFrom(
@@ -241,7 +227,7 @@ class _PrivacySectionState extends State<PrivacySection> {
               shape: RoundedRectangleBorder(borderRadius: AppRadius.mdRadius),
             ),
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Je confirme'),
+            child: Text(l10n.privacyDeleteFinalConfirm),
           ),
         ],
       ),
@@ -256,15 +242,15 @@ class _PrivacySectionState extends State<PrivacySection> {
   Future<void> _doDelete() async {
     if (mounted) setState(() => _deleting = true);
 
+    final l10n = AppLocalizations.of(context)!;
+
     try {
       await _service.deleteData(widget.childId);
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            'Toutes les données de ${widget.childName} ont été supprimées.',
-          ),
+          content: Text(l10n.privacyDeleteSuccess(widget.childName)),
           backgroundColor: AppColors.accentGreen,
           duration: const Duration(seconds: 3),
         ),
@@ -276,7 +262,7 @@ class _PrivacySectionState extends State<PrivacySection> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Erreur lors de la suppression : $e'),
+          content: Text(l10n.privacyDeleteError(e.toString())),
           backgroundColor: AppColors.accentRed,
           duration: const Duration(seconds: 5),
         ),
@@ -292,13 +278,14 @@ class _PrivacySectionState extends State<PrivacySection> {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Titre de section — même style que les autres sections
         Text(
-          'CONFIDENTIALITÉ (RGPD)',
+          l10n.privacySectionTitle,
           style: tt.labelSmall?.copyWith(
             color: cs.onSurfaceVariant,
             letterSpacing: 1.2,
@@ -323,8 +310,7 @@ class _PrivacySectionState extends State<PrivacySection> {
                   const SizedBox(width: AppSpacing.sm),
                   Expanded(
                     child: Text(
-                      'Conformément au RGPD, vous pouvez à tout moment '
-                      'exporter ou supprimer les données de ${widget.childName}.',
+                      l10n.privacyIntro(widget.childName),
                       style: tt.bodySmall?.copyWith(
                         color: cs.onSurfaceVariant,
                         height: 1.5,
@@ -351,8 +337,8 @@ class _PrivacySectionState extends State<PrivacySection> {
                       : const Icon(Icons.download_outlined, size: 18),
                   label: Text(
                     _exporting
-                        ? 'Export en cours…'
-                        : 'Exporter les données',
+                        ? l10n.privacyExportLoading
+                        : l10n.privacyExportButton,
                   ),
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
@@ -372,8 +358,7 @@ class _PrivacySectionState extends State<PrivacySection> {
                 padding: const EdgeInsets.symmetric(
                     horizontal: AppSpacing.xs),
                 child: Text(
-                  'Télécharge toutes les données de ${widget.childName} '
-                  'au format JSON.',
+                  l10n.privacyExportDescription(widget.childName),
                   style: tt.bodySmall?.copyWith(
                     color: cs.onSurfaceVariant,
                     fontSize: 11,
@@ -401,8 +386,8 @@ class _PrivacySectionState extends State<PrivacySection> {
                         ),
                   label: Text(
                     _deleting
-                        ? 'Suppression en cours…'
-                        : 'Supprimer toutes les données',
+                        ? l10n.privacyDeleteLoading
+                        : l10n.privacyDeleteButton,
                     style: TextStyle(
                       color: _deleting
                           ? cs.onSurfaceVariant

@@ -2827,6 +2827,126 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Politique de confidentialité'**
   String get settingsPrivacyPolicy;
+
+  /// No description provided for @privacySectionTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'CONFIDENTIALITÉ (RGPD)'**
+  String get privacySectionTitle;
+
+  /// No description provided for @privacyIntro.
+  ///
+  /// In fr, this message translates to:
+  /// **'Conformément au RGPD, vous pouvez à tout moment exporter ou supprimer les données de {childName}.'**
+  String privacyIntro(String childName);
+
+  /// No description provided for @privacyExportButton.
+  ///
+  /// In fr, this message translates to:
+  /// **'Exporter les données'**
+  String get privacyExportButton;
+
+  /// No description provided for @privacyExportLoading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Export en cours…'**
+  String get privacyExportLoading;
+
+  /// No description provided for @privacyExportDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Télécharge toutes les données de {childName} au format JSON.'**
+  String privacyExportDescription(String childName);
+
+  /// No description provided for @privacyDeleteButton.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer toutes les données'**
+  String get privacyDeleteButton;
+
+  /// No description provided for @privacyDeleteLoading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Suppression en cours…'**
+  String get privacyDeleteLoading;
+
+  /// No description provided for @privacyDeleteDialogTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Données de {childName}'**
+  String privacyDeleteDialogTitle(String childName);
+
+  /// No description provided for @privacyDeleteDialogBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer toutes les données effacera l\'historique, les paramètres et l\'appairage de {childName}. Cette action est irréversible.\n\nPensez à exporter d\'abord si vous souhaitez garder une copie.'**
+  String privacyDeleteDialogBody(String childName);
+
+  /// No description provided for @privacyDeleteExportFirst.
+  ///
+  /// In fr, this message translates to:
+  /// **'Exporter d\'abord'**
+  String get privacyDeleteExportFirst;
+
+  /// No description provided for @privacyDeleteConfirmDestructive.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer définitivement'**
+  String get privacyDeleteConfirmDestructive;
+
+  /// No description provided for @privacyDialogCancel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler'**
+  String get privacyDialogCancel;
+
+  /// No description provided for @privacyDeleteFinalTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dernière confirmation'**
+  String get privacyDeleteFinalTitle;
+
+  /// No description provided for @privacyDeleteFinalBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous allez supprimer définitivement toutes les données de {childName}. L\'appairage sera également supprimé. Cette action ne peut pas être annulée.'**
+  String privacyDeleteFinalBody(String childName);
+
+  /// No description provided for @privacyDeleteFinalConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Je confirme'**
+  String get privacyDeleteFinalConfirm;
+
+  /// No description provided for @privacyExportSuccessTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Export de {childName} enregistré.'**
+  String privacyExportSuccessTitle(String childName);
+
+  /// No description provided for @privacyExportInternalStorageNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Stockage interne — non visible depuis le gestionnaire de fichiers.'**
+  String get privacyExportInternalStorageNote;
+
+  /// No description provided for @privacyExportError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de l\'export : {error}'**
+  String privacyExportError(String error);
+
+  /// No description provided for @privacyDeleteSuccess.
+  ///
+  /// In fr, this message translates to:
+  /// **'Toutes les données de {childName} ont été supprimées.'**
+  String privacyDeleteSuccess(String childName);
+
+  /// No description provided for @privacyDeleteError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de la suppression : {error}'**
+  String privacyDeleteError(String error);
 }
 
 class _AppLocalizationsDelegate

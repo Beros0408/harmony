@@ -1474,4 +1474,83 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get settingsPrivacyPolicy => 'Politique de confidentialité';
+
+  @override
+  String get privacySectionTitle => 'CONFIDENTIALITÉ (RGPD)';
+
+  @override
+  String privacyIntro(String childName) {
+    return 'Conformément au RGPD, vous pouvez à tout moment exporter ou supprimer les données de $childName.';
+  }
+
+  @override
+  String get privacyExportButton => 'Exporter les données';
+
+  @override
+  String get privacyExportLoading => 'Export en cours…';
+
+  @override
+  String privacyExportDescription(String childName) {
+    return 'Télécharge toutes les données de $childName au format JSON.';
+  }
+
+  @override
+  String get privacyDeleteButton => 'Supprimer toutes les données';
+
+  @override
+  String get privacyDeleteLoading => 'Suppression en cours…';
+
+  @override
+  String privacyDeleteDialogTitle(String childName) {
+    return 'Données de $childName';
+  }
+
+  @override
+  String privacyDeleteDialogBody(String childName) {
+    return 'Supprimer toutes les données effacera l\'historique, les paramètres et l\'appairage de $childName. Cette action est irréversible.\n\nPensez à exporter d\'abord si vous souhaitez garder une copie.';
+  }
+
+  @override
+  String get privacyDeleteExportFirst => 'Exporter d\'abord';
+
+  @override
+  String get privacyDeleteConfirmDestructive => 'Supprimer définitivement';
+
+  @override
+  String get privacyDialogCancel => 'Annuler';
+
+  @override
+  String get privacyDeleteFinalTitle => 'Dernière confirmation';
+
+  @override
+  String privacyDeleteFinalBody(String childName) {
+    return 'Vous allez supprimer définitivement toutes les données de $childName. L\'appairage sera également supprimé. Cette action ne peut pas être annulée.';
+  }
+
+  @override
+  String get privacyDeleteFinalConfirm => 'Je confirme';
+
+  @override
+  String privacyExportSuccessTitle(String childName) {
+    return 'Export de $childName enregistré.';
+  }
+
+  @override
+  String get privacyExportInternalStorageNote =>
+      'Stockage interne — non visible depuis le gestionnaire de fichiers.';
+
+  @override
+  String privacyExportError(String error) {
+    return 'Erreur lors de l\'export : $error';
+  }
+
+  @override
+  String privacyDeleteSuccess(String childName) {
+    return 'Toutes les données de $childName ont été supprimées.';
+  }
+
+  @override
+  String privacyDeleteError(String error) {
+    return 'Erreur lors de la suppression : $error';
+  }
 }

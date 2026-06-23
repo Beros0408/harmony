@@ -1471,4 +1471,83 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsPrivacyPolicy => 'Privacy Policy';
+
+  @override
+  String get privacySectionTitle => 'PRIVACY (GDPR)';
+
+  @override
+  String privacyIntro(String childName) {
+    return 'Under GDPR, you can export or delete $childName\'s data at any time.';
+  }
+
+  @override
+  String get privacyExportButton => 'Export data';
+
+  @override
+  String get privacyExportLoading => 'Exporting…';
+
+  @override
+  String privacyExportDescription(String childName) {
+    return 'Downloads all of $childName\'s data as a JSON file.';
+  }
+
+  @override
+  String get privacyDeleteButton => 'Delete all data';
+
+  @override
+  String get privacyDeleteLoading => 'Deleting…';
+
+  @override
+  String privacyDeleteDialogTitle(String childName) {
+    return '$childName\'s data';
+  }
+
+  @override
+  String privacyDeleteDialogBody(String childName) {
+    return 'Deleting all data will erase $childName\'s history, settings and pairing. This action cannot be undone.\n\nConsider exporting first if you want to keep a copy.';
+  }
+
+  @override
+  String get privacyDeleteExportFirst => 'Export first';
+
+  @override
+  String get privacyDeleteConfirmDestructive => 'Delete permanently';
+
+  @override
+  String get privacyDialogCancel => 'Cancel';
+
+  @override
+  String get privacyDeleteFinalTitle => 'Final confirmation';
+
+  @override
+  String privacyDeleteFinalBody(String childName) {
+    return 'You are about to permanently delete all of $childName\'s data. Pairing will also be removed. This action cannot be undone.';
+  }
+
+  @override
+  String get privacyDeleteFinalConfirm => 'I confirm';
+
+  @override
+  String privacyExportSuccessTitle(String childName) {
+    return 'Export of $childName saved.';
+  }
+
+  @override
+  String get privacyExportInternalStorageNote =>
+      'Internal storage — not visible from the file manager.';
+
+  @override
+  String privacyExportError(String error) {
+    return 'Export error: $error';
+  }
+
+  @override
+  String privacyDeleteSuccess(String childName) {
+    return 'All of $childName\'s data has been deleted.';
+  }
+
+  @override
+  String privacyDeleteError(String error) {
+    return 'Delete error: $error';
+  }
 }

@@ -1475,4 +1475,83 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get settingsPrivacyPolicy => 'Política de privacidad';
+
+  @override
+  String get privacySectionTitle => 'PRIVACIDAD (RGPD)';
+
+  @override
+  String privacyIntro(String childName) {
+    return 'Conforme al RGPD, puede exportar o eliminar los datos de $childName en cualquier momento.';
+  }
+
+  @override
+  String get privacyExportButton => 'Exportar los datos';
+
+  @override
+  String get privacyExportLoading => 'Exportando…';
+
+  @override
+  String privacyExportDescription(String childName) {
+    return 'Descarga todos los datos de $childName en formato JSON.';
+  }
+
+  @override
+  String get privacyDeleteButton => 'Eliminar todos los datos';
+
+  @override
+  String get privacyDeleteLoading => 'Eliminando…';
+
+  @override
+  String privacyDeleteDialogTitle(String childName) {
+    return 'Datos de $childName';
+  }
+
+  @override
+  String privacyDeleteDialogBody(String childName) {
+    return 'Eliminar todos los datos borrará el historial, los ajustes y el emparejamiento de $childName. Esta acción es irreversible.\n\nConsidere exportar antes si desea conservar una copia.';
+  }
+
+  @override
+  String get privacyDeleteExportFirst => 'Exportar primero';
+
+  @override
+  String get privacyDeleteConfirmDestructive => 'Eliminar definitivamente';
+
+  @override
+  String get privacyDialogCancel => 'Cancelar';
+
+  @override
+  String get privacyDeleteFinalTitle => 'Confirmación final';
+
+  @override
+  String privacyDeleteFinalBody(String childName) {
+    return 'Va a eliminar definitivamente todos los datos de $childName. El emparejamiento también se eliminará. Esta acción no se puede deshacer.';
+  }
+
+  @override
+  String get privacyDeleteFinalConfirm => 'Confirmo';
+
+  @override
+  String privacyExportSuccessTitle(String childName) {
+    return 'Exportación de $childName guardada.';
+  }
+
+  @override
+  String get privacyExportInternalStorageNote =>
+      'Almacenamiento interno — no visible desde el gestor de archivos.';
+
+  @override
+  String privacyExportError(String error) {
+    return 'Error al exportar: $error';
+  }
+
+  @override
+  String privacyDeleteSuccess(String childName) {
+    return 'Todos los datos de $childName han sido eliminados.';
+  }
+
+  @override
+  String privacyDeleteError(String error) {
+    return 'Error al eliminar: $error';
+  }
 }

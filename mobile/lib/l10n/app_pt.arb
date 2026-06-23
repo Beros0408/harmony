@@ -553,5 +553,71 @@
   "breathingStop": "Parar",
   "breathingReturn": "Voltar",
 
-  "settingsPrivacyPolicy": "Política de privacidade"
+  "settingsPrivacyPolicy": "Política de privacidade",
+
+  "privacySectionTitle": "PRIVACIDADE (RGPD)",
+  "privacyIntro": "Nos termos do RGPD, pode exportar ou eliminar os dados de {childName} a qualquer momento.",
+  "@privacyIntro": {
+    "placeholders": {
+      "childName": {"type": "String"}
+    }
+  },
+  "privacyExportButton": "Exportar os dados",
+  "privacyExportLoading": "A exportar…",
+  "privacyExportDescription": "Transfere todos os dados de {childName} no formato JSON.",
+  "@privacyExportDescription": {
+    "placeholders": {
+      "childName": {"type": "String"}
+    }
+  },
+  "privacyDeleteButton": "Eliminar todos os dados",
+  "privacyDeleteLoading": "A eliminar…",
+  "privacyDeleteDialogTitle": "Dados de {childName}",
+  "@privacyDeleteDialogTitle": {
+    "placeholders": {
+      "childName": {"type": "String"}
+    }
+  },
+  "privacyDeleteDialogBody": "Eliminar todos os dados apagará o histórico, as definições e o emparelhamento de {childName}. Esta ação é irreversível.\n\nConsidere exportar primeiro se quiser guardar uma cópia.",
+  "@privacyDeleteDialogBody": {
+    "placeholders": {
+      "childName": {"type": "String"}
+    }
+  },
+  "privacyDeleteExportFirst": "Exportar primeiro",
+  "privacyDeleteConfirmDestructive": "Eliminar definitivamente",
+  "privacyDialogCancel": "Cancelar",
+  "privacyDeleteFinalTitle": "Confirmação final",
+  "privacyDeleteFinalBody": "Vai eliminar definitivamente todos os dados de {childName}. O emparelhamento também será removido. Esta ação não pode ser anulada.",
+  "@privacyDeleteFinalBody": {
+    "placeholders": {
+      "childName": {"type": "String"}
+    }
+  },
+  "privacyDeleteFinalConfirm": "Confirmo",
+  "privacyExportSuccessTitle": "Exportação de {childName} guardada.",
+  "@privacyExportSuccessTitle": {
+    "placeholders": {
+      "childName": {"type": "String"}
+    }
+  },
+  "privacyExportInternalStorageNote": "Armazenamento interno — não visível no gestor de ficheiros.",
+  "privacyExportError": "Erro ao exportar: {error}",
+  "@privacyExportError": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "privacyDeleteSuccess": "Todos os dados de {childName} foram eliminados.",
+  "@privacyDeleteSuccess": {
+    "placeholders": {
+      "childName": {"type": "String"}
+    }
+  },
+  "privacyDeleteError": "Erro ao eliminar: {error}",
+  "@privacyDeleteError": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  }
 }

@@ -553,5 +553,71 @@
   "breathingStop": "Ferma",
   "breathingReturn": "Indietro",
 
-  "settingsPrivacyPolicy": "Informativa sulla privacy"
+  "settingsPrivacyPolicy": "Informativa sulla privacy",
+
+  "privacySectionTitle": "PRIVACY (GDPR)",
+  "privacyIntro": "Ai sensi del GDPR, puoi esportare o eliminare i dati di {childName} in qualsiasi momento.",
+  "@privacyIntro": {
+    "placeholders": {
+      "childName": {"type": "String"}
+    }
+  },
+  "privacyExportButton": "Esporta i dati",
+  "privacyExportLoading": "Esportazione in corso…",
+  "privacyExportDescription": "Scarica tutti i dati di {childName} in formato JSON.",
+  "@privacyExportDescription": {
+    "placeholders": {
+      "childName": {"type": "String"}
+    }
+  },
+  "privacyDeleteButton": "Elimina tutti i dati",
+  "privacyDeleteLoading": "Eliminazione in corso…",
+  "privacyDeleteDialogTitle": "Dati di {childName}",
+  "@privacyDeleteDialogTitle": {
+    "placeholders": {
+      "childName": {"type": "String"}
+    }
+  },
+  "privacyDeleteDialogBody": "Eliminare tutti i dati cancellerà la cronologia, le impostazioni e l'abbinamento di {childName}. Questa azione è irreversibile.\n\nValuta di esportare prima se vuoi conservare una copia.",
+  "@privacyDeleteDialogBody": {
+    "placeholders": {
+      "childName": {"type": "String"}
+    }
+  },
+  "privacyDeleteExportFirst": "Esporta prima",
+  "privacyDeleteConfirmDestructive": "Elimina definitivamente",
+  "privacyDialogCancel": "Annulla",
+  "privacyDeleteFinalTitle": "Conferma finale",
+  "privacyDeleteFinalBody": "Stai per eliminare definitivamente tutti i dati di {childName}. Anche l'abbinamento sarà rimosso. Questa azione non può essere annullata.",
+  "@privacyDeleteFinalBody": {
+    "placeholders": {
+      "childName": {"type": "String"}
+    }
+  },
+  "privacyDeleteFinalConfirm": "Confermo",
+  "privacyExportSuccessTitle": "Esportazione di {childName} salvata.",
+  "@privacyExportSuccessTitle": {
+    "placeholders": {
+      "childName": {"type": "String"}
+    }
+  },
+  "privacyExportInternalStorageNote": "Memoria interna — non visibile dal gestore file.",
+  "privacyExportError": "Errore durante l'esportazione: {error}",
+  "@privacyExportError": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "privacyDeleteSuccess": "Tutti i dati di {childName} sono stati eliminati.",
+  "@privacyDeleteSuccess": {
+    "placeholders": {
+      "childName": {"type": "String"}
+    }
+  },
+  "privacyDeleteError": "Errore durante l'eliminazione: {error}",
+  "@privacyDeleteError": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  }
 }
