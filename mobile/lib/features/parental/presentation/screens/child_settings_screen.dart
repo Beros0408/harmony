@@ -261,17 +261,6 @@ class _ChildSettingsScreenState extends State<ChildSettingsScreen> {
             label: l10n.blacklistSaveButton,
             onPressed: _save,
           ),
-          const SizedBox(height: AppSpacing.lg),
-
-          // Supprimer profil
-          if (_profile != null)
-            TextButton(
-              onPressed: _confirmDelete,
-              child: Text(
-                'Supprimer ce profil',
-                style: TextStyle(color: AppColors.accentRed),
-              ),
-            ),
           const SizedBox(height: AppSpacing.xxxl),
         ],
       ),
@@ -288,30 +277,6 @@ class _ChildSettingsScreenState extends State<ChildSettingsScreen> {
     );
     context.read<ChildProfileCubit>().add(updated);
     Navigator.of(context).pop();
-  }
-
-  void _confirmDelete() {
-    showDialog<void>(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Supprimer ce profil ?'),
-        content: Text('Le profil de ${_profile!.name} sera supprimé définitivement.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Annuler'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              context.read<ChildProfileCubit>().remove(_profile!.id);
-              Navigator.of(context).pop();
-            },
-            child: const Text('Supprimer', style: TextStyle(color: AppColors.accentRed)),
-          ),
-        ],
-      ),
-    );
   }
 
   String _dayName(int day) => switch (day) {

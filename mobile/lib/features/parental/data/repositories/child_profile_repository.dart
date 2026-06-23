@@ -45,12 +45,6 @@ class ChildProfileRepository implements IChildProfileRepository {
   }
 
   @override
-  Future<void> delete(String id) async {
-    final db = await DatabaseHelper.db;
-    await db.delete(_table, where: 'id = ?', whereArgs: [id]);
-  }
-
-  @override
   Future<void> seed(List<ChildProfile> profiles) async {
     final db = await DatabaseHelper.db;
     final batch = db.batch();

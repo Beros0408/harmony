@@ -5,6 +5,5 @@ abstract interface class IChildProfileRepository {
   Future<ChildProfile?> getById(String id);
   Future<void> add(ChildProfile profile);
   Future<void> update(ChildProfile profile);
-  Future<void> delete(String id);
   Future<void> seed(List<ChildProfile> profiles);
 }

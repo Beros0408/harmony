@@ -25,9 +25,6 @@ class _StubChildRepo implements IChildProfileRepository {
   }
 
   @override
-  Future<void> delete(String id) async => _store.removeWhere((p) => p.id == id);
-
-  @override
   Future<void> seed(List<ChildProfile> profiles) async => _store.addAll(profiles);
 }
 
@@ -73,22 +70,5 @@ void main() {
       ],
     );
 
-    blocTest<ChildProfileCubit, ChildProfileState>(
-      'remove() supprime le profil et recharge',
-      build: buildCubit,
-      setUp: () => repo.seed([
-        const ChildProfile(id: 'p1', name: 'Lucas', age: 12, avatarColor: Colors.blue),
-      ]),
-      act: (c) async {
-        await c.load();
-        await c.remove('p1');
-      },
-      expect: () => [
-        isA<ChildProfileLoading>(),
-        predicate<ChildProfileState>((s) => s is ChildProfileLoaded && s.profiles.length == 1),
-        isA<ChildProfileLoading>(),
-        predicate<ChildProfileState>((s) => s is ChildProfileLoaded && s.profiles.isEmpty),
-      ],
-    );
   });
 }

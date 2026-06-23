@@ -57,11 +57,6 @@ class ChildProfileCubit extends Cubit<ChildProfileState> {
     await load();
   }
 
-  Future<void> remove(String id) async {
-    await _repo.delete(id);
-    await load();
-  }
-
   void updateScores(Map<String, SecurityScore> scores) {
     final current = state;
     if (current is ChildProfileLoaded) {

@@ -202,7 +202,10 @@ class _ChildDetailBody extends StatelessWidget {
         PrivacySection(
           childId: profile.id,
           childName: profile.name,
-          onDeleted: () => context.pop(),
+          onDeleted: () {
+            context.read<ChildProfileCubit>().loadFromApi();
+            context.pop();
+          },
         ),
         const SizedBox(height: AppSpacing.xxxl),
       ],
